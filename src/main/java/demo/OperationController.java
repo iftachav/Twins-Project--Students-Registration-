@@ -24,10 +24,21 @@ public class OperationController {
 	}
 	
 	@RequestMapping(
+			path = "/twins/operations",
+			method = RequestMethod.POST,
+			consumes = MediaType.APPLICATION_JSON_VALUE,
+			produces = MediaType.APPLICATION_JSON_VALUE)
+	public OperationBoundary ASynchronousOperation(@RequestBody OperationBoundary input) {
+		input.setId(new OperationId());
+		System.err.println("(STUB) A Synchronous operation successfully invoked on item");
+		return input;
+	}
+	
+	@RequestMapping(
 			path = "/twins/admin/operations/{userSpace}/{userEmail}",
 			method = RequestMethod.DELETE)
 	public void deleteAllOperations(@PathVariable("userSpace") String userSpace, @PathVariable("userEmail") String userEmail) {
-		
+		System.err.println("(STUB) All operation deleted successfully");
 	}
 	
 	@RequestMapping(
@@ -37,6 +48,7 @@ public class OperationController {
 	public OperationBoundary[] exportAllOperations(@PathVariable("userSpace") String userSpace, @PathVariable("userEmail") String userEmail){
 		OperationBoundary[] tmp = Stream.of(new OperationBoundary(), new OperationBoundary(), new OperationBoundary())
 				.map(input->{ return input; }).collect(Collectors.toList()).toArray(new OperationBoundary[0]);
+		System.err.println("(STUB) All operation exported successfully");
 		return tmp;
 	}
 }
