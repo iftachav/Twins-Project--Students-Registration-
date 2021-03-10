@@ -24,7 +24,7 @@ public class OperationController {
 	}
 	
 	@RequestMapping(
-			path = "/twins/operations",
+			path = "/twins/operations/async",
 			method = RequestMethod.POST,
 			consumes = MediaType.APPLICATION_JSON_VALUE,
 			produces = MediaType.APPLICATION_JSON_VALUE)
