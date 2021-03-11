@@ -1,4 +1,4 @@
-package demo;
+package demo.operations;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;

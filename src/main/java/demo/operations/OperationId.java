@@ -1,4 +1,4 @@
-package demo;
+package demo.operations;
 
 public class OperationId {
 	private String space;

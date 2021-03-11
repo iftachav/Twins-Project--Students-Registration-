@@ -1,4 +1,4 @@
-package demo;
+package demo.operations;
 /*
  * OperationBoundary sample JSON:
 	{
@@ -32,6 +32,7 @@ package demo;
 import java.util.Date;
 import java.util.HashMap;
 
+import demo.UserId;
 import demo.item.ItemIdBoundary;
 
 public class OperationBoundary {
