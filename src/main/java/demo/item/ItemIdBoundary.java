@@ -11,7 +11,7 @@ public class ItemIdBoundary {
 
 	public ItemIdBoundary() {
 		this.space="iftachTeam";
-//		this.id=(long) 1;
+		this.id = 1L;
 	}
 
 	public ItemIdBoundary(Long id) {

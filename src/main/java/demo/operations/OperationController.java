@@ -33,7 +33,6 @@ public class OperationController {
 	public OperationBoundary ASynchronousOperation(@RequestBody OperationBoundary input) {
 		//input.setId(new OperationId());
 		input.addOperationAttribute("key1", "can be set to any value you wish");
-		input.addOperationAttribute("key2", new String("can be nested json"));
 		System.err.println("(STUB) A Synchronous operation successfully invoked on item");
 		return input;
 	}
