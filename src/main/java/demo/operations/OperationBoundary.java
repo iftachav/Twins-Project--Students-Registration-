@@ -31,7 +31,7 @@ package demo.operations;
 
 import java.util.Date;
 import java.util.HashMap;
-
+import java.util.Map;
 import demo.UserId;
 import demo.item.ItemIdBoundary;
 
@@ -41,10 +41,10 @@ public class OperationBoundary {
 	private ItemIdBoundary item;
 	private Date timestamp;
 	private UserId invokedBy;
-	private HashMap<String, Object> operationsAttributes;
+	private Map<String, Object> operationsAttributes;
 	
 	public OperationBoundary() {
-		this.id = new OperationId("2021b.twins");
+		this.id = new OperationId();
 		this.type = "random_number";
 		this.item = new ItemIdBoundary();
 		this.timestamp = new Date();
@@ -92,11 +92,11 @@ public class OperationBoundary {
 		this.invokedBy = invokedBy;
 	}
 
-	public HashMap<String, Object> getOperationsAttributes() {
+	public Map<String, Object> getOperationsAttributes() {
 		return operationsAttributes;
 	}
 
-	public void setOperationsAttributes(HashMap<String, Object> operationsAttributes) {
+	public void setOperationsAttributes(Map<String, Object> operationsAttributes) {
 		this.operationsAttributes = operationsAttributes;
 	}
 	

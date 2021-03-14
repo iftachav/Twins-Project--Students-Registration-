@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import demo.item.ItemIdBoundary;
+
 @RestController
 public class OperationController {
 	
@@ -29,7 +31,9 @@ public class OperationController {
 			consumes = MediaType.APPLICATION_JSON_VALUE,
 			produces = MediaType.APPLICATION_JSON_VALUE)
 	public OperationBoundary ASynchronousOperation(@RequestBody OperationBoundary input) {
-		input.setId(new OperationId());
+		//input.setId(new OperationId());
+		input.addOperationAttribute("key1", "can be set to any value you wish");
+		input.addOperationAttribute("key2", new String("can be nested json"));
 		System.err.println("(STUB) A Synchronous operation successfully invoked on item");
 		return input;
 	}

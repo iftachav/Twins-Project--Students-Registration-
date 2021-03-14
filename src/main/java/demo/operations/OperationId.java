@@ -5,6 +5,8 @@ public class OperationId {
 	private String id;
 	
 	public OperationId() {
+		this.space = "2021b.twins";
+		this.id = "451";
 	}
 
 	public OperationId(String space) {
