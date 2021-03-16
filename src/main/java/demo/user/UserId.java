@@ -1,8 +1,9 @@
-package demo;
+package demo.user;
 
 public class UserId {
-	private String email;
 	private String space;
+	private String email;
+	
 	public UserId() {
 		this.space = "2021b.twins";
 		this.email = "user@demo.com";

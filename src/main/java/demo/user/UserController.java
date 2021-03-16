@@ -1,10 +1,5 @@
-package demo;
+package demo.user;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -61,7 +56,7 @@ public class UserController {
 		public UserBoundary[] exportAllUsers(@PathVariable("userSpace") String userSpace, @PathVariable("userEmail") String userEmail) {
 			// STUB implementation - do nothing - focus on input and output only
 			System.err.println("(STUB) successfully exportAllUsers");
-			AtomicLong counter = new AtomicLong(1L);
+			//AtomicLong counter = new AtomicLong(1L);
 			// STUB implementation - create 3 messages as array and return it
 			UserBoundary[] tmp = new UserBoundary[] {new UserBoundary(), new UserBoundary(), new UserBoundary()};
 			tmp[0].setUsername("Moshiko");

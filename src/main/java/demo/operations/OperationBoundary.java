@@ -32,8 +32,9 @@ package demo.operations;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import demo.UserId;
+
 import demo.item.ItemIdBoundary;
+import demo.user.UserId;
 
 public class OperationBoundary {
 	private OperationId id;

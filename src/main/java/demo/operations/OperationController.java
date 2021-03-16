@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import demo.item.ItemIdBoundary;
 
 @RestController
 public class OperationController {
@@ -20,7 +19,7 @@ public class OperationController {
 			method = RequestMethod.POST,
 			consumes = MediaType.APPLICATION_JSON_VALUE,
 			produces = MediaType.APPLICATION_JSON_VALUE)
-	public OperationBoundary invokeOperationOnItem(@RequestBody OperationBoundary input) {
+	public Object invokeOperationOnItem(@RequestBody OperationBoundary input) {
 		System.err.println("(STUB) operation successfully invoked on item");
 		return input;
 	}

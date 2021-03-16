@@ -1,8 +1,9 @@
 package demo.item;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
-import demo.UserId;
 
 //JSON{
 //	"itemId":{
@@ -37,17 +38,17 @@ public class ItemBoundary {
 	private String name;
 	private Boolean active;
 	private Date createdTimestamp;
-	private UserId createdBy;
+	private CreatedByBoundary createdBy;
 	private LocationBoundary location;
-	private ItemAttributesBoundary itemAttributes;
+	private Map<String, Object> itemAttributes;
 
 	public ItemBoundary() {
 		itemId = new ItemIdBoundary();
 		active = true;
 		createdTimestamp = new Date();
-		createdBy= new UserId();
+		createdBy= new CreatedByBoundary();
 		location = new LocationBoundary();
-		itemAttributes = new ItemAttributesBoundary();
+		itemAttributes = new HashMap<>();
 	}
 
 	public ItemBoundary(String type, String name, Boolean active) {
@@ -58,21 +59,20 @@ public class ItemBoundary {
 	}
 
 	public ItemBoundary(String type, String name, Boolean active,
-			LocationBoundary location, ItemAttributesBoundary itemAttributes) {
+			LocationBoundary location) {
 		this();
 		this.type = type;
 		this.name = name;
 		this.active = active;
 		this.location = location;
-		this.itemAttributes = itemAttributes;
 	}
 	
 
-	public UserId getCreatedBy() {
+	public CreatedByBoundary getCreatedBy() {
 		return createdBy;
 	}
 
-	public void setCreatedBy(UserId createdBy) {
+	public void setCreatedBy(CreatedByBoundary createdBy) {
 		this.createdBy = createdBy;
 	}
 
@@ -124,11 +124,11 @@ public class ItemBoundary {
 		this.location = location;
 	}
 
-	public ItemAttributesBoundary getItemAttributes() {
+	public Map<String, Object> getItemAttributes() {
 		return itemAttributes;
 	}
 
-	public void setItemAttributes(ItemAttributesBoundary itemAttributes) {
+	public void setItemAttributes(Map<String, Object> itemAttributes) {
 		this.itemAttributes = itemAttributes;
 	}
 }

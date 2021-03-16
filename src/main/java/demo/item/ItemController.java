@@ -1,7 +1,8 @@
 package demo.item;
 
 
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -63,11 +64,14 @@ public class ItemController {
 	public ItemBoundary retrieveSpecificItem (@PathVariable("itemSpace") String itemSpace,
 			@PathVariable("itemId") Long id){
 		// STUB implementation
+		Map<String, Object> map= new HashMap<>();
+		map.put("key1", true);
 		ItemBoundary iB= new ItemBoundary();
 		iB.setName("Meron");
 		ItemIdBoundary iIB= new ItemIdBoundary(id);
 		iIB.setSpace(itemSpace);
 		iB.setItemId(iIB);
+		iB.setItemAttributes(map);
 		return iB;
 	}
 	
@@ -102,6 +106,7 @@ public class ItemController {
 	
 
 	//Delete All Items
+//	localhost:8080/twins/admin/items/fsda/vcx
 	@RequestMapping(
 			path = "/twins/admin/items/{userSpace}/{userEmail}",
 //				path = "/twins/admin",

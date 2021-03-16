@@ -1,4 +1,4 @@
-package demo;
+package demo.user;
 
 /*
  UserBoundary sample JSON: 
