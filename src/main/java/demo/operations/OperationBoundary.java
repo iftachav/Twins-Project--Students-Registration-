@@ -33,32 +33,29 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import demo.item.ItemIdBoundary;
-import demo.user.UserId;
-
 public class OperationBoundary {
-	private OperationId id;
+	private OperationId operationId;
 	private String type;
-	private ItemIdBoundary item;
+	private ItemWrapper item;
 	private Date timestamp;
-	private UserId invokedBy;
+	private UserIdWrapper invokedBy;
 	private Map<String, Object> operationsAttributes;
 	
 	public OperationBoundary() {
-		this.id = new OperationId();
+		this.operationId = new OperationId();
 		this.type = "random_number";
-		this.item = new ItemIdBoundary();
+		this.item = new ItemWrapper();
 		this.timestamp = new Date();
-		this.invokedBy = new UserId();
+		this.invokedBy = new UserIdWrapper();
 		this.operationsAttributes = new HashMap<>();
 	}
 
-	public OperationId getId() {
-		return id;
+	public OperationId getOperationId() {
+		return operationId;
 	}
 
-	public void setId(OperationId id) {
-		this.id = id;
+	public void setOperationId(OperationId operationId) {
+		this.operationId = operationId;
 	}
 
 	public String getType() {
@@ -68,12 +65,12 @@ public class OperationBoundary {
 	public void setType(String type) {
 		this.type = type;
 	}
-
-	public ItemIdBoundary getItem() {
+	
+	public ItemWrapper getItem() {
 		return item;
 	}
 
-	public void setItem(ItemIdBoundary item) {
+	public void setItem(ItemWrapper item) {
 		this.item = item;
 	}
 
@@ -85,11 +82,11 @@ public class OperationBoundary {
 		this.timestamp = timestamp;
 	}
 
-	public UserId getInvokedBy() {
+	public UserIdWrapper getInvokedBy() {
 		return invokedBy;
 	}
 
-	public void setInvokedBy(UserId invokedBy) {
+	public void setInvokedBy(UserIdWrapper invokedBy) {
 		this.invokedBy = invokedBy;
 	}
 
