@@ -37,17 +37,17 @@ public class OperationBoundary {
 	private OperationId operationId;
 	private String type;
 	private ItemWrapper item;
-	private Date timestamp;
+	private Date createdTimestamp;
 	private UserIdWrapper invokedBy;
-	private Map<String, Object> operationsAttributes;
+	private Map<String, Object> operationAttributes;
 	
 	public OperationBoundary() {
 		this.operationId = new OperationId();
 		this.type = "random_number";
 		this.item = new ItemWrapper();
-		this.timestamp = new Date();
+		this.createdTimestamp = new Date();
 		this.invokedBy = new UserIdWrapper();
-		this.operationsAttributes = new HashMap<>();
+		this.operationAttributes = new HashMap<>();
 	}
 
 	public OperationId getOperationId() {
@@ -74,12 +74,12 @@ public class OperationBoundary {
 		this.item = item;
 	}
 
-	public Date getTimestamp() {
-		return timestamp;
+	public Date getCreatedTimestamp() {
+		return createdTimestamp;
 	}
 
-	public void setTimestamp(Date timestamp) {
-		this.timestamp = timestamp;
+	public void setCreatedTimestamp(Date createdTimestamp) {
+		this.createdTimestamp = createdTimestamp;
 	}
 
 	public UserIdWrapper getInvokedBy() {
@@ -90,15 +90,15 @@ public class OperationBoundary {
 		this.invokedBy = invokedBy;
 	}
 
-	public Map<String, Object> getOperationsAttributes() {
-		return operationsAttributes;
+	public Map<String, Object> getOperationAttributes() {
+		return operationAttributes;
 	}
 
-	public void setOperationsAttributes(Map<String, Object> operationsAttributes) {
-		this.operationsAttributes = operationsAttributes;
+	public void setOperationAttributes(Map<String, Object> operationsAttributes) {
+		this.operationAttributes = operationsAttributes;
 	}
 	
 	public void addOperationAttribute(String key, Object value) {
-		this.operationsAttributes.put(key, value);
+		this.operationAttributes.put(key, value);
 	}
 }

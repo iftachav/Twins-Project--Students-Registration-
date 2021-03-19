@@ -20,7 +20,7 @@ public class OperationController {
 			consumes = MediaType.APPLICATION_JSON_VALUE,
 			produces = MediaType.APPLICATION_JSON_VALUE)
 	public Object invokeOperationOnItem(@RequestBody OperationBoundary input) {
-		System.err.println("(STUB) operation successfully invoked on item");
+		System.err.println("(STUB) operation successfully invoked on item\n"+input.getOperationAttributes());
 		return input;
 	}
 	
