@@ -18,6 +18,7 @@ public class UserBoundary {
 	private String role;
 	private String username;
 	private String avatar;
+	
 	public UserBoundary() {
 		this.userId = new UserId();
 		this.role = "MANAGER";

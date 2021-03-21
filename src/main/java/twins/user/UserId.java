@@ -8,6 +8,10 @@ public class UserId {
 		this.space = "2021b.twins";
 		this.email = "user@demo.com";
 	}
+	public UserId(String space, String email) {
+		this.space = space;
+		this.email = email;
+	}
 	public String getEmail() {
 		return email;
 	}
