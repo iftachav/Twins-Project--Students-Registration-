@@ -1,6 +1,6 @@
-package demo.item;
+package twins.item;
 
-import demo.user.UserId;
+import twins.user.UserId;
 
 public class CreatedByBoundary {
 	private UserId userId;

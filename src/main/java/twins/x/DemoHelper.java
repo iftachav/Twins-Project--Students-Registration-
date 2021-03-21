@@ -1,4 +1,4 @@
-package demo.x;
+package twins.x;
 
 import org.springframework.stereotype.Component;
 

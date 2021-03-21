@@ -1,4 +1,4 @@
-package demo.operations;
+package twins.operations;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;

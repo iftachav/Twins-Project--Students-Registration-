@@ -1,4 +1,4 @@
-package demo.user;
+package twins.user;
 
 public class UserId {
 	private String space;

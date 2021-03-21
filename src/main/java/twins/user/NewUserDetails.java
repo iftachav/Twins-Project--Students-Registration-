@@ -1,4 +1,4 @@
-package demo.user;
+package twins.user;
 /*
 NewUserDetails sample JSON: 
 	{ 

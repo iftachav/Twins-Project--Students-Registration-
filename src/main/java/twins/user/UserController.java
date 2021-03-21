@@ -1,4 +1,4 @@
-package demo.user;
+package twins.user;
 
 
 import org.springframework.http.MediaType;
