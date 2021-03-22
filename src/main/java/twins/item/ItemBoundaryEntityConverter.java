@@ -27,8 +27,37 @@ public class ItemBoundaryEntityConverter implements ItemConverter{
 
 	@Override
 	public ItemEntity toEntity(ItemBoundary itemBoundary) {
-		// TODO Auto-generated method stub
-		return null;
+		ItemEntity ie = new ItemEntity();
+		
+		if(itemBoundary.getActive() != null)
+			ie.setActive(itemBoundary.getActive());
+		else
+			ie.setActive(false);
+		
+		if(itemBoundary.getItemId().getId() != null)
+			ie.setId(itemBoundary.getItemId().getId());
+		
+		if(itemBoundary.getItemAttributes() != null)
+			ie.setItemAttributes(itemBoundary.getItemAttributes());
+		else
+			ie.setItemAttributes(null);
+		
+		if(itemBoundary.getLocation() != null) {
+			ie.setLat(itemBoundary.getLocation().getLat());
+			ie.setLng(itemBoundary.getLocation().getLng());
+		}
+		
+		if(itemBoundary.getCreatedBy() != null) {
+			ie.setUserEmail(itemBoundary.getCreatedBy().getUserId().getEmail());
+			ie.setUserSpace(itemBoundary.getCreatedBy().getUserId().getSpace());
+		}
+
+		ie.setItemSpace(itemBoundary.getItemId().getSpace());
+		ie.setName(itemBoundary.getName());
+		ie.setTimestamp(itemBoundary.getCreatedTimestamp());
+		ie.setType(itemBoundary.getType());
+		
+		return ie;
 	}
 	
 }

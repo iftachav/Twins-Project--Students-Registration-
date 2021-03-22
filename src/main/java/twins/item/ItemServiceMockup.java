@@ -30,9 +30,6 @@ public class ItemServiceMockup implements ItemService{
 	
 	@Override
 	public ItemBoundary createItem(String userSpace, String userEmail, ItemBoundary item) {
-		if(userSpace == null || userEmail == null) 
-			throw new RuntimeException("userSpace or userEmail can not be null");
-		
 		String id = UUID.randomUUID().toString() + ID_STRING;
 		
 		ItemEntity entity = itemEntityConverter.toEntity(item);
@@ -46,8 +43,8 @@ public class ItemServiceMockup implements ItemService{
 	@Override
 	public ItemBoundary updateItem(String userSpace, String userEmail, String itemSpace, String itemId,
 			ItemBoundary update) {
-		if(userSpace == null || userEmail == null || itemSpace == null) 
-			throw new RuntimeException("userSpace or userEmail or itemSpace can not be null");
+		if(itemId == null) 
+			throw new RuntimeException("itemId can not be null");
 		
 			//Creating the updated entity
 			ItemEntity entity = itemEntityConverter.toEntity(update);		
@@ -80,7 +77,7 @@ public class ItemServiceMockup implements ItemService{
 
 	@Override
 	public ItemBoundary getSpecificItem(String userSpace, String userEmail, String itemSpace, String itemId) {
-		if(userSpace != null || userEmail != null || itemSpace != null || itemId != null) {
+		if(itemId != null) {
 			//Search for the desired item
 			for(Map.Entry<String, ItemEntity> entry : items.entrySet()) {
 				if(Long.toString(entry.getValue().getId()) == itemId && entry.getValue().getUserSpace() == userSpace && 
@@ -90,7 +87,7 @@ public class ItemServiceMockup implements ItemService{
 			}
 		}
 		
-		throw new RuntimeException("userSpace or userEmail or itemSpace or itemId can not be null");
+		throw new RuntimeException("itemId can not be null");
 	}
 
 	@Override
