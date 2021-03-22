@@ -48,14 +48,16 @@ public class ItemServiceMockup implements ItemService{
 			ItemBoundary update) {
 		if(itemId == null) 
 			throw new RuntimeException("itemId can not be null");
-		
-		//Creating the updated entity
-		ItemEntity entity = itemEntityConverter.toEntity(update);	
+
+		ItemEntity entity = null;
 		
 		//Search for the desired item
 		for(Map.Entry<String, ItemEntity> entry : items.entrySet()) {
 			if(Long.toString(entry.getValue().getId()) == itemId && entry.getValue().getUserSpace() == userSpace && 
 					entry.getValue().getUserEmail() == userEmail && entry.getValue().getItemSpace() == itemSpace) {
+				
+				//Creating the updated entity
+				entity =  itemEntityConverter.toEntity(update);	
 				
 				//Keep these values unchanged
 				entity.setUserSpace(entry.getValue().getUserSpace());
@@ -63,10 +65,14 @@ public class ItemServiceMockup implements ItemService{
 				entity.setItemSpace(entry.getValue().getItemSpace());
 				entity.setTimestamp(entry.getValue().getTimestamp());
 				
+				//updating the DB
 				entry.setValue(entity);
 				break;
 			}
 		}
+		
+		if(entity == null)
+			throw new RuntimeException("The requested item doesn't exist");
 		
 		return itemEntityConverter.toBoundary(entity);
 	}
@@ -97,7 +103,7 @@ public class ItemServiceMockup implements ItemService{
 			}
 		
 		if(ie == null)
-			throw new RuntimeException("The item you searched for doesn't exist");
+			throw new RuntimeException("The requested item doesn't exist");
 		return itemEntityConverter.toBoundary(ie);
 	}
 
