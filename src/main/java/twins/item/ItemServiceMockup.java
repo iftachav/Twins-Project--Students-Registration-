@@ -30,6 +30,9 @@ public class ItemServiceMockup implements ItemService{
 	
 	@Override
 	public ItemBoundary createItem(String userSpace, String userEmail, ItemBoundary item) {
+		if(userSpace == null || userEmail == null) 
+			throw new RuntimeException("userSpace or userEmail can not be null");
+			
 		String id = UUID.randomUUID().toString() + ID_STRING;
 		
 		ItemEntity entity = itemEntityConverter.toEntity(item);
@@ -46,30 +49,34 @@ public class ItemServiceMockup implements ItemService{
 		if(itemId == null) 
 			throw new RuntimeException("itemId can not be null");
 		
-			//Creating the updated entity
-			ItemEntity entity = itemEntityConverter.toEntity(update);		
-			entity.setUserSpace(userSpace);
-			entity.setUserEmail(userEmail);
-			entity.setItemSpace(itemSpace);
-			
-			//Search for the desired item
-			for(Map.Entry<String, ItemEntity> entry : items.entrySet()) {
-				if(Long.toString(entry.getValue().getId()) == itemId && entry.getValue().getUserSpace() == userSpace && 
-						entry.getValue().getUserEmail() == userEmail && entry.getValue().getItemSpace() == itemSpace) {
-					entry.setValue(entity);
-					break;
-				}
+		//Creating the updated entity
+		ItemEntity entity = itemEntityConverter.toEntity(update);	
+		
+		//Search for the desired item
+		for(Map.Entry<String, ItemEntity> entry : items.entrySet()) {
+			if(Long.toString(entry.getValue().getId()) == itemId && entry.getValue().getUserSpace() == userSpace && 
+					entry.getValue().getUserEmail() == userEmail && entry.getValue().getItemSpace() == itemSpace) {
+				
+				//Keep these values unchanged
+				entity.setUserSpace(entry.getValue().getUserSpace());
+				entity.setUserEmail(entry.getValue().getUserEmail());
+				entity.setItemSpace(entry.getValue().getItemSpace());
+				entity.setTimestamp(entry.getValue().getTimestamp());
+				
+				entry.setValue(entity);
+				break;
 			}
-			
-			return itemEntityConverter.toBoundary(entity);
+		}
+		
+		return itemEntityConverter.toBoundary(entity);
 	}
 
 	@Override
 	public List<ItemBoundary> getAllItems(String userSpace, String userEmail) {
-		//filter only items matching userSpace && userEmail, convert them to ItemBoundary and export them to a Collection
 		if(userSpace == null || userEmail == null) 
 			throw new RuntimeException("userSpace or userEmail can not be null");
 		
+		//filter only items matching userSpace && userEmail, convert them to ItemBoundary and export them to a Collection
 		return items.values().stream().filter(e-> e.getUserSpace() == userSpace && e.getUserEmail() == userEmail)
 			.map(itemEntityConverter::toBoundary)
 			.collect(Collectors.toList());
@@ -77,17 +84,21 @@ public class ItemServiceMockup implements ItemService{
 
 	@Override
 	public ItemBoundary getSpecificItem(String userSpace, String userEmail, String itemSpace, String itemId) {
-		if(itemId != null) {
+		if(itemId == null) 
+			throw new RuntimeException("itemId can not be null");
+		
+		ItemEntity ie = null;
 			//Search for the desired item
 			for(Map.Entry<String, ItemEntity> entry : items.entrySet()) {
 				if(Long.toString(entry.getValue().getId()) == itemId && entry.getValue().getUserSpace() == userSpace && 
 						entry.getValue().getUserEmail() == userEmail && entry.getValue().getItemSpace() == itemSpace) {
-					return itemEntityConverter.toBoundary(entry.getValue());
+					ie = entry.getValue();
 				}
 			}
-		}
 		
-		throw new RuntimeException("itemId can not be null");
+		if(ie == null)
+			throw new RuntimeException("The item you searched for doesn't exist");
+		return itemEntityConverter.toBoundary(ie);
 	}
 
 	@Override
