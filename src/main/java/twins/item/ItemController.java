@@ -7,14 +7,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import twins.logic.ItemService;
+import twins.logic.ItemsService;
 
 @RestController
 public class ItemController {
-	private ItemService itemService;
+	private ItemsService itemService;
 	
 	@Autowired
-	public ItemController(ItemService itemService) {
+	public ItemController(ItemsService itemService) {
 		this.itemService = itemService;
 	}
 	
