@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -20,12 +19,13 @@ public class ItemServiceMockup implements ItemsService{
 	private ItemConverter itemEntityConverter;
 	
 	//TODO need to use spring.application.name.
-	@Value("${spring.application.name}") 
-	private String ID_STRING;
+	//@Value("${spring.application.name:2021b.iftach.avraham}")
+	private final String space = "iftach.avraham";
 	//private final String ID_STRING = "iftach.avraham";
 	
 	public ItemServiceMockup() {
 		this.items = Collections.synchronizedMap(new HashMap<>());
+		System.err.println(space);
 	}
 	
 	@Autowired
@@ -40,7 +40,7 @@ public class ItemServiceMockup implements ItemsService{
 		if(item.getCreatedTimestamp() == null)
 			item.setTimestamp(new Date());
 		
-		String id = UUID.randomUUID().toString() + ID_STRING;
+		String id = UUID.randomUUID().toString() + space;
 		
 		ItemEntity entity = itemEntityConverter.toEntity(item);
 		entity.setUserSpace(userSpace);
