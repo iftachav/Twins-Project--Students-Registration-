@@ -1,5 +1,6 @@
 package twins.item;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,7 @@ import twins.logic.ItemsService;
 public class ItemServiceMockup implements ItemsService{
 	private Map<String, ItemEntity> items;
 	private ItemConverter itemEntityConverter;
+	
 	//TODO need to use spring.application.name.
 	private final String ID_STRING = "iftach.avraham";
 	
@@ -32,7 +34,9 @@ public class ItemServiceMockup implements ItemsService{
 	public ItemBoundary createItem(String userSpace, String userEmail, ItemBoundary item) {
 		if(userSpace == null || userEmail == null) 
 			throw new RuntimeException("userSpace or userEmail can not be null");
-			
+		if(item.getCreatedTimestamp() == null)
+			item.setTimestamp(new Date());
+		
 		String id = UUID.randomUUID().toString() + ID_STRING;
 		
 		ItemEntity entity = itemEntityConverter.toEntity(item);
@@ -53,8 +57,8 @@ public class ItemServiceMockup implements ItemsService{
 		
 		//Search for the desired item
 		for(Map.Entry<String, ItemEntity> entry : items.entrySet()) {
-			if(Long.toString(entry.getValue().getId()) == itemId && entry.getValue().getUserSpace() == userSpace && 
-					entry.getValue().getUserEmail() == userEmail && entry.getValue().getItemSpace() == itemSpace) {
+			if(Long.toString(entry.getValue().getId()).equals(itemId) && entry.getValue().getUserSpace().equals(userSpace) && 
+					entry.getValue().getUserEmail().equals(userEmail) && entry.getValue().getItemSpace().equals(itemSpace)) {
 				
 				//Creating the updated entity
 				entity =  itemEntityConverter.toEntity(update);	
@@ -83,7 +87,7 @@ public class ItemServiceMockup implements ItemsService{
 			throw new RuntimeException("userSpace or userEmail can not be null");
 		
 		//filter only items matching userSpace && userEmail, convert them to ItemBoundary and export them to a Collection
-		return items.values().stream().filter(e-> e.getUserSpace() == userSpace && e.getUserEmail() == userEmail)
+		return items.values().stream().filter(e-> e.getUserSpace().equals(userSpace) && e.getUserEmail().equals(userEmail))
 			.map(itemEntityConverter::toBoundary)
 			.collect(Collectors.toList());
 	}
@@ -96,8 +100,8 @@ public class ItemServiceMockup implements ItemsService{
 		ItemEntity ie = null;
 			//Search for the desired item
 			for(Map.Entry<String, ItemEntity> entry : items.entrySet()) {
-				if(Long.toString(entry.getValue().getId()) == itemId && entry.getValue().getUserSpace() == userSpace && 
-						entry.getValue().getUserEmail() == userEmail && entry.getValue().getItemSpace() == itemSpace) {
+				if(Long.toString(entry.getValue().getId()).equals(itemId) && entry.getValue().getUserSpace().equals(userSpace) && 
+						entry.getValue().getUserEmail().equals(userEmail) && entry.getValue().getItemSpace().equals(itemSpace)) {
 					ie = entry.getValue();
 				}
 			}
