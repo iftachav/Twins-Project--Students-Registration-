@@ -20,8 +20,7 @@ public class ItemServiceMockup implements ItemsService{
 	
 	//TODO need to use spring.application.name.
 	//@Value("${spring.application.name:2021b.iftach.avraham}")
-	private final String space = "iftach.avraham";
-	//private final String ID_STRING = "iftach.avraham";
+	private final String space = "2021b.iftach.avraham";
 	
 	public ItemServiceMockup() {
 		this.items = Collections.synchronizedMap(new HashMap<>());
