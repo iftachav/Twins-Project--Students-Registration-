@@ -8,6 +8,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import twins.data.ItemEntity;
 import twins.logic.ItemConverter;
@@ -19,7 +20,9 @@ public class ItemServiceMockup implements ItemsService{
 	private ItemConverter itemEntityConverter;
 	
 	//TODO need to use spring.application.name.
-	private final String ID_STRING = "iftach.avraham";
+	@Value("${spring.application.name}") 
+	private String ID_STRING;
+	//private final String ID_STRING = "iftach.avraham";
 	
 	public ItemServiceMockup() {
 		this.items = Collections.synchronizedMap(new HashMap<>());
