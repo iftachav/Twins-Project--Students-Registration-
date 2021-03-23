@@ -10,12 +10,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import twins.data.ItemEntity;
 import twins.logic.ItemConverter;
-import twins.logic.ItemService;
+import twins.logic.ItemsService;
 
 @Service
-public class ItemServiceMockup implements ItemService{
+public class ItemServiceMockup implements ItemsService{
 	private Map<String, ItemEntity> items;
 	private ItemConverter itemEntityConverter;
+	//TODO need to use spring.application.name.
 	private final String ID_STRING = "iftach.avraham";
 	
 	public ItemServiceMockup() {

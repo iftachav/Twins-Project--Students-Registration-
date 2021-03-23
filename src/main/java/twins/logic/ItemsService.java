@@ -4,7 +4,7 @@ import java.util.List;
 
 import twins.item.ItemBoundary;
 
-public interface ItemService {
+public interface ItemsService {
 	public ItemBoundary createItem(String userSpace, String userEmail, ItemBoundary item);
 	
 	public ItemBoundary updateItem(String userSpace, String userEmail, String itemSpace, String itemId, ItemBoundary update);
