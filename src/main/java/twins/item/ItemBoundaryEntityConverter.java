@@ -15,7 +15,7 @@ public class ItemBoundaryEntityConverter implements ItemConverter{
 				new LocationBoundary(itemEntity.getLat(), itemEntity.getLng()));
 		ib.setCreatedBy(new CreatedByBoundary(new UserId(itemEntity.getItemSpace(), itemEntity.getUserEmail())));
 		ib.setTimestamp(itemEntity.getTimestamp());
-		ib.setItemId(new ItemIdBoundary(itemEntity.getId()));
+		ib.setItemId(new ItemIdBoundary(itemEntity.getId(), itemEntity.getItemSpace()));
 		
 		if(itemEntity.getItemAttributes() != null)
 			ib.setItemAttributes(itemEntity.getItemAttributes());
@@ -34,10 +34,10 @@ public class ItemBoundaryEntityConverter implements ItemConverter{
 		else
 			ie.setActive(false);
 		
-		if(itemBoundary.getItemId() != null) {
-			ie.setId(itemBoundary.getItemId().getId());
-			ie.setItemSpace(itemBoundary.getItemId().getSpace());
-		}
+//		if(itemBoundary.getItemId() != null) {
+//			ie.setId(itemBoundary.getItemId().getId());
+//			ie.setItemSpace(itemBoundary.getItemId().getSpace());
+//		}
 			
 		if(itemBoundary.getItemAttributes() != null)
 			ie.setItemAttributes(itemBoundary.getItemAttributes());

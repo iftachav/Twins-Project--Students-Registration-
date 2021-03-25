@@ -9,13 +9,10 @@ public class ItemIdBoundary {
 	private String space;
 	private Long id;
 
-	public ItemIdBoundary() {
-		this.space="iftachTeam";
-		this.id = 1L;
-	}
+	public ItemIdBoundary() {}
 
-	public ItemIdBoundary(Long id) {
-		this();
+	public ItemIdBoundary(Long id, String space) {
+		this.space = space;
 		this.id = id;
 	}
 

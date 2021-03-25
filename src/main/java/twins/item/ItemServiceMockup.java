@@ -34,7 +34,7 @@ public class ItemServiceMockup implements ItemsService{
 	public void setItemEntityConverter(ItemConverter itemEntityConverter) {
 		this.itemEntityConverter = itemEntityConverter;
 	}
-	
+
 	@Override
 	public ItemBoundary createItem(String userSpace, String userEmail, ItemBoundary item) {		
 /*		if(item.getItemId() == null || item.getItemId().getId() == null)
@@ -48,7 +48,7 @@ public class ItemServiceMockup implements ItemsService{
 		entity.setTimestamp(new Date());
 		entity.setId(this.id++);
 		entity.setItemSpace(this.space);
-		items.put(this.space + Long.toString(entity.getId()), entity);
+		items.put((this.space + "_" + Long.toString(entity.getId())), entity);
 		
 		return itemEntityConverter.toBoundary(entity);		
 	}
@@ -106,6 +106,7 @@ public class ItemServiceMockup implements ItemsService{
 //			.collect(Collectors.toList());
 		
 		//convert all items ItemBoundary and export them to a Collection
+		System.err.println(items.keySet().toString());
 		return items.values().stream().map(itemEntityConverter::toBoundary).collect(Collectors.toList());
 	}
 
