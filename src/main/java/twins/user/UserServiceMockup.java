@@ -34,32 +34,34 @@ public class UserServiceMockup implements UsersService {
 
 	@Override
 	public UserBoundary createUser(UserBoundary user) {
+		if(user.getAvatar().equals(null) || user.getUsername().equals(null)
+			|| user.getUserId().getSpace().equals(null))
+			throw new RuntimeException("One of the fields is null");
 		if(!checkUserRole(user.getRole()))
 			throw new RuntimeException("Role is not one of the enum options");
 		if(!checkEmail(user.getUserId().getEmail()))
 			throw new RuntimeException("Email is not valid");
-		//TODO need to use spring.application.name.
+		//TODO need to use spring.application.name.@@@@@@@@@@@@@@@@@@@@@@@@@@@
+		
 		user.getUserId().setSpace("2021b.iftach.avraham");
 		UserEntity entity = this.userEntityConverter.fromBoundary(user);
-		String newId= UUID.randomUUID().toString();
+		String newId= UUID.randomUUID().toString()+entity.getEmail()+entity.getSpace();
 		this.users.put(newId, entity);
 		return this.userEntityConverter.toBoundary(entity);
 	}
 
 	@Override
 	public UserBoundary login(String userSpace, String userEmail) {
-//		TODO thats it?
 		UserEntity entity=null;
 		for(Map.Entry<String, UserEntity> current : users.entrySet()) {
 			if(current.getValue().getEmail().equals(userEmail) 
 					&& current.getValue().getSpace().equals(userSpace)) {
 				entity=current.getValue();
-				break;
+				return userEntityConverter.toBoundary(entity);
 			}
 		}
-		if(entity==null)
-			throw new RuntimeException("The requested user doesn't exist");
-		return userEntityConverter.toBoundary(entity);
+		//User not found, returned nothing.
+		return null;
 	}
 
 	@Override
@@ -67,7 +69,6 @@ public class UserServiceMockup implements UsersService {
 		if(!checkUserRole(update.getRole()))
 			throw new RuntimeException("Role is not one of the enum options");
 		UserEntity entity=null;
-//		TODO if the search by the space and mail and not from update.
 		for(Map.Entry<String, UserEntity> current : users.entrySet()) {
 			if(current.getValue().getEmail().equals(userEmail) 
 					&& current.getValue().getSpace().equals(userSpace)) {
@@ -95,6 +96,8 @@ public class UserServiceMockup implements UsersService {
 	}
 	
 	public boolean checkEmail(String email) {
+		if(email.equals(null))
+			return false;
 		String[] splitted=email.split("@");
 		int size1=splitted.length;
 		if(size1>2 || size1<1)
@@ -106,6 +109,8 @@ public class UserServiceMockup implements UsersService {
 	}
 	
 	public boolean checkUserRole(String userRole) {
+		if(userRole.equals(null))
+			return false;
 		for(UserRole role : UserRole.values()) {
 			if(userRole.equals(role.toString()))
 				return true;
