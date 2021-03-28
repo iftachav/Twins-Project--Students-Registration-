@@ -9,6 +9,11 @@ public class OperationId {
 		this.id = "451";
 	}
 
+	public OperationId(String space, String id) {
+		this.space = space;
+		this.id = id;
+	}
+	
 	public OperationId(String space) {
 		this.space = space;
 	}

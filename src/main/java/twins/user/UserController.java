@@ -39,7 +39,6 @@ public class UserController {
 				method = RequestMethod.GET,
 				produces = MediaType.APPLICATION_JSON_VALUE)
 		public UserBoundary loginAndRetrieve(@PathVariable("userSpace") String userSpace, @PathVariable("userEmail") String userEmail) {
-//			System.err.println("");
 			return userService.login(userSpace, userEmail);
 		}
 		
