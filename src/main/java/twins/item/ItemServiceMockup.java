@@ -37,11 +37,6 @@ public class ItemServiceMockup implements ItemsService{
 
 	@Override
 	public ItemBoundary createItem(String userSpace, String userEmail, ItemBoundary item) {		
-/*		if(item.getItemId() == null || item.getItemId().getId() == null)
-			item.setItemId(new ItemIdBoundary(Long.parseLong(UUID.randomUUID().toString())));
-			
-		id += item.getItemId().getId().toString();
-*/	
 		ItemEntity entity = itemEntityConverter.toEntity(item);
 		entity.setUserSpace(userSpace);
 		entity.setUserEmail(userEmail);
@@ -61,18 +56,31 @@ public class ItemServiceMockup implements ItemsService{
 		if(entity == null)
 			throw new RuntimeException("Item id " + id + " doesn't exist");
 		
-		if(update.getType() != null)
+		boolean updated = false;
+		if(update.getType() != null) {
 			entity.setType(update.getType());
-		if(update.getName() != null)
+			updated = true;
+		}
+		if(update.getName() != null) {
 			entity.setName(update.getName());
-		if(update.getActive() != null)
+			updated = true;
+		}
+		if(update.getActive() != null) {
 			entity.setActive(update.getActive());
+			updated = true;
+		}
 		if(update.getLocation() != null) {
 			entity.setLat(update.getLocation().getLat());
 			entity.setLng(update.getLocation().getLng());
+			updated = true;
 		}
-		if(update.getItemAttributes() != null)
+		if(update.getItemAttributes() != null) {
 			entity.setItemAttributes(update.getItemAttributes());
+			updated = true;
+		}
+		
+		if(updated)
+			this.items.put(id, entity);
 		
 		return itemEntityConverter.toBoundary(entity);
 	}
@@ -80,26 +88,17 @@ public class ItemServiceMockup implements ItemsService{
 	@Override
 	public List<ItemBoundary> getAllItems(String userSpace, String userEmail) {
 		//filter only items matching userSpace && userEmail, convert them to ItemBoundary and export them to a Collection
-//		return items.values().stream().filter(e-> e.getUserSpace().equals(userSpace) && e.getUserEmail().equals(userEmail))
-//			.map(itemEntityConverter::toBoundary)
-//			.collect(Collectors.toList());
-		
+/*		return items.values().stream().filter(e-> e.getUserSpace().equals(userSpace) && e.getUserEmail().equals(userEmail))
+			.map(itemEntityConverter::toBoundary)
+			.collect(Collectors.toList());
+*/
 		//convert all items ItemBoundary and export them to a Collection
 		System.err.println(items.keySet().toString());
 		return items.values().stream().map(itemEntityConverter::toBoundary).collect(Collectors.toList());
 	}
 
 	@Override
-	public ItemBoundary getSpecificItem(String userSpace, String userEmail, String itemSpace, String itemId) {
- /* 		ItemEntity ie = null;
-			//Search for the desired item
-			for(Map.Entry<String, ItemEntity> entry : items.entrySet()) {
-				if(Long.toString(entry.getValue().getId()).equals(itemId) && entry.getValue().getUserSpace().equals(userSpace) && 
-						entry.getValue().getUserEmail().equals(userEmail) && entry.getValue().getItemSpace().equals(itemSpace)) {
-					ie = entry.getValue();
-				}
-			}
-*/		
+	public ItemBoundary getSpecificItem(String userSpace, String userEmail, String itemSpace, String itemId) {	
 		String id = itemSpace + "_" + itemId;
 		ItemEntity ie = items.get(id);
 		if(ie == null)

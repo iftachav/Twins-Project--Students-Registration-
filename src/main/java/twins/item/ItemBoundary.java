@@ -43,16 +43,9 @@ public class ItemBoundary {
 	private Map<String, Object> itemAttributes;
 
 	public ItemBoundary() {
-		itemId = new ItemIdBoundary();
-		active = true;
-		createdTimestamp = new Date();
-		createdBy= new CreatedByBoundary();
-		location = new LocationBoundary();
-		itemAttributes = new HashMap<>();
 	}
 
 	public ItemBoundary(String type, String name, Boolean active) {
-		this();
 		this.type = type;
 		this.name = name;
 		this.active = active;
@@ -60,7 +53,6 @@ public class ItemBoundary {
 
 	public ItemBoundary(String type, String name, Boolean active,
 			LocationBoundary location) {
-		this();
 		this.type = type;
 		this.name = name;
 		this.active = active;

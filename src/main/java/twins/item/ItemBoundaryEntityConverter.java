@@ -34,10 +34,10 @@ public class ItemBoundaryEntityConverter implements ItemConverter{
 		else
 			ie.setActive(false);
 		
-//		if(itemBoundary.getItemId() != null) {
-//			ie.setId(itemBoundary.getItemId().getId());
-//			ie.setItemSpace(itemBoundary.getItemId().getSpace());
-//		}
+		if(itemBoundary.getItemId() != null) {
+			ie.setId(itemBoundary.getItemId().getId());
+			ie.setItemSpace(itemBoundary.getItemId().getSpace());
+		}
 			
 		if(itemBoundary.getItemAttributes() != null)
 			ie.setItemAttributes(itemBoundary.getItemAttributes());
