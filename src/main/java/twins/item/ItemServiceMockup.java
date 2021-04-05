@@ -6,13 +6,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import twins.data.ItemEntity;
 import twins.logic.ItemConverter;
 import twins.logic.ItemsService;
 
 /*
- * TODO need to use spring.application.name
  * TODO itemId and map key what the relations between them?
  */
 
@@ -21,9 +21,7 @@ public class ItemServiceMockup implements ItemsService{
 	private Map<String, ItemEntity> items;
 	private ItemConverter itemEntityConverter;
 	private long id;
-	
-	//@Value("${spring.application.name:2021b.iftach.avraham}")
-	private final String space = "2021b.iftach.avraham";
+	private String space;
 	
 	public ItemServiceMockup() {
 		this.items = Collections.synchronizedMap(new HashMap<>());
@@ -34,7 +32,13 @@ public class ItemServiceMockup implements ItemsService{
 	public void setItemEntityConverter(ItemConverter itemEntityConverter) {
 		this.itemEntityConverter = itemEntityConverter;
 	}
-
+	
+	@Value("${spring.application.name:2021b.iftach.avraham}")
+	public void setSpace(String space) {
+		this.space = space;
+		System.err.println(this.space);
+	}
+	
 	@Override
 	public ItemBoundary createItem(String userSpace, String userEmail, ItemBoundary item) {		
 		ItemEntity entity = itemEntityConverter.toEntity(item);
