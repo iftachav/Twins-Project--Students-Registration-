@@ -36,7 +36,6 @@ public class ItemServiceMockup implements ItemsService{
 	@Value("${spring.application.name:2021b.iftach.avraham}")
 	public void setSpace(String space) {
 		this.space = space;
-		System.err.println(this.space);
 	}
 	
 	@Override
