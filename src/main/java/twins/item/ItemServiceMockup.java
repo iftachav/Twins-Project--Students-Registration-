@@ -56,46 +56,25 @@ public class ItemServiceMockup implements ItemsService{
 	@Override
 	public ItemBoundary updateItem(String userSpace, String userEmail, String itemSpace, String itemId,
 			ItemBoundary update) {
-		
-/*		ItemEntity entity = null;
-		
-		//Search for the desired item
-		for(Map.Entry<String, ItemEntity> entry : items.entrySet()) {
-			if(Long.toString(entry.getValue().getId()).equals(itemId) && entry.getValue().getUserSpace().equals(userSpace) && 
-					entry.getValue().getUserEmail().equals(userEmail) && entry.getValue().getItemSpace().equals(itemSpace)) {
-				
-				//Creating the updated entity
-				entity =  itemEntityConverter.toEntity(update);	
-				
-				//Keep these values unchanged
-				entity.setUserSpace(entry.getValue().getUserSpace());
-				entity.setUserEmail(entry.getValue().getUserEmail());
-				entity.setItemSpace(entry.getValue().getItemSpace());
-				entity.setTimestamp(entry.getValue().getTimestamp());
-				
-				//updating the DB
-				entry.setValue(entity);
-				break;
-			}
-		}
-*/		
 		String id = itemSpace + "_" + itemId;
 		ItemEntity entity =  items.get(id);
 		if(entity == null)
 			throw new RuntimeException("Item id " + id + " doesn't exist");
 		
-		ItemEntity updateEntity = itemEntityConverter.toEntity(update);	
+		if(update.getType() != null)
+			entity.setType(update.getType());
+		if(update.getName() != null)
+			entity.setName(update.getName());
+		if(update.getActive() != null)
+			entity.setActive(update.getActive());
+		if(update.getLocation() != null) {
+			entity.setLat(update.getLocation().getLat());
+			entity.setLng(update.getLocation().getLng());
+		}
+		if(update.getItemAttributes() != null)
+			entity.setItemAttributes(update.getItemAttributes());
 		
-		//Keep these values unchanged
-		updateEntity.setUserSpace(entity.getUserSpace());
-		updateEntity.setUserEmail(entity.getUserEmail());
-		updateEntity.setItemSpace(entity.getItemSpace());
-		updateEntity.setTimestamp(entity.getTimestamp());
-		updateEntity.setId(entity.getId());
-		
-		items.put(id, updateEntity);
-		
-		return itemEntityConverter.toBoundary(updateEntity);
+		return itemEntityConverter.toBoundary(entity);
 	}
 
 	@Override
