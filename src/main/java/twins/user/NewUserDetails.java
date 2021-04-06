@@ -3,7 +3,7 @@ package twins.user;
 NewUserDetails sample JSON: 
 	{ 
 	"email":"user@demo.com", 
-	"role":"PLAYER", 
+	"role":"MANAGER", 
 	"username":"Demo User", 
 	"avatar":"J" 
 	}
@@ -17,7 +17,7 @@ public class NewUserDetails {
 	
 	public NewUserDetails(){
 		this.email = "user@demo.com";
-		this.role = "PLAYER";
+		this.role = "MANAGER";
 		this.username = "Demo User";
 		this.avatar = "J";
 		
