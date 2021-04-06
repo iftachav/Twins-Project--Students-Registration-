@@ -9,6 +9,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import twins.data.OperationEntity;
@@ -20,6 +21,7 @@ public class OperationServiceMockup implements OperationService{
 	private Map<String, OperationEntity> operations;
 	private OperationEntityConverter operationEntityConverter;
 	private long id;
+	private String springApplicationName;
 	
 	public OperationServiceMockup() {
 		//this is a thread safe collection
@@ -32,28 +34,61 @@ public class OperationServiceMockup implements OperationService{
 		this.operationEntityConverter = entityConverter;
 	}
 
+	@Value("${spring.application.name:2021b.iftach.avraham}")
+	public void setSpringApplicationName(String springApplicationName) {
+		this.springApplicationName = springApplicationName;
+	}
+	
 	@Override
 	public Object invokeOperation(OperationBoundary operation) {
-		if(operation==null)
-			return null;
-		operation.getOperationId().setId(""+this.id++); // ?
+		if(operation == null)
+			throw new RuntimeException("Null Operation Received.");
+		setSpringApplicationName(springApplicationName);
 		operation.setCreatedTimestamp(new Date());
-		operation.getInvokedBy().getUserId().setSpace("2021b.iftach.avraham");
-		operation.getItem().getItemId().setSpace("2021b.iftach.avraham");
-		operation.getOperationId().setSpace("2021b.iftach.avraham");
+		
+		if(operation.getInvokedBy() == null || operation.getInvokedBy().getUserId() == null)
+			throw new RuntimeException("Null Invoked By Element Received.");
+		operation.getInvokedBy().getUserId().setSpace(springApplicationName);
+		if(!checkEmail(operation.getInvokedBy().getUserId().getEmail()))
+			throw new RuntimeException("Email Is Not Valid.");
+		
+		if(operation.getItem() == null || operation.getItem().getItemId() == null || operation.getItem().getItemId().getId() == null)
+			throw new RuntimeException("Null Item Element Received.");
+		operation.getItem().getItemId().setSpace(springApplicationName);
+		
+		if(operation.getOperationId() == null)
+			throw new RuntimeException("Null Operation Id Received.");
+		operation.getOperationId().setId(""+this.id++); // ?
+		operation.getOperationId().setSpace(springApplicationName);
+		
 		OperationEntity op = operationEntityConverter.fromBoundary(operation);
 		String newId= UUID.randomUUID().toString()+"_"+operation.getInvokedBy().getUserId().getEmail()+"_"+operation.getInvokedBy().getUserId().getSpace();
 		operations.put(newId, op);
-		return operation;
-		//TODO need to use spring.application.name.@@@@@@@@@@@@@@@@@@@@@@@@@@@
+		return operation.getOperationId().getId();
 	}
 
 	@Override
 	public OperationBoundary invokeAsynchronousOperation(OperationBoundary operation) {
-		if(operation==null)
-			return null;
-		operation.getOperationId().setId(""+this.id++); // ?
+		if(operation == null)
+			throw new RuntimeException("Null Operation Received.");
+		setSpringApplicationName(springApplicationName);
 		operation.setCreatedTimestamp(new Date());
+		
+		if(operation.getInvokedBy() == null || operation.getInvokedBy().getUserId() == null)
+			throw new RuntimeException("Null Invoked By Element Received.");
+		operation.getInvokedBy().getUserId().setSpace(springApplicationName);
+		if(!checkEmail(operation.getInvokedBy().getUserId().getEmail()))
+			throw new RuntimeException("Email Is Not Valid.");
+		
+		if(operation.getItem() == null || operation.getItem().getItemId() == null || operation.getItem().getItemId().getId() == null)
+			throw new RuntimeException("Null Item Element Received.");
+		operation.getItem().getItemId().setSpace(springApplicationName);
+		
+		if(operation.getOperationId() == null)
+			throw new RuntimeException("Null Operation Id Received.");
+		operation.getOperationId().setId(""+this.id++); // ?
+		operation.getOperationId().setSpace(springApplicationName);
+		
 		OperationEntity op = operationEntityConverter.fromBoundary(operation);
 		String newId= UUID.randomUUID().toString()+"_"+operation.getInvokedBy().getUserId().getEmail()+"_"+operation.getInvokedBy().getUserId().getSpace();
 		operations.put(newId, op);
@@ -70,5 +105,18 @@ public class OperationServiceMockup implements OperationService{
 	public void deleteAllOperations(String adminSpace, String adminEmail) {
 		operations.clear();
 		this.id = 0;
+	}
+	
+	public boolean checkEmail(String email) {
+		if(email.equals(null))
+			return false;
+		String[] splitted=email.split("@");
+		int size1=splitted.length;
+		if(size1>2 || size1<1)
+			return false;
+		int size2=splitted[1].split("//.").length;
+		if(size2>3 || size2<1)
+			return false;
+		return true;
 	}
 }
