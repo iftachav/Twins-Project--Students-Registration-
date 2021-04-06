@@ -8,6 +8,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 
@@ -21,10 +22,16 @@ public class UserServiceMockup implements UsersService {
 	
 	private Map<String, UserEntity> users;
 	private UserEntityConverter userEntityConverter;
+	private String springApplicationName;
 	
 	public UserServiceMockup() {
 		//this is a thread safe collection
 		this.users=Collections.synchronizedMap(new HashMap<>());
+	}
+	
+	@Value("${spring.application.name:2021b.iftach.avraham}")
+	public void setSpringApplicationName(String springApplicationName) {
+		this.springApplicationName = springApplicationName;
 	}
 	
 	@Autowired
@@ -41,11 +48,11 @@ public class UserServiceMockup implements UsersService {
 			throw new RuntimeException("Role is not one of the enum options");
 		if(!checkEmail(user.getUserId().getEmail()))
 			throw new RuntimeException("Email is not valid");
-		//TODO need to use spring.application.name.@@@@@@@@@@@@@@@@@@@@@@@@@@@
-		
-		user.getUserId().setSpace("2021b.iftach.avraham");
+		setSpringApplicationName(springApplicationName);
+		user.getUserId().setSpace(springApplicationName);
 		UserEntity entity = this.userEntityConverter.fromBoundary(user);
-		String newId= UUID.randomUUID().toString()+entity.getEmail()+entity.getSpace();
+		//Doesn't need UUID because each user has different mail.
+		String newId= /*UUID.randomUUID().toString()+*/entity.getSpace()+entity.getEmail();
 		this.users.put(newId, entity);
 		return this.userEntityConverter.toBoundary(entity);
 	}
