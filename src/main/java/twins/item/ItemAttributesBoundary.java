@@ -15,8 +15,6 @@ public class ItemAttributesBoundary {
 	private Boolean attribute4;
 
 	public ItemAttributesBoundary() {
-		this.attribute3=1;
-		this.attribute4=true;
 	}
 
 	public ItemAttributesBoundary(String attribute1, String attribute2, int attribute3, Boolean attribute4) {

@@ -96,7 +96,6 @@ public class ItemServiceMockup implements ItemsService{
 			.collect(Collectors.toList());
 */
 		//convert all items ItemBoundary and export them to a Collection
-		System.err.println(items.keySet().toString());
 		return items.values().stream().map(itemEntityConverter::toBoundary).collect(Collectors.toList());
 	}
 
