@@ -17,7 +17,7 @@ package twins.operations;
 		"invokedBy":{
 			"userId":{
 			"space":"2021b.twins",
-			"email":"user3@@demo.com"
+			"email":"user3@demo.com"
 			}
 		},
 		"operationAttributes":{

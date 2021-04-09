@@ -46,6 +46,9 @@ public class OperationServiceMockup implements OperationService{
 		setSpringApplicationName(springApplicationName);
 		operation.setCreatedTimestamp(new Date());
 		
+		if(operation.getType() == null)
+			throw new RuntimeException("Null operation type passed");
+		
 		if(operation.getInvokedBy() == null || operation.getInvokedBy().getUserId() == null)
 			throw new RuntimeException("Null Invoked By Element Received.");
 		operation.getInvokedBy().getUserId().setSpace(springApplicationName);
@@ -73,6 +76,9 @@ public class OperationServiceMockup implements OperationService{
 			throw new RuntimeException("Null Operation Received.");
 		setSpringApplicationName(springApplicationName);
 		operation.setCreatedTimestamp(new Date());
+		
+		if(operation.getType() == null)
+			throw new RuntimeException("Null operation type passed");
 		
 		if(operation.getInvokedBy() == null || operation.getInvokedBy().getUserId() == null)
 			throw new RuntimeException("Null Invoked By Element Received.");

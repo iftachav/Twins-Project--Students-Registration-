@@ -64,7 +64,7 @@ public class OperationController {
 	public OperationBoundary[] exportAllOperations(@PathVariable("userSpace") String userSpace, @PathVariable("userEmail") String userEmail){
 		OperationBoundary[] tmp = Stream.of(new OperationBoundary(), new OperationBoundary(), new OperationBoundary())
 				.map(input->{ return input; }).collect(Collectors.toList()).toArray(new OperationBoundary[0]);
-		System.err.println("(STUB) All operation exported successfully");
+		//System.err.println("(STUB) All operation exported successfully");
 		return operationService.getAllOperations(userSpace, userEmail).toArray(new OperationBoundary[0]);
 	}
 }
