@@ -1,32 +1,38 @@
 package twins.operations;
 
-import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import twins.data.OperationEntity;
+import twins.logic.OperationDao;
 import twins.logic.OperationEntityConverter;
 import twins.logic.OperationService;
 
-//@Sevice
-public class OperationServiceMockup implements OperationService{
-	private Map<String, OperationEntity> operations;
+
+@Service
+public class OperationServiceJpa implements OperationService{
+	private OperationDao operationDao;
 	private OperationEntityConverter operationEntityConverter;
 	private long id;
 	private String springApplicationName;
 	
-	public OperationServiceMockup() {
-		//this is a thread safe collection
-		this.operations=Collections.synchronizedMap(new HashMap<>());
+	public OperationServiceJpa() {
 		this.id = 0;
+	}
+	
+	@Autowired
+	public void setOperationDao(OperationDao operationDao) {
+		this.operationDao = operationDao;
 	}
 	
 	@Autowired
@@ -40,6 +46,7 @@ public class OperationServiceMockup implements OperationService{
 	}
 	
 	@Override
+	@Transactional
 	public Object invokeOperation(OperationBoundary operation) {
 		if(operation == null)
 			throw new RuntimeException("Null Operation Received.");
@@ -59,18 +66,22 @@ public class OperationServiceMockup implements OperationService{
 			throw new RuntimeException("Null Item Element Received.");
 		operation.getItem().getItemId().setSpace(springApplicationName);
 		
-		if(operation.getOperationId() == null)
-			throw new RuntimeException("Null Operation Id Received.");
-		operation.getOperationId().setId(""+this.id++); // ?
+//		if(operation.getOperationId() == null) WHYYYYYYYYYYYYYY
+//			throw new RuntimeException("Null Operation Id Received.");
+//		operation.getOperationId().setId(""+this.id++); // ? WHYYYYYYYYYYY
+		String newId= UUID.randomUUID().toString()+"_"+operation.getInvokedBy().getUserId().getEmail()+"_"+operation.getInvokedBy().getUserId().getSpace();
+		operation.getOperationId().setId(newId); // ?
 		operation.getOperationId().setSpace(springApplicationName);
 		
 		OperationEntity op = operationEntityConverter.fromBoundary(operation);
-		String newId= UUID.randomUUID().toString()+"_"+operation.getInvokedBy().getUserId().getEmail()+"_"+operation.getInvokedBy().getUserId().getSpace();
-		operations.put(newId, op);
-		return operation.getOperationId().getId();
+		operationDao.save(op);
+//		operations.put(newId, op);
+		return operation.getOperationId().getId();//WHYYYYYYYYYYYYYYY
+//		TODO check with arad all of the comments
 	}
 
 	@Override
+	@Transactional
 	public OperationBoundary invokeAsynchronousOperation(OperationBoundary operation) {
 		if(operation == null)
 			throw new RuntimeException("Null Operation Received.");
@@ -90,26 +101,31 @@ public class OperationServiceMockup implements OperationService{
 			throw new RuntimeException("Null Item Element Received.");
 		operation.getItem().getItemId().setSpace(springApplicationName);
 		
-		if(operation.getOperationId() == null)
-			throw new RuntimeException("Null Operation Id Received.");
-		operation.getOperationId().setId(""+this.id++); // ?
+//		if(operation.getOperationId() == null)
+//			throw new RuntimeException("Null Operation Id Received.");
+		String newId= UUID.randomUUID().toString()+"_"+operation.getInvokedBy().getUserId().getEmail()+"_"+operation.getInvokedBy().getUserId().getSpace();
+		operation.getOperationId().setId(newId); // ?
+//		operation.getOperationId().setId(""+this.id++); // ?
 		operation.getOperationId().setSpace(springApplicationName);
 		
 		OperationEntity op = operationEntityConverter.fromBoundary(operation);
-		String newId= UUID.randomUUID().toString()+"_"+operation.getInvokedBy().getUserId().getEmail()+"_"+operation.getInvokedBy().getUserId().getSpace();
-		operations.put(newId, op);
+		operationDao.save(op);
+//		operations.put(newId, op);
 		return operation;
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public List<OperationBoundary> getAllOperations(String adminSpace, String adminEmail) {
-		return this.operations.values().stream().map(this.operationEntityConverter::toBoundary)
+		Iterable<OperationEntity> allEntities=this.operationDao.findAll();
+		return StreamSupport.stream(allEntities.spliterator(), false).map(this.operationEntityConverter::toBoundary)
 				.collect(Collectors.toList());
 	}
 
 	@Override
+	@Transactional
 	public void deleteAllOperations(String adminSpace, String adminEmail) {
-		operations.clear();
+		this.operationDao.deleteAll();
 		this.id = 0;
 	}
 	

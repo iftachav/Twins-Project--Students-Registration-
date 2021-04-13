@@ -3,12 +3,20 @@ package twins.data;
 import java.util.Date;
 import java.util.Map;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
 import twins.item.ItemIdBoundary;
 import twins.operations.ItemWrapper;
 import twins.operations.OperationId;
 import twins.operations.UserIdWrapper;
 import twins.user.UserId;
 
+
+@Entity
+@Table(name="Operations")
 public class OperationEntity {
 	private String operationSpace;
 	private String operationId;
@@ -47,7 +55,7 @@ public class OperationEntity {
 	public void setOperationSpace(String operationSpace) {
 		this.operationSpace = operationSpace;
 	}
-
+	@Id
 	public String getOperationId() {
 		return operationId;
 	}
@@ -79,11 +87,11 @@ public class OperationEntity {
 	public void setItemId(Long itemId) {
 		this.itemId = itemId;
 	}
-
+	@Transient
 	public Date getCreatedTimestamp() {
 		return createdTimestamp;
 	}
-
+	@Transient
 	public void setCreatedTimestamp(Date createdTimestamp) {
 		this.createdTimestamp = createdTimestamp;
 	}
@@ -103,11 +111,11 @@ public class OperationEntity {
 	public void setUserEmail(String userEmail) {
 		this.userEmail = userEmail;
 	}
-
+	@Transient
 	public Map<String, Object> getOperationAttributes() {
 		return operationAttributes;
 	}
-
+	@Transient
 	public void setOperationAttributes(Map<String, Object> operationAttributes) {
 		this.operationAttributes = operationAttributes;
 	}
