@@ -21,12 +21,12 @@ import twins.logic.ItemsService;
 public class ItemServiceMockup implements ItemsService{
 	private Map<String, ItemEntity> items;
 	private ItemConverter itemEntityConverter;
-	private long id;
+	//private long id;
 	private String space;
 	
 	public ItemServiceMockup() {
 		this.items = Collections.synchronizedMap(new HashMap<>());
-		this.id = 0;
+		//this.id = 0;
 	}
 	
 	@Autowired
