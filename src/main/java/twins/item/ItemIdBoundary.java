@@ -7,11 +7,11 @@ package twins.item;
 
 public class ItemIdBoundary {
 	private String space;
-	private Long id;
+	private String id;
 
 	public ItemIdBoundary() {}
 
-	public ItemIdBoundary(Long id, String space) {
+	public ItemIdBoundary(String id, String space) {
 		this.space = space;
 		this.id = id;
 	}
@@ -24,11 +24,11 @@ public class ItemIdBoundary {
 		this.space = space;
 	}
 
-	public Long getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 }

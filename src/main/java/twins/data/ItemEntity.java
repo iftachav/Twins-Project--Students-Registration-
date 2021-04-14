@@ -5,7 +5,7 @@ import java.util.Map;
 
 public class ItemEntity {
 	private String itemSpace;
-	private long id;
+	private String id;
 	private String type;
 	private String name;
 	private boolean active;
@@ -25,11 +25,11 @@ public class ItemEntity {
 		this.itemSpace = itemSpace;
 	}
 
-	public long getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(long id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 

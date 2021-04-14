@@ -108,7 +108,7 @@ public class UserServiceJPA implements UsersService{
 	}
 	
 	public boolean checkEmail(String email) {
-		if(email.equals(null))
+		if(email == null)
 			return false;
 		String[] splitted=email.split("@");
 		int size1=splitted.length;

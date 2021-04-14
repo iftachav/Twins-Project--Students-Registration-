@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -44,9 +45,12 @@ public class ItemServiceMockup implements ItemsService{
 		entity.setUserSpace(userSpace);
 		entity.setUserEmail(userEmail);
 		entity.setTimestamp(new Date());
-		entity.setId(this.id++);
+		
+		String id = UUID.randomUUID().toString();
+		entity.setId(id);
+		//entity.setId(this.id++);
 		entity.setItemSpace(this.space);
-		items.put((this.space + "_" + Long.toString(entity.getId())), entity);
+		items.put((this.space + "_" + id), entity);
 		
 		return itemEntityConverter.toBoundary(entity);		
 	}
