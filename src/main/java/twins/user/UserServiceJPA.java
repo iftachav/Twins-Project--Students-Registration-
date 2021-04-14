@@ -59,12 +59,12 @@ public class UserServiceJPA implements UsersService{
 	@Transactional(readOnly = true)
 	public UserBoundary login(String userSpace, String userEmail) {
 		if(!userSpace.equals(this.springApplicationName))
-			throw new RuntimeException("User: " + userEmail + " doesn't exist in current space " + springApplicationName);
+			throw new RuntimeException("UserSpace: " + userSpace + " doesn't fit in current space " + springApplicationName);
 			
 		Optional<UserEntity> optionalUser = this.userDao.findById(userEmail);
 		
 		if(!optionalUser.isPresent())
-			throw new RuntimeException("User: " + userEmail + " doesn't exist");
+			throw new UserNotFoundException("User: " + userEmail + " doesn't exist");
 		
 		UserEntity userEntity = optionalUser.get();
 		return userEntityConverter.toBoundary(userEntity);
@@ -78,7 +78,7 @@ public class UserServiceJPA implements UsersService{
 		
 		Optional<UserEntity> optionalUser = this.userDao.findById(userEmail);
 		if(!optionalUser.isPresent())
-			throw new RuntimeException("User: " + userEmail + " doesn't exist");
+			throw new UserNotFoundException("User: " + userEmail + " doesn't exist");
 		
 		UserEntity user = optionalUser.get();		
 		
