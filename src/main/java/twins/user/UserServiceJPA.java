@@ -73,14 +73,12 @@ public class UserServiceJPA implements UsersService{
 	@Override
 	@Transactional(readOnly = true)
 	public UserBoundary updateUser(String userSpace, String userEmail, UserBoundary update) {
-		if(!userSpace.equals(this.springApplicationName))
-			throw new RuntimeException("User: " + userEmail + " doesn't exist in current space " + springApplicationName);
-		if(!checkUserRole(update.getRole()))
-			throw new RuntimeException("Invalid Role");
-		
 		Optional<UserEntity> optionalUser = this.userDao.findById(userEmail);
 		if(!optionalUser.isPresent())
 			throw new RuntimeException("User: " + userEmail + " doesn't exist");
+		
+		if(!checkUserRole(update.getRole()))
+			throw new RuntimeException("Invalid Role");
 		
 		UserEntity updateUser = userEntityConverter.fromBoundary(update);
 		
