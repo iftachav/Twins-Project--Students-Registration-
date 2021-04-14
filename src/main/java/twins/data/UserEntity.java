@@ -1,6 +1,14 @@
 package twins.data;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
+//	EMAIL	|	SPACE	|	ROLE	|	USER_NAME	|	AVATAR
+//	VARCHAR	|	VARCHAR	|	VARCHAR	|	VARCHAR		| 	VARCHAR
+//	<PK>
+@Entity
+@Table(name="USERS")
 public class UserEntity {
 	private String space;
 	private String email;
@@ -9,7 +17,6 @@ public class UserEntity {
 	private String avatar;
 	
 	public UserEntity() {
-		
 	}
 
 	public String getSpace() {
@@ -19,7 +26,8 @@ public class UserEntity {
 	public void setSpace(String space) {
 		this.space = space;
 	}
-
+	
+	@Id
 	public String getEmail() {
 		return email;
 	}

@@ -21,12 +21,16 @@ public class UserEntityConverterImplementation implements UserEntityConverter {
 	@Override
 	public UserEntity fromBoundary(UserBoundary boundary) {
 		UserEntity rv = new UserEntity();
-		rv.setAvatar(boundary.getAvatar());
 		rv.setRole(boundary.getRole());
+		
+		if(boundary.getAvatar() != null)
+			rv.setAvatar(boundary.getAvatar());
+		
 		if(boundary.getUserId() != null) {
 			rv.setEmail(boundary.getUserId().getEmail());
 			rv.setSpace(boundary.getUserId().getSpace());
 		}
+		
 		rv.setUsername(boundary.getUsername());
 		return rv;
 	}

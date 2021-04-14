@@ -17,7 +17,7 @@ import twins.data.UserRole;
 import twins.logic.UserEntityConverter;
 import twins.logic.UsersService;
 
-@Service
+//@Service
 public class UserServiceMockup implements UsersService {
 	
 	private Map<String, UserEntity> users;
