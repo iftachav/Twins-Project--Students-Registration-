@@ -42,7 +42,7 @@ public class UserServiceJPA implements UsersService{
 			throw new RuntimeException("User avatar can't be null");
 		if(user.getUsername() == null)
 			throw new RuntimeException("Username can't be null");
-		if(!checkUserRole(user.getRole()))
+		if(!checkUserRole(user.getRole()) || user.getRole() == null)
 			throw new RuntimeException("Invalid Role");
 		if(!checkEmail(user.getUserId().getEmail()))
 			throw new RuntimeException("Invalid Email");
@@ -73,17 +73,24 @@ public class UserServiceJPA implements UsersService{
 	@Override
 	@Transactional(readOnly = true)
 	public UserBoundary updateUser(String userSpace, String userEmail, UserBoundary update) {
+		if(!checkUserRole(update.getRole()))
+			throw new RuntimeException("Invalid Role");
+		
 		Optional<UserEntity> optionalUser = this.userDao.findById(userEmail);
 		if(!optionalUser.isPresent())
 			throw new RuntimeException("User: " + userEmail + " doesn't exist");
 		
-		if(!checkUserRole(update.getRole()))
-			throw new RuntimeException("Invalid Role");
+		UserEntity user = optionalUser.get();		
 		
-		UserEntity updateUser = userEntityConverter.fromBoundary(update);
-		
-		userDao.save(updateUser);
-		return userEntityConverter.toBoundary(this.userDao.findById(userEmail).get());
+		if(update.getAvatar() != null)
+			user.setAvatar(update.getAvatar());
+		if(update.getUsername() != null)
+			user.setUsername(update.getUsername());
+		if(user.getRole() != null)
+			user.setRole(user.getRole());
+
+		user = userDao.save(user);
+		return userEntityConverter.toBoundary(user);
 	}
 
 	@Override
@@ -114,8 +121,6 @@ public class UserServiceJPA implements UsersService{
 	}
 	
 	public boolean checkUserRole(String userRole) {
-		if(userRole.equals(null))
-			return false;
 		for(UserRole role : UserRole.values()) {
 			if(userRole.equals(role.toString()))
 				return true;
