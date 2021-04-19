@@ -8,14 +8,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import twins.dal.UserDao;
 import twins.data.UserEntity;
 import twins.data.UserRole;
 import twins.errors.BadRequestException;
+import twins.errors.ForbiddenRequestException;
 import twins.errors.NotFoundException;
 import twins.logic.UserEntityConverter;
 import twins.logic.UsersService;
+
 
 @Service
 public class UserServiceJPA implements UsersService{
@@ -41,20 +42,26 @@ public class UserServiceJPA implements UsersService{
 	@Override
 	@Transactional
 	public UserBoundary createUser(UserBoundary user) {
-		//TODO: Test create 2 users with the same Email
+		//check null NewUserDetails
+		if(user.getAvatar() == null && user.getUsername() == null && user.getRole() == null && user.getUserId().getEmail() == null)
+			throw new BadRequestException("Invalid User data");
 		if(user.getAvatar() == null)
 			throw new BadRequestException("User avatar can't be null");
 		if(user.getUsername() == null)
 			throw new BadRequestException("Username can't be null");
-		if(!checkUserRole(user.getRole()) || user.getRole() == null)
+		if(user.getRole() == null || !checkUserRole(user.getRole()))
 			throw new BadRequestException("Invalid Role");
 		if(!checkEmail(user.getUserId().getEmail()))
 			throw new BadRequestException("Invalid Email");
-		if(user.getUserId().getSpace() == null)
-			user.getUserId().setSpace(springApplicationName);
 		
-		UserEntity entity = this.userEntityConverter.fromBoundary(user);	
 		String email = user.getUserId().getEmail() + "@@" + this.springApplicationName;
+		
+		//if User already exists -> throw (prevent an exploit for changing the details of an existing User by creating a new user with the same Email)
+		Optional<UserEntity> optional = this.userDao.findById(email);
+		if(optional.isPresent())
+			throw new ForbiddenRequestException("Unathorized operation on existing user");
+		
+		UserEntity entity = this.userEntityConverter.fromBoundary(user);		
 		entity.setEmail(email);
 		
 		userDao.save(entity);
@@ -64,8 +71,6 @@ public class UserServiceJPA implements UsersService{
 	@Override
 	@Transactional(readOnly = true)
 	public UserBoundary login(String userSpace, String userEmail) {
-//		if(!userSpace.equals(this.springApplicationName))
-//			throw new BadRequestException("UserSpace: " + userSpace + " doesn't belong in current space");
 		
 		String id = userEmail + "@@" + userSpace;
 		Optional<UserEntity> optionalUser = this.userDao.findById(id);
@@ -79,23 +84,30 @@ public class UserServiceJPA implements UsersService{
 
 	@Override
 	@Transactional
-	public UserBoundary updateUser(String userSpace, String userEmail, UserBoundary update) {
-		if(!checkUserRole(update.getRole()))
-			throw new BadRequestException("Invalid Role");
+	public UserBoundary updateUser(String userSpace, String userEmail, UserBoundary update) {	
+		if(update.getAvatar() == null && update.getRole() == null && update.getUsername() == null)
+			throw new BadRequestException("Invalid data");
 		
 		String id = userEmail + "@@" + userSpace;
 		Optional<UserEntity> optionalUser = this.userDao.findById(id);
 		if(!optionalUser.isPresent())
 			throw new NotFoundException("User: " + userEmail + " doesn't exist");
 		
-		UserEntity user = optionalUser.get();		
+		UserEntity user = optionalUser.get();	
+			
 		
 		if(update.getAvatar() != null)
 			user.setAvatar(update.getAvatar());
 		if(update.getUsername() != null)
 			user.setUsername(update.getUsername());
-		if(user.getRole() != null)
-			user.setRole(update.getRole());
+		if(update.getRole() != null) {
+			if(!checkUserRole(update.getRole()))
+				throw new BadRequestException("Invalid Role");
+			else
+				user.setRole(update.getRole());
+		}
+		
+		
 
 		user = userDao.save(user);
 		return userEntityConverter.toBoundary(user);

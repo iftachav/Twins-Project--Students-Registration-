@@ -26,11 +26,6 @@ public class UserEntityConverterImplementation implements UserEntityConverter {
 		if(boundary.getAvatar() != null)
 			rv.setAvatar(boundary.getAvatar());
 		
-//		if(boundary.getUserId() != null) {
-//			rv.setEmail(boundary.getUserId().getEmail());
-//			rv.setSpace(boundary.getUserId().getSpace());
-//		}
-		
 		rv.setUsername(boundary.getUsername());
 		return rv;
 	}

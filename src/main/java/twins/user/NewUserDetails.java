@@ -16,11 +16,6 @@ public class NewUserDetails {
 	private String avatar;
 	
 	public NewUserDetails(){
-		this.email = "user@demo.com";
-		this.role = "MANAGER";
-		this.username = "Demo User";
-		this.avatar = "J";
-		
 	}
 
 	public String getEmail() {

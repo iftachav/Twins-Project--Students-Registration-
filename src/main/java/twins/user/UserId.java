@@ -6,6 +6,7 @@ public class UserId {
 	
 	public UserId() {
 	}
+	
 	public UserId(String space, String email) {
 		this.space = space;
 		this.email = email;
