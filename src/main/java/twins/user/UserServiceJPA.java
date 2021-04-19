@@ -41,6 +41,7 @@ public class UserServiceJPA implements UsersService{
 	@Override
 	@Transactional
 	public UserBoundary createUser(UserBoundary user) {
+		//TODO: Test create 2 users with the same Email
 		if(user.getAvatar() == null)
 			throw new BadRequestException("User avatar can't be null");
 		if(user.getUsername() == null)
@@ -128,8 +129,6 @@ public class UserServiceJPA implements UsersService{
 	}
 	
 	public boolean checkUserRole(String userRole) {
-		if(userRole == null)
-			return false;
 		for(UserRole role : UserRole.values()) {
 			if(userRole.equals(role.toString()))
 				return true;
