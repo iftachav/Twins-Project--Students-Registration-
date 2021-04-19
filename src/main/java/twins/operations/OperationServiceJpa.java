@@ -13,8 +13,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import twins.dal.OperationDao;
 import twins.data.OperationEntity;
-import twins.logic.OperationDao;
 import twins.logic.OperationEntityConverter;
 import twins.logic.OperationService;
 

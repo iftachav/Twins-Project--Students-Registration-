@@ -8,7 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import twins.data.UserDao;
+
+import twins.dal.UserDao;
 import twins.data.UserEntity;
 import twins.data.UserRole;
 import twins.errors.BadRequestException;
