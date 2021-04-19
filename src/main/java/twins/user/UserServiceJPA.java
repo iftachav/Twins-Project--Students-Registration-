@@ -59,7 +59,7 @@ public class UserServiceJPA implements UsersService{
 		//if User already exists -> throw (prevent an exploit for changing the details of an existing User by creating a new user with the same Email)
 		Optional<UserEntity> optional = this.userDao.findById(email);
 		if(optional.isPresent())
-			throw new ForbiddenRequestException("Unathorized operation on existing user");
+			throw new ForbiddenRequestException("Unauthorized operation on existing user");
 		
 		UserEntity entity = this.userEntityConverter.fromBoundary(user);		
 		entity.setEmail(email);
