@@ -1,24 +1,24 @@
-package twins.user;
+package twins.errors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(code = HttpStatus.NOT_FOUND)
-public class UserNotFoundException extends RuntimeException {
+public class NotFoundException extends RuntimeException {
 	private static final long serialVersionUID = 810787392513959509L;
 
-	public UserNotFoundException() {		
+	public NotFoundException() {		
 	}
 
-	public UserNotFoundException(String message) {
+	public NotFoundException(String message) {
 		super(message);
 	}
 
-	public UserNotFoundException(Throwable cause) {
+	public NotFoundException(Throwable cause) {
 		super(cause);
 	}
 
-	public UserNotFoundException(String message, Throwable cause) {
+	public NotFoundException(String message, Throwable cause) {
 		super(message, cause);
 	}
 }

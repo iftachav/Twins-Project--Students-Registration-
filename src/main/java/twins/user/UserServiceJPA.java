@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import twins.data.UserDao;
 import twins.data.UserEntity;
 import twins.data.UserRole;
+import twins.errors.NotFoundException;
 import twins.logic.UserEntityConverter;
 import twins.logic.UsersService;
 
@@ -64,7 +65,7 @@ public class UserServiceJPA implements UsersService{
 		Optional<UserEntity> optionalUser = this.userDao.findById(userEmail);
 		
 		if(!optionalUser.isPresent())
-			throw new UserNotFoundException("User: " + userEmail + " doesn't exist");
+			throw new NotFoundException("User: " + userEmail + " doesn't exist");
 		
 		UserEntity userEntity = optionalUser.get();
 		return userEntityConverter.toBoundary(userEntity);
@@ -78,7 +79,7 @@ public class UserServiceJPA implements UsersService{
 		
 		Optional<UserEntity> optionalUser = this.userDao.findById(userEmail);
 		if(!optionalUser.isPresent())
-			throw new UserNotFoundException("User: " + userEmail + " doesn't exist");
+			throw new NotFoundException("User: " + userEmail + " doesn't exist");
 		
 		UserEntity user = optionalUser.get();		
 		
