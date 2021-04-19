@@ -22,7 +22,7 @@ public class OperationEntity {
 	private String operationId;
 	private String type;
 	private String itemSpace;
-	private Long itemId;
+	private String itemId;
 	private Date createdTimestamp;
 	private String userSpace;
 	private String userEmail;
@@ -32,7 +32,7 @@ public class OperationEntity {
 
 	
 	
-	public OperationEntity(String operationSpace, String operationId, String type, String itemSpace, Long itemId,
+	public OperationEntity(String operationSpace, String operationId, String type, String itemSpace, String itemId,
 			Date createdTimestamp, String userSpace, String userEmail, Map<String, Object> operationAttributes) {
 		super();
 		this.operationSpace = operationSpace;
@@ -80,11 +80,11 @@ public class OperationEntity {
 		this.itemSpace = itemSpace;
 	}
 
-	public Long getItemId() {
+	public String getItemId() {
 		return itemId;
 	}
 
-	public void setItemId(Long itemId) {
+	public void setItemId(String itemId) {
 		this.itemId = itemId;
 	}
 	@Transient
