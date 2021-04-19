@@ -21,9 +21,6 @@ public class UserBoundary {
 	
 	public UserBoundary() {
 		this.userId = new UserId();
-		this.role = "MANAGER";
-		this.username = "Demo User";
-		this.avatar = "J";
 	}
 	public UserId getUserId() {
 		return userId;

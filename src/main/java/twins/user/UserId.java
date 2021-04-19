@@ -5,8 +5,6 @@ public class UserId {
 	private String email;
 	
 	public UserId() {
-		this.space = "2021b.twins";
-		this.email = "user@demo.com";
 	}
 	public UserId(String space, String email) {
 		this.space = space;

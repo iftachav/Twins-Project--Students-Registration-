@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import twins.data.UserDao;
 import twins.data.UserEntity;
 import twins.data.UserRole;
+import twins.errors.BadRequestException;
 import twins.errors.NotFoundException;
 import twins.logic.UserEntityConverter;
 import twins.logic.UsersService;
@@ -40,18 +41,20 @@ public class UserServiceJPA implements UsersService{
 	@Transactional
 	public UserBoundary createUser(UserBoundary user) {
 		if(user.getAvatar() == null)
-			throw new RuntimeException("User avatar can't be null");
+			throw new BadRequestException("User avatar can't be null");
 		if(user.getUsername() == null)
-			throw new RuntimeException("Username can't be null");
+			throw new BadRequestException("Username can't be null");
 		if(!checkUserRole(user.getRole()) || user.getRole() == null)
-			throw new RuntimeException("Invalid Role");
+			throw new BadRequestException("Invalid Role");
 		if(!checkEmail(user.getUserId().getEmail()))
-			throw new RuntimeException("Invalid Email");
+			throw new BadRequestException("Invalid Email");
 		if(user.getUserId().getSpace() == null)
 			user.getUserId().setSpace(springApplicationName);
 		
-		UserEntity entity = this.userEntityConverter.fromBoundary(user);		
-		//String userId = entity.getSpace() + entity.getEmail();
+		UserEntity entity = this.userEntityConverter.fromBoundary(user);	
+		String email = user.getUserId().getEmail() + "@@" + this.springApplicationName;
+		entity.setEmail(email);
+		
 		userDao.save(entity);
 		return this.userEntityConverter.toBoundary(entity);
 	}
@@ -59,10 +62,11 @@ public class UserServiceJPA implements UsersService{
 	@Override
 	@Transactional(readOnly = true)
 	public UserBoundary login(String userSpace, String userEmail) {
-		if(!userSpace.equals(this.springApplicationName))
-			throw new RuntimeException("UserSpace: " + userSpace + " doesn't fit in current space " + springApplicationName);
-			
-		Optional<UserEntity> optionalUser = this.userDao.findById(userEmail);
+//		if(!userSpace.equals(this.springApplicationName))
+//			throw new BadRequestException("UserSpace: " + userSpace + " doesn't belong in current space");
+		
+		String id = userEmail + "@@" + userSpace;
+		Optional<UserEntity> optionalUser = this.userDao.findById(id);
 		
 		if(!optionalUser.isPresent())
 			throw new NotFoundException("User: " + userEmail + " doesn't exist");
@@ -72,12 +76,13 @@ public class UserServiceJPA implements UsersService{
 	}
 
 	@Override
-	@Transactional(readOnly = true)
+	@Transactional
 	public UserBoundary updateUser(String userSpace, String userEmail, UserBoundary update) {
 		if(!checkUserRole(update.getRole()))
-			throw new RuntimeException("Invalid Role");
+			throw new BadRequestException("Invalid Role");
 		
-		Optional<UserEntity> optionalUser = this.userDao.findById(userEmail);
+		String id = userEmail + "@@" + userSpace;
+		Optional<UserEntity> optionalUser = this.userDao.findById(id);
 		if(!optionalUser.isPresent())
 			throw new NotFoundException("User: " + userEmail + " doesn't exist");
 		
@@ -88,7 +93,7 @@ public class UserServiceJPA implements UsersService{
 		if(update.getUsername() != null)
 			user.setUsername(update.getUsername());
 		if(user.getRole() != null)
-			user.setRole(user.getRole());
+			user.setRole(update.getRole());
 
 		user = userDao.save(user);
 		return userEntityConverter.toBoundary(user);
@@ -122,6 +127,8 @@ public class UserServiceJPA implements UsersService{
 	}
 	
 	public boolean checkUserRole(String userRole) {
+		if(userRole == null)
+			return false;
 		for(UserRole role : UserRole.values()) {
 			if(userRole.equals(role.toString()))
 				return true;

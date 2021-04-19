@@ -13,7 +13,7 @@ public class UserEntityConverterImplementation implements UserEntityConverter {
 		UserBoundary rv= new UserBoundary();
 		rv.setAvatar(entity.getAvatar());
 		rv.setRole(entity.getRole());
-		rv.setUserId(new UserId(entity.getSpace(),entity.getEmail()));
+		rv.setUserId(new UserId(entity.getEmail().split("@@")[1], entity.getEmail().split("@@")[0]));
 		rv.setUsername(entity.getUsername());
 		return rv;
 	}
@@ -26,10 +26,10 @@ public class UserEntityConverterImplementation implements UserEntityConverter {
 		if(boundary.getAvatar() != null)
 			rv.setAvatar(boundary.getAvatar());
 		
-		if(boundary.getUserId() != null) {
-			rv.setEmail(boundary.getUserId().getEmail());
-			rv.setSpace(boundary.getUserId().getSpace());
-		}
+//		if(boundary.getUserId() != null) {
+//			rv.setEmail(boundary.getUserId().getEmail());
+//			rv.setSpace(boundary.getUserId().getSpace());
+//		}
 		
 		rv.setUsername(boundary.getUsername());
 		return rv;
