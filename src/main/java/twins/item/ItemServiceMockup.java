@@ -17,7 +17,7 @@ import twins.logic.ItemsService;
  * TODO itemId and map key what the relations between them?
  */
 
-@Service
+//@Service
 public class ItemServiceMockup implements ItemsService{
 	private Map<String, ItemEntity> items;
 	private ItemConverter itemEntityConverter;
@@ -78,11 +78,11 @@ public class ItemServiceMockup implements ItemsService{
 			entity.setLng(update.getLocation().getLng());
 			updated = true;
 		}
-		if(update.getItemAttributes() != null) {
-			entity.setItemAttributes(update.getItemAttributes());
-			updated = true;
-		}
-		
+//		if(update.getItemAttributes() != null) {
+//			entity.setItemAttributes(update.getItemAttributes());
+//			updated = true;
+//		}
+//		
 		if(updated)
 			this.items.put(id, entity);
 		

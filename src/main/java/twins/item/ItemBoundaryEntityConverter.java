@@ -1,6 +1,10 @@
 package twins.item;
 
+import java.util.Map;
+
 import org.springframework.stereotype.Component;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import twins.data.ItemEntity;
 import twins.logic.ItemConverter;
@@ -8,6 +12,8 @@ import twins.user.UserId;
 
 @Component
 public class ItemBoundaryEntityConverter implements ItemConverter{
+	
+	private ObjectMapper jackson;
 
 	@Override
 	public ItemBoundary toBoundary(ItemEntity itemEntity) {
@@ -18,7 +24,7 @@ public class ItemBoundaryEntityConverter implements ItemConverter{
 		ib.setItemId(new ItemIdBoundary(itemEntity.getId(), itemEntity.getItemSpace()));
 		
 		if(itemEntity.getItemAttributes() != null)
-			ib.setItemAttributes(itemEntity.getItemAttributes());
+			ib.setItemAttributes(fromJsonToMap(itemEntity.getItemAttributes()));
 		else
 			ib.setItemAttributes(null);
 		
@@ -40,7 +46,7 @@ public class ItemBoundaryEntityConverter implements ItemConverter{
 		}
 			
 		if(itemBoundary.getItemAttributes() != null)
-			ie.setItemAttributes(itemBoundary.getItemAttributes());
+			ie.setItemAttributes(fromMapToJson(itemBoundary.getItemAttributes()));
 		else
 			ie.setItemAttributes(null);
 		
@@ -59,5 +65,28 @@ public class ItemBoundaryEntityConverter implements ItemConverter{
 		
 		return ie;
 	}
+	
+	@Override
+	public String fromMapToJson (Map<String, Object> value) { // marshalling: Java->JSON
+		
+		try {
+			return this.jackson
+				.writeValueAsString(value);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	
+	}
+	
+	@Override
+	public Map<String, Object> fromJsonToMap (String json){ // unmarshalling: JSON->Java
+		try {
+			return this.jackson
+				.readValue(json, Map.class);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+
+	} 
 	
 }
