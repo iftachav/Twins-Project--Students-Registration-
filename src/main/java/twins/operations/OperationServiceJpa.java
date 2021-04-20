@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import twins.dal.OperationDao;
 import twins.data.OperationEntity;
+import twins.errors.BadRequestException;
 import twins.logic.OperationEntityConverter;
 import twins.logic.OperationService;
 
@@ -47,26 +48,23 @@ public class OperationServiceJpa implements OperationService{
 	@Transactional
 	public Object invokeOperation(OperationBoundary operation) {
 		if(operation == null)
-			throw new RuntimeException("Null Operation Received.");
-		setSpringApplicationName(springApplicationName);	//no need to do that. Remove that line
+			throw new BadRequestException("Null Operation Received.");
 		operation.setCreatedTimestamp(new Date());
-		
 		if(operation.getType() == null)
-			throw new RuntimeException("Null operation type passed");
-		
+			throw new BadRequestException("Null operation type passed");
 		if(operation.getInvokedBy() == null || operation.getInvokedBy().getUserId() == null)
-			throw new RuntimeException("Null Invoked By Element Received.");
+			throw new BadRequestException("Null Invoked By Element Received.");
+		
 		operation.getInvokedBy().getUserId().setSpace(springApplicationName);
 		if(!checkEmail(operation.getInvokedBy().getUserId().getEmail()))
-			throw new RuntimeException("Email Is Not Valid.");
+			throw new BadRequestException("Email Is Not Valid.");
 		
 		if(operation.getItem() == null || operation.getItem().getItemId() == null || operation.getItem().getItemId().getId() == null)
-			throw new RuntimeException("Null Item Element Received.");
+			throw new BadRequestException("Null Item Element Received.");
 		operation.getItem().getItemId().setSpace(springApplicationName);
-		String newId= UUID.randomUUID().toString()+"_"+operation.getInvokedBy().getUserId().getEmail()+"_"+operation.getInvokedBy().getUserId().getSpace();
+		String newId= UUID.randomUUID().toString()+"_"+this.springApplicationName;
 		operation.getOperationId().setId(newId);
 		operation.getOperationId().setSpace(springApplicationName);
-		
 		OperationEntity op = operationEntityConverter.fromBoundary(operation);
 		operationDao.save(op);
 		return operation;
@@ -76,25 +74,19 @@ public class OperationServiceJpa implements OperationService{
 	@Transactional
 	public OperationBoundary invokeAsynchronousOperation(OperationBoundary operation) {
 		if(operation == null)
-			throw new RuntimeException("Null Operation Received.");
-		setSpringApplicationName(springApplicationName);	//no need to do that. Remove that line
+			throw new BadRequestException("Null Operation Received.");
 		operation.setCreatedTimestamp(new Date());
-		
 		if(operation.getType() == null)
-			throw new RuntimeException("Null operation type passed");
-		
+			throw new BadRequestException("Null operation type passed");
 		if(operation.getInvokedBy() == null || operation.getInvokedBy().getUserId() == null)
-			throw new RuntimeException("Null Invoked By Element Received.");
+			throw new BadRequestException("Null Invoked By Element Received.");
 		operation.getInvokedBy().getUserId().setSpace(springApplicationName);
 		if(!checkEmail(operation.getInvokedBy().getUserId().getEmail()))
-			throw new RuntimeException("Email Is Not Valid.");
-		
+			throw new BadRequestException("Email Is Not Valid.");
 		if(operation.getItem() == null || operation.getItem().getItemId() == null || operation.getItem().getItemId().getId() == null)
-			throw new RuntimeException("Null Item Element Received.");
+			throw new BadRequestException("Null Item Element Received.");
 		operation.getItem().getItemId().setSpace(springApplicationName);
-		
-
-		String newId= UUID.randomUUID().toString()+"_"+operation.getInvokedBy().getUserId().getEmail()+"_"+operation.getInvokedBy().getUserId().getSpace();
+		String newId= UUID.randomUUID().toString()+"_"+this.springApplicationName;
 		operation.getOperationId().setId(newId);
 		operation.getOperationId().setSpace(springApplicationName);
 		OperationEntity op = operationEntityConverter.fromBoundary(operation);
@@ -117,7 +109,7 @@ public class OperationServiceJpa implements OperationService{
 	}
 	
 	public boolean checkEmail(String email) {
-		if(email.equals(null))
+		if(email==null)
 			return false;
 		String[] splitted=email.split("@");
 		int size1=splitted.length;

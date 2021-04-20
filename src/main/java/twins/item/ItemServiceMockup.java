@@ -21,12 +21,10 @@ import twins.logic.ItemsService;
 public class ItemServiceMockup implements ItemsService{
 	private Map<String, ItemEntity> items;
 	private ItemConverter itemEntityConverter;
-	//private long id;
 	private String space;
 	
 	public ItemServiceMockup() {
 		this.items = Collections.synchronizedMap(new HashMap<>());
-		//this.id = 0;
 	}
 	
 	@Autowired
@@ -48,7 +46,6 @@ public class ItemServiceMockup implements ItemsService{
 		
 		String id = UUID.randomUUID().toString();
 		entity.setId(id);
-		//entity.setId(this.id++);
 		entity.setItemSpace(this.space);
 		items.put((this.space + "_" + id), entity);
 		

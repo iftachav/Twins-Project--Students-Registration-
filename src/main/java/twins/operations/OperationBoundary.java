@@ -43,7 +43,6 @@ public class OperationBoundary {
 	
 	public OperationBoundary() {
 		this.operationId = new OperationId();
-		this.type = "random_number";
 		this.item = new ItemWrapper();
 		this.createdTimestamp = new Date();
 		this.invokedBy = new UserIdWrapper();

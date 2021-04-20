@@ -29,15 +29,15 @@ public class ItemController {
 	@RequestMapping(path = "/twins/items/{userSpace}/{userEmail}/{itemSpace}/{itemId}", method = RequestMethod.PUT,
 			consumes = MediaType.APPLICATION_JSON_VALUE)
 	public void updateData (@PathVariable("userSpace") String userSpace, @PathVariable("userEmail") String userEmail,
-			@PathVariable("itemSpace") String itemSpace, @PathVariable("itemId") Long itemId, @RequestBody ItemBoundary update) {
-		itemService.updateItem(userSpace, userEmail, itemSpace, itemId.toString(), update);
+			@PathVariable("itemSpace") String itemSpace, @PathVariable("itemId") String itemId, @RequestBody ItemBoundary update) {
+		itemService.updateItem(userSpace, userEmail, itemSpace, itemId, update);
 	}
 	
 	@RequestMapping(path = "/twins/items/{userSpace}/{userEmail}/{itemSpace}/{itemId}", method = RequestMethod.GET, 
 			produces = MediaType.APPLICATION_JSON_VALUE)
 	public ItemBoundary getSpecificItem (@PathVariable("userSpace") String userSpace, @PathVariable("userEmail") String userEmail,
-			@PathVariable("itemSpace") String itemSpace, @PathVariable("itemId") Long id){
-		return itemService.getSpecificItem(userSpace, userEmail, itemSpace, id.toString());
+			@PathVariable("itemSpace") String itemSpace, @PathVariable("itemId") String id){
+		return itemService.getSpecificItem(userSpace, userEmail, itemSpace, id);
 	}
 
 	@RequestMapping(path = "/twins/items/{userSpace}/{userEmail}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
