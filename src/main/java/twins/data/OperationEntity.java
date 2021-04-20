@@ -5,7 +5,10 @@ import java.util.Map;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import twins.item.ItemIdBoundary;
@@ -26,14 +29,14 @@ public class OperationEntity {
 	private Date createdTimestamp;
 	private String userSpace;
 	private String userEmail;
-	private Map<String, Object> operationAttributes;
+	private String operationAttributes;
 
 	public OperationEntity() {}
 
 	
 	
 	public OperationEntity(String operationSpace, String operationId, String type, String itemSpace, String itemId,
-			Date createdTimestamp, String userSpace, String userEmail, Map<String, Object> operationAttributes) {
+			Date createdTimestamp, String userSpace, String userEmail, String operationAttributes) {
 		super();
 		this.operationSpace = operationSpace;
 		this.operationId = operationId;
@@ -87,11 +90,12 @@ public class OperationEntity {
 	public void setItemId(String itemId) {
 		this.itemId = itemId;
 	}
-	@Transient
+	
+	@Temporal(TemporalType.TIMESTAMP)
 	public Date getCreatedTimestamp() {
 		return createdTimestamp;
 	}
-	@Transient
+	
 	public void setCreatedTimestamp(Date createdTimestamp) {
 		this.createdTimestamp = createdTimestamp;
 	}
@@ -111,12 +115,13 @@ public class OperationEntity {
 	public void setUserEmail(String userEmail) {
 		this.userEmail = userEmail;
 	}
-	@Transient
-	public Map<String, Object> getOperationAttributes() {
+	
+	@Lob
+	public String getOperationAttributes() {
 		return operationAttributes;
 	}
-	@Transient
-	public void setOperationAttributes(Map<String, Object> operationAttributes) {
+
+	public void setOperationAttributes(String operationAttributes) {
 		this.operationAttributes = operationAttributes;
 	}
 	

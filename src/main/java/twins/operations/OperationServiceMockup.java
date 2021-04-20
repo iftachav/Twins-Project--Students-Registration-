@@ -16,7 +16,7 @@ import twins.data.OperationEntity;
 import twins.logic.OperationEntityConverter;
 import twins.logic.OperationService;
 
-//@Sevice
+//@Service
 public class OperationServiceMockup implements OperationService{
 	private Map<String, OperationEntity> operations;
 	private OperationEntityConverter operationEntityConverter;

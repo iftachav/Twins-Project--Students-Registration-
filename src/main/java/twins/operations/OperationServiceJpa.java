@@ -23,11 +23,9 @@ import twins.logic.OperationService;
 public class OperationServiceJpa implements OperationService{
 	private OperationDao operationDao;
 	private OperationEntityConverter operationEntityConverter;
-	private long id;
 	private String springApplicationName;
 	
 	public OperationServiceJpa() {
-		this.id = 0;
 	}
 	
 	@Autowired
@@ -65,19 +63,13 @@ public class OperationServiceJpa implements OperationService{
 		if(operation.getItem() == null || operation.getItem().getItemId() == null || operation.getItem().getItemId().getId() == null)
 			throw new RuntimeException("Null Item Element Received.");
 		operation.getItem().getItemId().setSpace(springApplicationName);
-		
-//		if(operation.getOperationId() == null) WHYYYYYYYYYYYYYY
-//			throw new RuntimeException("Null Operation Id Received.");
-//		operation.getOperationId().setId(""+this.id++); // ? WHYYYYYYYYYYY
 		String newId= UUID.randomUUID().toString()+"_"+operation.getInvokedBy().getUserId().getEmail()+"_"+operation.getInvokedBy().getUserId().getSpace();
-		operation.getOperationId().setId(newId); // ?
+		operation.getOperationId().setId(newId);
 		operation.getOperationId().setSpace(springApplicationName);
 		
 		OperationEntity op = operationEntityConverter.fromBoundary(operation);
 		operationDao.save(op);
-//		operations.put(newId, op);
-		return operation.getOperationId().getId();//WHYYYYYYYYYYYYYYY
-//		TODO check with arad all of the comments
+		return operation;
 	}
 
 	@Override
@@ -101,16 +93,12 @@ public class OperationServiceJpa implements OperationService{
 			throw new RuntimeException("Null Item Element Received.");
 		operation.getItem().getItemId().setSpace(springApplicationName);
 		
-//		if(operation.getOperationId() == null)
-//			throw new RuntimeException("Null Operation Id Received.");
+
 		String newId= UUID.randomUUID().toString()+"_"+operation.getInvokedBy().getUserId().getEmail()+"_"+operation.getInvokedBy().getUserId().getSpace();
-		operation.getOperationId().setId(newId); // ?
-//		operation.getOperationId().setId(""+this.id++); // ?
+		operation.getOperationId().setId(newId);
 		operation.getOperationId().setSpace(springApplicationName);
-		
 		OperationEntity op = operationEntityConverter.fromBoundary(operation);
 		operationDao.save(op);
-//		operations.put(newId, op);
 		return operation;
 	}
 
@@ -126,7 +114,6 @@ public class OperationServiceJpa implements OperationService{
 	@Transactional
 	public void deleteAllOperations(String adminSpace, String adminEmail) {
 		this.operationDao.deleteAll();
-		this.id = 0;
 	}
 	
 	public boolean checkEmail(String email) {
