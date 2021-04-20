@@ -48,7 +48,7 @@ public class OperationServiceJpa implements OperationService{
 	public Object invokeOperation(OperationBoundary operation) {
 		if(operation == null)
 			throw new RuntimeException("Null Operation Received.");
-		setSpringApplicationName(springApplicationName);
+		setSpringApplicationName(springApplicationName);	//no need to do that. Remove that line
 		operation.setCreatedTimestamp(new Date());
 		
 		if(operation.getType() == null)
@@ -77,7 +77,7 @@ public class OperationServiceJpa implements OperationService{
 	public OperationBoundary invokeAsynchronousOperation(OperationBoundary operation) {
 		if(operation == null)
 			throw new RuntimeException("Null Operation Received.");
-		setSpringApplicationName(springApplicationName);
+		setSpringApplicationName(springApplicationName);	//no need to do that. Remove that line
 		operation.setCreatedTimestamp(new Date());
 		
 		if(operation.getType() == null)
