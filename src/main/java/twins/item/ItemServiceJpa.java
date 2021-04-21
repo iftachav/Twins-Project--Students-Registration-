@@ -48,19 +48,23 @@ public class ItemServiceJpa implements UpdatedItemService{
 	@Override
 	@Transactional//(readOnly = false)
 	public ItemBoundary createItem(String userSpace, String userEmail, ItemBoundary item) {
-		String newId;
-		if(item!=null && item.getItemId()!=null && item.getItemId().getSpace()!=null && item.getItemId().getId()!=null)
-			newId = item.getItemId().getSpace() + "_" + item.getItemId().getId(); //UUID.randomUUID().toString();
-		else
-			throw new BadRequestException();
+				
+		if(item==null)
+			throw new BadRequestException("item can't be null");
+		if(item.getItemId()==null)
+			throw new BadRequestException("ItemId can't be null");
+		if(item.getItemId().getSpace()==null)
+			throw new BadRequestException("space (of ItemId) can't be null");
+		if(item.getItemId().getId()==null)
+			throw new BadRequestException("id (of ItemId) can't be null");
 		
+		String newId = item.getItemId().getSpace() + "_" + item.getItemId().getId();
+			
 		ItemEntity entity = this.itemEntityConverter.toEntity(item);
-		
-		entity.setUserSpace(userSpace);
-		entity.setUserEmail(userEmail);
 		entity.setId(newId);
 		entity.setTimestamp(new Date());
-		
+		entity.setUserSpace(userSpace);
+		entity.setUserEmail(userEmail);
 		entity = this.itemDao.save(entity);
 		
 		return this.itemEntityConverter.toBoundary(entity);
