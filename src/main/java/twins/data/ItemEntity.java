@@ -134,6 +134,11 @@ public class ItemEntity {
 		this.children = children;
 	}
 	
+	public void addChild (ItemEntity child) {
+		this.children.add(child);
+		child.setParent(this);
+	}
+	
 	@ManyToOne(fetch = FetchType.LAZY) 
 	public ItemEntity getParent() {
 		return parent;

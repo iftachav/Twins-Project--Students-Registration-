@@ -1,9 +1,9 @@
-package twins.item;
+package twins.logic;
 
 import java.util.List;
 import java.util.Optional;
 
-import twins.logic.ItemsService;
+import twins.item.ItemBoundary;
 
 public interface UpdatedItemService extends ItemsService{
 	

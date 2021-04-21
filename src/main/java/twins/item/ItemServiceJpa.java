@@ -16,6 +16,7 @@ import twins.data.ItemEntity;
 import twins.errors.BadRequestException;
 import twins.errors.NotFoundException;
 import twins.logic.ItemConverter;
+import twins.logic.UpdatedItemService;
 
 @Service
 public class ItemServiceJpa implements UpdatedItemService{
@@ -147,9 +148,18 @@ public class ItemServiceJpa implements UpdatedItemService{
 	@Override
 	@Transactional//(readOnly = false)
 	public void addChildToItem(String parentId, String childId) {
-		ItemEntity child = this.itemDao
+		ItemEntity parent = this.itemDao
 				.findById(parentId)
 				.orElseThrow(()->new NotFoundException("could not find original parrent by id: " + parentId));
+		
+		ItemEntity child = this.itemDao
+				.findById(childId)
+				.orElseThrow(()->new NotFoundException("could not find original parrent by id: " + childId));
+		
+		parent.addChild(child);
+		
+		this.itemDao.save(parent);
+		this.itemDao.save(child);
 	}
 	
 	@Override
