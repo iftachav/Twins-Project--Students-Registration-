@@ -147,7 +147,7 @@ public class ItemServiceJpa implements UpdatedItemService{
 	}
 
 	@Override
-	@Transactional//(readOnly = false)
+	@Transactional
 	public void addChildToItem(String parentId, String childId) {
 		ItemEntity parent = this.itemDao
 				.findById(parentId)
