@@ -146,11 +146,11 @@ public class ItemServiceJpa implements UpdatedItemService{
 	public void addChildToItem(String parentId, String childId) {
 		ItemEntity parent = this.itemDao
 				.findById(parentId)
-				.orElseThrow(()->new NotFoundException("could not find original parrent by id: " + parentId));
+				.orElseThrow(()->new NotFoundException("could not find parent by id: " + parentId));
 		
 		ItemEntity child = this.itemDao
 				.findById(childId)
-				.orElseThrow(()->new NotFoundException("could not find original parrent by id: " + childId));
+				.orElseThrow(()->new NotFoundException("could not find child by id: " + childId));
 		
 		parent.addChild(child);
 		
@@ -163,7 +163,7 @@ public class ItemServiceJpa implements UpdatedItemService{
 	public List<ItemBoundary> getAllChildren(String parentId) {
 		ItemEntity parent = this.itemDao
 				.findById(parentId)
-				.orElseThrow(()->new NotFoundException("could not find original message by id: " + parentId));
+				.orElseThrow(()->new NotFoundException("could not find paernt by id: " + parentId));
 
 		return parent
 			.getChildren() // Set<MessageEntity>
@@ -172,21 +172,19 @@ public class ItemServiceJpa implements UpdatedItemService{
 			.collect(Collectors.toList());
 	}
 
+	
 	@Override
 	@Transactional(readOnly = true)
-	public Optional<ItemBoundary> getParent(String childId) {
+	public List<ItemBoundary> getAllParents(String childId) {
 		ItemEntity child = this.itemDao
 				.findById(childId)
-				.orElseThrow(()->new NotFoundException("could not find response message by id: " + childId));
-		
-		if (child.getParent() != null) {
-			return Optional.of(
-				this.itemEntityConverter
-					.toBoundary(child.getParent()));
-		
-		}else {
-			return Optional.empty();
-		}
+				.orElseThrow(()->new NotFoundException("could not find paernt by id: " + childId));
+
+		return child
+			.getParents() // Set<MessageEntity>
+			.stream() // Stream<MessageEntity>
+			.map(this.itemEntityConverter::toBoundary)// Stream<MessageBoundary>
+			.collect(Collectors.toList());
 	}
 	
 }

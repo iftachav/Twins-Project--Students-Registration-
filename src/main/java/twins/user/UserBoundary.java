@@ -4,7 +4,7 @@ package twins.user;
  UserBoundary sample JSON: 
 	{ 
 	"userId":{ 
-		"space":"2021b.twins", 
+		"space":"2021b.iftach.avraham", 
 		"email":"user@demo.com" 
 		}, 
 	"role":"MANAGER", 

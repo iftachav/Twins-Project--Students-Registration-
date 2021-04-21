@@ -3,21 +3,13 @@ package twins.data;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
-
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javax.persistence.*;
 
 @Entity
 @Table(name="ITEMS")
 public class ItemEntity {
 	private String itemSpace;
+	@Column(name="ITEM_ID")
 	private String id;
 	private String type;
 	private String name;
@@ -27,11 +19,17 @@ public class ItemEntity {
 	private String userEmail;
 	private double lat, lng;
 	private String itemAttributes;
+	
 	private Set<ItemEntity> children;
-	private ItemEntity parent;
+
+	private Set<ItemEntity> parents;
+
+
 	
 	public ItemEntity() { 
-		this.children = new HashSet<>();
+		this.children = new HashSet<ItemEntity>();
+
+		this.parents = new HashSet<ItemEntity>();
 	}
 
 	public String getItemSpace() {
@@ -125,7 +123,10 @@ public class ItemEntity {
 		this.itemAttributes = itemAttributes;
 	}
 	
-	@OneToMany(mappedBy = "parent", fetch = FetchType.LAZY)
+	@ManyToMany(cascade={CascadeType.ALL})
+	@JoinTable(name="Items_Many2Many",
+		joinColumns={@JoinColumn(name="parent")},
+		inverseJoinColumns={@JoinColumn(name="child")})
 	public Set<ItemEntity> getChildren() {
 		return children;
 	}
@@ -139,14 +140,20 @@ public class ItemEntity {
 		child.setParent(this);
 	}
 	
-	@ManyToOne(fetch = FetchType.LAZY) 
-	public ItemEntity getParent() {
-		return parent;
+	public void setParents(Set<ItemEntity> parents) {
+		this.parents = parents;
 	}
 
-	public void setParent(ItemEntity parent) {
-		this.parent = parent;
+	@ManyToMany(mappedBy="children")
+	public Set<ItemEntity> getParents() {
+		return this.parents;
 	}
+	
+
+	public void setParent(ItemEntity parent) {
+		this.parents.add(parent);
+	}
+	
 
 	@Override
 	public int hashCode() {
