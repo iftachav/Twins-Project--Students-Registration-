@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import twins.dal.OperationDao;
 import twins.data.OperationEntity;
 import twins.errors.BadRequestException;
+import twins.errors.ForbiddenRequestException;
 import twins.logic.OperationEntityConverter;
 import twins.logic.OperationService;
 
@@ -57,13 +58,18 @@ public class OperationServiceJpa implements OperationService{
 		
 		if(operation.getItem() == null || operation.getItem().getItemId() == null || operation.getItem().getItemId().getId() == null)
 			throw new BadRequestException("Null Item Element Received.");
+		//TODO to ask eyal.
+		if(!(operation.getItem().getItemId().getSpace().equals(operation.getInvokedBy().getUserId().getSpace())))
+			throw new ForbiddenRequestException("User space and Item space is not the same.");
+		
+		
 		operation.getItem().getItemId().setSpace(springApplicationName);
 		String newId= UUID.randomUUID().toString()+"_"+this.springApplicationName;
 		operation.getOperationId().setId(newId);
 		operation.getOperationId().setSpace(springApplicationName);
 		OperationEntity op = operationEntityConverter.fromBoundary(operation);
 		operationDao.save(op);
-		return operation;
+		return operationEntityConverter.toBoundary(op);
 	}
 
 	@Override
@@ -81,13 +87,16 @@ public class OperationServiceJpa implements OperationService{
 			throw new BadRequestException("Email Is Not Valid.");
 		if(operation.getItem() == null || operation.getItem().getItemId() == null || operation.getItem().getItemId().getId() == null)
 			throw new BadRequestException("Null Item Element Received.");
+		//TODO to ask eyal.
+		if(!(operation.getItem().getItemId().getSpace().equals(operation.getInvokedBy().getUserId().getSpace())))
+			throw new ForbiddenRequestException("User space and Item space is not the same.");
 		operation.getItem().getItemId().setSpace(springApplicationName);
 		String newId= UUID.randomUUID().toString()+"_"+this.springApplicationName;
 		operation.getOperationId().setId(newId);
 		operation.getOperationId().setSpace(springApplicationName);
 		OperationEntity op = operationEntityConverter.fromBoundary(operation);
 		operationDao.save(op);
-		return operation;
+		return operationEntityConverter.toBoundary(op);
 	}
 
 	@Override
