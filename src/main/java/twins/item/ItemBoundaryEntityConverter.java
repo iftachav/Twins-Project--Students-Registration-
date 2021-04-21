@@ -15,6 +15,11 @@ public class ItemBoundaryEntityConverter implements ItemConverter{
 	
 	private ObjectMapper jackson;
 
+	public ItemBoundaryEntityConverter(ObjectMapper jackson) {
+		super();
+		this.jackson = new ObjectMapper();
+	}
+
 	@Override
 	public ItemBoundary toBoundary(ItemEntity itemEntity) {
 		ItemBoundary ib = new ItemBoundary(itemEntity.getType(), itemEntity.getName(), itemEntity.isActive(), 
