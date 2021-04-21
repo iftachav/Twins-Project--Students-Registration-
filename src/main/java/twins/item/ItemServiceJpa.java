@@ -172,21 +172,19 @@ public class ItemServiceJpa implements UpdatedItemService{
 			.collect(Collectors.toList());
 	}
 
+	
 	@Override
 	@Transactional(readOnly = true)
-	public Optional<ItemBoundary> getParent(String childId) {
+	public List<ItemBoundary> getAllParents(String childId) {
 		ItemEntity child = this.itemDao
 				.findById(childId)
-				.orElseThrow(()->new NotFoundException("could not find child by id: " + childId));
-		
-		if (child.getParent() != null) {
-			return Optional.of(
-				this.itemEntityConverter
-					.toBoundary(child.getParent()));
-		
-		}else {
-			return Optional.empty();
-		}
+				.orElseThrow(()->new NotFoundException("could not find paernt by id: " + childId));
+
+		return child
+			.getParents() // Set<MessageEntity>
+			.stream() // Stream<MessageEntity>
+			.map(this.itemEntityConverter::toBoundary)// Stream<MessageBoundary>
+			.collect(Collectors.toList());
 	}
 	
 }

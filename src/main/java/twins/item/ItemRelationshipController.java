@@ -1,7 +1,4 @@
 package twins.item;
-
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -51,12 +48,7 @@ public class ItemRelationshipController{
 	public ItemBoundary[] getParents (
 			@PathVariable("itemId") String itemId,
 			@PathVariable("itemSpace") String itemSpace) {
-		Optional<ItemBoundary> original = this.itemLogic.getParent(itemSpace + "_" + itemId);
-		
-		if (original.isPresent()) {
-			return new ItemBoundary[] {original.get()};
-		}else {
-			return new ItemBoundary[0];
-		}
+		return this.itemLogic.getAllParents(itemSpace + "_" + itemId).toArray(new ItemBoundary[0]);
+
 	}
 }
