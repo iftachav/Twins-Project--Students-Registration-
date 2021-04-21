@@ -35,18 +35,21 @@ public class ItemController {
 	
 	@RequestMapping(path = "/twins/items/{userSpace}/{userEmail}/{itemSpace}/{itemId}", method = RequestMethod.GET, 
 			produces = MediaType.APPLICATION_JSON_VALUE)
-	public ItemBoundary getSpecificItem (@PathVariable("userSpace") String userSpace, @PathVariable("userEmail") String userEmail,
-			@PathVariable("itemSpace") String itemSpace, @PathVariable("itemId") String id){
+	public ItemBoundary getSpecificItem(@PathVariable("userSpace") String userSpace,
+			@PathVariable("userEmail") String userEmail, @PathVariable("itemSpace") String itemSpace,
+			@PathVariable("itemId") String id) {
 		return itemService.getSpecificItem(userSpace, userEmail, itemSpace, id);
 	}
 
 	@RequestMapping(path = "/twins/items/{userSpace}/{userEmail}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ItemBoundary[] getAllItems (@PathVariable("userSpace") String userSpace, @PathVariable("userEmail") String userEmail) {
+	public ItemBoundary[] getAllItems(@PathVariable("userSpace") String userSpace,
+			@PathVariable("userEmail") String userEmail) {
 		return itemService.getAllItems(userSpace, userEmail).toArray(new ItemBoundary[0]);
 	}
 
 	@RequestMapping(path = "/twins/admin/items/{userSpace}/{userEmail}", method = RequestMethod.DELETE)
-	public void deleteAllItems (@PathVariable("userSpace") String userSpace, @PathVariable("userEmail") String userEmail) {
+	public void deleteAllItems(@PathVariable("userSpace") String userSpace,
+			@PathVariable("userEmail") String userEmail) {
 		itemService.deleteAllItems(userSpace, userEmail);
 	}
 }

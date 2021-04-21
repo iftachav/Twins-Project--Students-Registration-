@@ -86,36 +86,27 @@ public class ItemServiceJpa implements UpdatedItemService{
 		ItemEntity entity = entityOptional.get();
 		
 	
-		boolean updated = false;
 		if(update.getActive()!=null) {
 			entity.setActive(update.getActive());
-			updated=true;
 		}
 		if(update.getType() != null) {
 			entity.setType(update.getType());
-			updated = true;
 		}
 		if(update.getName() != null) {
 			entity.setName(update.getName());
-			updated = true;
 		}
 		if(update.getActive()!=null) {
 			entity.setActive(update.getActive());
-			updated=true;
 		}
 		if(update.getLocation() != null) {
 			entity.setLat(update.getLocation().getLat());
 			entity.setLng(update.getLocation().getLng());
-			updated = true;
-		}
-		
+		}		
 		if(update.getItemAttributes() != null) {
 			entity.setItemAttributes(this.itemEntityConverter.fromMapToJson(update.getItemAttributes()));
-			updated = true;
 		}
 		
-		if(updated)
-			this.itemDao.save(entity);
+		this.itemDao.save(entity);
 		
 		return itemEntityConverter.toBoundary(entity);
 	}
