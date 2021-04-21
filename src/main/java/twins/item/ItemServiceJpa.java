@@ -46,7 +46,7 @@ public class ItemServiceJpa implements UpdatedItemService{
 	}
 	
 	@Override
-	@Transactional//(readOnly = false)
+	@Transactional
 	public ItemBoundary createItem(String userSpace, String userEmail, ItemBoundary item) {
 				
 		if(item==null)
@@ -117,7 +117,7 @@ public class ItemServiceJpa implements UpdatedItemService{
 		Iterable<ItemEntity>  allEntities = this.itemDao.findAll();
 
 		return StreamSupport
-				.stream(allEntities.spliterator(), false) // get stream from iterable
+				.stream(allEntities.spliterator(), false) 
 				.map(this.itemEntityConverter::toBoundary)
 				.collect(Collectors.toList());
 	}
@@ -166,9 +166,9 @@ public class ItemServiceJpa implements UpdatedItemService{
 				.orElseThrow(()->new NotFoundException("could not find paernt by id: " + parentId));
 
 		return parent
-			.getChildren() // Set<MessageEntity>
-			.stream() // Stream<MessageEntity>
-			.map(this.itemEntityConverter::toBoundary)// Stream<MessageBoundary>
+			.getChildren() 
+			.stream() 
+			.map(this.itemEntityConverter::toBoundary)
 			.collect(Collectors.toList());
 	}
 
@@ -181,9 +181,9 @@ public class ItemServiceJpa implements UpdatedItemService{
 				.orElseThrow(()->new NotFoundException("could not find paernt by id: " + childId));
 
 		return child
-			.getParents() // Set<MessageEntity>
-			.stream() // Stream<MessageEntity>
-			.map(this.itemEntityConverter::toBoundary)// Stream<MessageBoundary>
+			.getParents()
+			.stream() 
+			.map(this.itemEntityConverter::toBoundary)
 			.collect(Collectors.toList());
 	}
 	
