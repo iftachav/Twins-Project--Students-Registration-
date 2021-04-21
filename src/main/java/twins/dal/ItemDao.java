@@ -1,4 +1,4 @@
-package twins.item;
+package twins.dal;
 
 import org.springframework.data.repository.CrudRepository;
 

@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import twins.dal.ItemDao;
 import twins.data.ItemEntity;
 import twins.errors.BadRequestException;
 import twins.errors.NotFoundException;
