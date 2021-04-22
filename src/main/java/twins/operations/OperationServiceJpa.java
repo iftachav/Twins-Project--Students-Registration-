@@ -58,10 +58,6 @@ public class OperationServiceJpa implements OperationService{
 		
 		if(operation.getItem() == null || operation.getItem().getItemId() == null || operation.getItem().getItemId().getId() == null)
 			throw new BadRequestException("Null Item Element Received.");
-		//TODO to ask eyal.
-		if(!(operation.getItem().getItemId().getSpace().equals(operation.getInvokedBy().getUserId().getSpace())))
-			throw new ForbiddenRequestException("User space and Item space is not the same.");
-		
 		
 		operation.getItem().getItemId().setSpace(springApplicationName);
 		String newId= UUID.randomUUID().toString()+"_"+this.springApplicationName;

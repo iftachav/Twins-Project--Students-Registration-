@@ -58,13 +58,14 @@ public class ItemServiceJpa implements UpdatedItemService{
 		if(item.getItemId().getId()==null)
 			throw new BadRequestException("id (of ItemId) can't be null");
 		
-		String newId = item.getItemId().getSpace() + "_" + item.getItemId().getId();
+		String newId = this.space + "_" + item.getItemId().getId();
 			
 		ItemEntity entity = this.itemEntityConverter.toEntity(item);
 		entity.setId(newId);
 		entity.setTimestamp(new Date());
-		entity.setUserSpace(userSpace);
+		entity.setUserSpace(this.space);
 		entity.setUserEmail(userEmail);
+		entity.setItemSpace(this.space);
 		entity = this.itemDao.save(entity);
 		
 		return this.itemEntityConverter.toBoundary(entity);
@@ -81,7 +82,7 @@ public class ItemServiceJpa implements UpdatedItemService{
 		Optional<ItemEntity> entityOptional =  itemDao.findById(id);
 		
 		if(!entityOptional.isPresent())
-			throw new NotFoundException("Item id " + id + " doesn't exist");
+			throw new NotFoundException("Item id " + itemId + " doesn't exist");
 		
 		ItemEntity entity = entityOptional.get();
 		
@@ -94,9 +95,6 @@ public class ItemServiceJpa implements UpdatedItemService{
 		}
 		if(update.getName() != null) {
 			entity.setName(update.getName());
-		}
-		if(update.getActive()!=null) {
-			entity.setActive(update.getActive());
 		}
 		if(update.getLocation() != null) {
 			entity.setLat(update.getLocation().getLat());
@@ -129,7 +127,7 @@ public class ItemServiceJpa implements UpdatedItemService{
 		Optional<ItemEntity> optionalItem = this.itemDao.findById(id);
 
 		if(!optionalItem.isPresent())
-			throw new NotFoundException("Item id " + id + " doesn't exist");
+			throw new NotFoundException("Item id " + itemId + " doesn't exist");
 		
 		ItemBoundary boundary = itemEntityConverter.toBoundary(optionalItem.get());
 		
@@ -143,11 +141,15 @@ public class ItemServiceJpa implements UpdatedItemService{
 
 	@Override
 	@Transactional
-	public void addChildToItem(String parentId, String childId) {
+	public void addChildToItem(String parentId, ItemIdBoundary childIdBoundary) {
 		ItemEntity parent = this.itemDao
 				.findById(parentId)
 				.orElseThrow(()->new NotFoundException("could not find parent by id: " + parentId));
 		
+		if(childIdBoundary == null || childIdBoundary.getId() == null || childIdBoundary.getSpace() == null)
+			throw new BadRequestException("Child Id Boundary is not valid.");
+		
+		String childId = childIdBoundary.getSpace() + "_" + childIdBoundary.getId();
 		ItemEntity child = this.itemDao
 				.findById(childId)
 				.orElseThrow(()->new NotFoundException("could not find child by id: " + childId));

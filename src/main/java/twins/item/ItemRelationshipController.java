@@ -27,7 +27,7 @@ public class ItemRelationshipController{
 			@PathVariable("itemSpace") String itemSpace,
 			@RequestBody ItemIdBoundary childIdBoundary) {
 		this.itemLogic
-			.addChildToItem(itemSpace + "_" + itemId,childIdBoundary.getSpace()+"_"+childIdBoundary.getId());
+			.addChildToItem(itemSpace + "_" + itemId, childIdBoundary);
 	}
 
 	@RequestMapping(
