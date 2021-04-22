@@ -4,8 +4,8 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-//	EMAIL	|	SPACE	|	ROLE	|	USER_NAME	|	AVATAR
-//	VARCHAR	|	VARCHAR	|	VARCHAR	|	VARCHAR		| 	VARCHAR
+//	EMAIL	@@	SPACE	|	ROLE	|	USER_NAME	|	AVATAR
+//	VARCHAR				|	VARCHAR	|	VARCHAR		| 	VARCHAR
 //	<PK>
 @Entity
 @Table(name="USERS")
