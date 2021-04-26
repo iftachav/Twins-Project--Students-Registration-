@@ -116,13 +116,13 @@ class UserTest {
 		this.restTemplate.postForObject(url, newUser, UserBoundary.class);
 		
 		//PUT changes
-		url = this.baseUrl + "/users/" + this.space + "/" + this.userEmail;
+		url = this.baseUrl + "/users/{userSpace}/{userEmail}";
 		UserBoundary updateUser = new UserBoundary(changedUserRole, changedUsername, changedUserAvatar);
-		this.restTemplate.put(url, updateUser);
+		this.restTemplate.put(url, updateUser, this.space, this.userEmail);
 		
 		//GET changed User
-		url = this.baseUrl + "/users/login/" + this.space + "/" + this.userEmail;
-		UserBoundary returnedUser = this.restTemplate.getForObject(url, UserBoundary.class);
+		url = this.baseUrl + "/users/login/{userSpace}/{userEmail}";
+		UserBoundary returnedUser = this.restTemplate.getForObject(url, UserBoundary.class, this.space, this.userEmail);
 		assertThat(returnedUser).isNotNull();
 		assertThat(returnedUser.getUserId()).isNotNull();
 		assertThat(returnedUser.getUserId().getEmail()).isEqualTo(this.userEmail);
@@ -150,8 +150,8 @@ class UserTest {
 		newUser = new NewUserDetails(secondUserEmail, secondUserRole, secondUsername, secondUserAvatar);
 		this.restTemplate.postForObject(url, newUser, UserBoundary.class);
 		
-		url = this.baseUrl + "/admin/users/" + this.space + "/" + this.userEmail;
-		UserBoundary[] users = this.restTemplate.getForObject(url, UserBoundary[].class);
+		url = this.baseUrl + "/admin/users/{userSpace}/{userEmail}";
+		UserBoundary[] users = this.restTemplate.getForObject(url, UserBoundary[].class, this.space, this.userEmail);
 		assertThat(users).overridingErrorMessage("There are no users in the DB").isNotNull();
 		assertThat(users).hasSize(2);
 	}
@@ -167,8 +167,8 @@ class UserTest {
 		NewUserDetails newUser = new NewUserDetails(userEmail, userRole, username, userAvatar);
 		this.restTemplate.postForObject(url, newUser, UserBoundary.class);
 		
-		url = this.baseUrl + "/admin/users/" + this.space + "/" + this.userEmail;
-		this.restTemplate.delete(url);
+		url = this.baseUrl + "/admin/users/{userSpace}/{userEmail}";
+		this.restTemplate.delete(url, this.space, this.userEmail);
 	}
 
 }
