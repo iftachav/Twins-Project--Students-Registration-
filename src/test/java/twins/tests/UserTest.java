@@ -145,12 +145,15 @@ class UserTest {
 		String secondUserAvatar = "B";
 		
 		String url = this.baseUrl + "/users";
-		NewUserDetails newUser = new NewUserDetails(secondUserEmail, secondUserRole, secondUsername, secondUserAvatar);
+		NewUserDetails  newUser = new NewUserDetails(this.userEmail, this.userRole, this.username, this.userRole);
+		this.restTemplate.postForObject(url, newUser, UserBoundary.class);
+		newUser = new NewUserDetails(secondUserEmail, secondUserRole, secondUsername, secondUserAvatar);
 		this.restTemplate.postForObject(url, newUser, UserBoundary.class);
 		
 		url = this.baseUrl + "/admin/users/" + this.space + "/" + this.userEmail;
 		UserBoundary[] users = this.restTemplate.getForObject(url, UserBoundary[].class);
 		assertThat(users).overridingErrorMessage("There are no users in the DB").isNotNull();
+		assertThat(users).hasSize(2);
 	}
 	
 	@Test
