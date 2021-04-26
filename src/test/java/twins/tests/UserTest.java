@@ -157,6 +157,8 @@ class UserTest {
 		
 		url = this.baseUrl + "/admin/users/" + this.space + "/" + this.userEmail;
 		this.restTemplate.delete(url);
+		
+		//TODO: how can we test there's nothing on the server?
 	}
 
 }
