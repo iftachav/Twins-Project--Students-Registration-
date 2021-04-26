@@ -9,6 +9,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.web.client.RestTemplate;
 
 import twins.item.ItemBoundary;
+import twins.item.LocationBoundary;
 import twins.user.UserId;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -17,6 +18,11 @@ public class ItemTests {
 	private String space;
 	private String baseUrl;
 	private RestTemplate restTemplate;
+	
+	//dummy items variables
+	private String userEmail = "a@demo.com";
+	private String itemName = "demoItem";
+	private String itemType = "demoType";
 	
 	@LocalServerPort
 	public void setPort(int port) {
@@ -28,6 +34,10 @@ public class ItemTests {
 		this.restTemplate = new RestTemplate();
 		this.baseUrl = "localhost:" + this.port + "/twins";
 		this.space = "2021b.iftach.avraham";
+	}
+	
+	public void tearDown() {
+		this.restTemplate.delete(this.baseUrl + "/admin/items/{userSpace}/{userEmail}", this.space, this.userEmail);
 	}
 	
 	@Test
@@ -44,24 +54,42 @@ public class ItemTests {
 		 * 	And: our space 
 		 * */
 		
-		String url = this.baseUrl + "/items";
-		UserId userId = new UserId();
-		ItemBoundary item = new ItemBoundary();
-		ItemBoundary actualItem = restTemplate.postForObject(url + "/{userSpace}/{userEmail}", item, ItemBoundary.class, this.space, "x@x.com");
+		ItemBoundary item = new ItemBoundary(itemType, itemName, true, new LocationBoundary(1, 1));
+		ItemBoundary actualItem = restTemplate.postForObject(this.baseUrl + "/items/{userSpace}/{userEmail}", item, ItemBoundary.class, this.space, this.userEmail);
 		
 		assertThat(actualItem).isNotNull();
 		assertThat(actualItem.getItemId()).isNotNull();
-		assertThat(actualItem.getItemId().getSpace()).isEqualTo(space);
+		assertThat(actualItem.getItemId().getSpace()).isEqualTo(this.space);
+		assertThat(actualItem.getItemId().getId()).isNotNull();
+		assertThat(actualItem.getCreatedTimestamp()).isNotNull();
+		assertThat(actualItem.getType()).isEqualTo(itemType);
+		assertThat(actualItem.getName()).isEqualTo(itemName);
+		assertThat(actualItem.getCreatedTimestamp()).isNotNull();
+		assertThat(actualItem.getCreatedBy()).isNotNull();
+		assertThat(actualItem.getCreatedBy().getUserId()).isNotNull();
+		assertThat(actualItem.getCreatedBy().getUserId().getEmail()).isEqualTo(this.userEmail);
+		assertThat(actualItem.getCreatedBy().getUserId().getSpace()).isEqualTo(this.space);
 	}
 	
 	@Test
 	public void testUpdateItem() {
 		/* Given: the server is up 
 		 * And: the item is exist
-		 * When: we PUT to /items{userSpace}/{userEmail}/{itemSpace}/{itemId}
+		 * When: we PUT to /items/{userSpace}/{userEmail}/{itemSpace}/{itemId}
 		 * Then: the server will update an existing item
 		 * And: returns a msg with the updated item
 		 * */
+		String updatedType = "anotherDemoType";
+		String updatedName = "anotherDemoItem";
+		
+		ItemBoundary item = new ItemBoundary(itemType, itemName, true, new LocationBoundary(1, 1));
+		ItemBoundary actualItem = restTemplate.postForObject(this.baseUrl + "/items/{userSpace}/{userEmail}", item, ItemBoundary.class, this.space, this.userEmail);
+		
+		//PUT
+		String itemId = actualItem.getItemId().getId();
+		ItemBoundary updatedItem = new ItemBoundary(updatedType, updatedName, false);
+		this.restTemplate.put(baseUrl + "/items/{userSpace}/{userEmail}/{itemSpace}/{itemId}", updatedItem,
+				this.space, this.userEmail, this.space, itemId);
 	}
 	
 	@Test

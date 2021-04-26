@@ -7,7 +7,7 @@ import java.util.Map;
 //JSON{
 //	"itemId":{
 //		"space":string- "2021b.twins",
-//		"id":int- "99"
+//		"id":String- "99"
 //	},
 //	"type":"demoType",
 //	"name":"demo item",

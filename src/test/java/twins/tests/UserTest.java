@@ -12,6 +12,13 @@ import org.springframework.web.client.RestTemplate;
 import twins.user.NewUserDetails;
 import twins.user.UserBoundary;
 
+/*
+ * TODO: add tests for the following edge cases:
+ * 1. create a user with invalid mail/role/space
+ * 2. create a user with the same mail as an existing user but with different details
+ * 3. update space/mail/time stamp of an existing user
+ */
+
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class UserTest {
 
@@ -45,7 +52,7 @@ class UserTest {
 	
 	@AfterEach
 	public void tearDown() {
-		this.restTemplate.delete(this.baseUrl + "/admin/users/" + this.space + "/" + this.userEmail);
+		this.restTemplate.delete(this.baseUrl + "/admin/users/{userSpace}/{userEmail}", this.space, this.userEmail);
 	}
 	
 	@Test
@@ -106,7 +113,7 @@ class UserTest {
 		NewUserDetails newUser = new NewUserDetails(userEmail, userRole, username, userAvatar);
 		this.restTemplate.postForObject(url, newUser, UserBoundary.class);
 		
-		//POST changes
+		//PUT changes
 		url = this.baseUrl + "/users/" + this.space + "/" + this.userEmail;
 		UserBoundary updateUser = new UserBoundary(changedUserRole, changedUsername, changedUserAvatar);
 		this.restTemplate.put(url, updateUser);
