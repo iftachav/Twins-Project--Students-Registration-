@@ -4,9 +4,12 @@ package twins.tests;
 import javax.annotation.PostConstruct;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.web.client.RestTemplate;
 
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class UserTest {
 
 	private int port;
@@ -22,7 +25,7 @@ class UserTest {
 	@PostConstruct
 	public void initTest() {
 		this.restTemplate = new RestTemplate();
-		this.baseUrl = "localhost:" + this.port + "/twins";
+		this.baseUrl = "http://localhost:" + this.port + "/twins";
 		this.space = "2021b.iftach.avraham";
 	}
 	
@@ -36,6 +39,7 @@ class UserTest {
 		 * Then: the server will create a new user with the provided details and will store it in the DB
 		 * And: returns an UserBoundary with the provided details and initialized UserId 
 		 */
+		this.baseUrl += "/users";
 	}
 
 	@Test
