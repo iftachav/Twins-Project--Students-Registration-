@@ -1,6 +1,8 @@
 package twins.tests;
 
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import javax.annotation.PostConstruct;
 
 import org.junit.jupiter.api.Test;
@@ -9,6 +11,11 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.web.client.RestTemplate;
 
+import twins.data.UserEntity;
+import twins.data.UserRole;
+import twins.user.NewUserDetails;
+import twins.user.UserBoundary;
+
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class UserTest {
 
@@ -16,6 +23,12 @@ class UserTest {
 	private String space;
 	private String baseUrl;
 	private RestTemplate restTemplate;
+	
+	//dummy User variables
+	private String userEmail;
+	private String userRole;
+	private String username;
+	private String userAvatar;
 	
 	@LocalServerPort
 	public void setPort(int port) {
@@ -27,6 +40,11 @@ class UserTest {
 		this.restTemplate = new RestTemplate();
 		this.baseUrl = "http://localhost:" + this.port + "/twins";
 		this.space = "2021b.iftach.avraham";
+		
+		this.userEmail = "a@demo.com";
+		this.userRole = "PLAYER";
+		this.username = "user A";
+		this.userAvatar = "A";
 	}
 	
 	@Test
@@ -40,7 +58,14 @@ class UserTest {
 		 * And: returns an UserBoundary with the provided details and initialized UserId 
 		 */
 		this.baseUrl += "/users";
+		NewUserDetails newUser = new NewUserDetails(userEmail, userRole, username, userAvatar);
+		UserBoundary userBoundary = this.restTemplate.postForObject(this.baseUrl, newUser, UserBoundary.class);
+		assertThat(userBoundary).isNotNull();
+		assertThat(userBoundary.getUserId()).isNotNull();
+		assertThat(userBoundary.getUserId().getEmail()).isEqualTo(this.userEmail);
+		assertThat(userBoundary.getUserId().getSpace()).isEqualTo(this.space);
 	}
+
 
 	@Test
 	void testLoginAndRetrieve() {
@@ -49,6 +74,15 @@ class UserTest {
 		 * When: We send a GET request to /twins/users/login/{userSpace}/{userEmail} with the correct userSpace and existing userEmail
 		 * Then: the server will return a UserBoundary with the correct user details
 		 */
+		this.baseUrl += "/users/login/" + this.space + "/" + this.userEmail;
+		UserBoundary returnedUser = this.restTemplate.getForObject(this.baseUrl, UserBoundary.class);
+		assertThat(returnedUser).isNotNull();
+		assertThat(returnedUser.getUserId()).isNotNull();
+		assertThat(returnedUser.getUserId().getEmail()).isEqualTo(this.userEmail);
+		assertThat(returnedUser.getUserId().getSpace()).isEqualTo(this.space);
+		assertThat(returnedUser.getRole()).isEqualTo(this.userRole);
+		assertThat(returnedUser.getUsername()).isEqualTo(this.username);
+		assertThat(returnedUser.getAvatar()).isEqualTo(this.userAvatar);
 	}
 
 	@Test

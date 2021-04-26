@@ -22,6 +22,13 @@ public class UserBoundary {
 	public UserBoundary() {
 		this.userId = new UserId();
 	}
+	
+	public UserBoundary(String role, String username, String avatar) {
+		this.role = role;
+		this.username = username;
+		this.avatar = avatar;
+	}
+	
 	public UserId getUserId() {
 		return userId;
 	}
