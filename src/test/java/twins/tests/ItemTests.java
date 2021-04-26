@@ -125,7 +125,8 @@ public class ItemTests {
 				ItemBoundary.class, this.space, this.userEmail);
 		
 		String itemId = actualItem.getItemId().getId();
-		System.err.println("Test:" + itemId + "_" + this.space);
+		//System.err.println("Test:" + itemId + "_" + this.space);
+		
 		//GET
 		actualItem = restTemplate.getForObject(baseUrl + "/items/{userSpace}/{userEmail}/{itemSpace}/{itemId}", ItemBoundary.class,
 				this.space, this.userEmail, this.space, itemId);
