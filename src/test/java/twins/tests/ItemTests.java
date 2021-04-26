@@ -13,9 +13,12 @@ import twins.item.LocationBoundary;
 
 /*
  * TODO:
- * 1. update item with invalid values/null values
- * 2. update space/email/timeStamp of an existing item 
- * 3. get child/parent of an item
+ * 1. create an item with null/invalid values
+ * 2. update item with invalid values/null values
+ * 3. update space/email/timeStamp of an existing item 
+ * 4. get child/parent of an item
+ * 5. check the map of an existing item 
+ * How can we test there's nothing on the server after a DELETE?
  */
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -26,9 +29,9 @@ public class ItemTests {
 	private RestTemplate restTemplate;
 	
 	//dummy items variables
-	private String userEmail = "a@demo.com";
-	private String itemName = "demoItem";
-	private String itemType = "demoType";
+	private String userEmail;
+	private String itemName;
+	private String itemType;
 	
 	@LocalServerPort
 	public void setPort(int port) {
@@ -40,6 +43,10 @@ public class ItemTests {
 		this.restTemplate = new RestTemplate();
 		this.baseUrl = "http://localhost:" + this.port + "/twins";
 		this.space = "2021b.iftach.avraham";
+		
+		this.userEmail = "a@demo.com";
+		this.itemName  = "demoItem";
+		this.itemType  = "demoType";
 	}
 	
 	@AfterEach
@@ -183,7 +190,5 @@ public class ItemTests {
 				this.space, this.userEmail);
 		
 		this.restTemplate.delete(baseUrl + "/admin/items/{userSpace}/{userEmail}", this.space, this.userEmail);
-		
-		//TODO: how can we test there's nothing on the server?
 	}
 }

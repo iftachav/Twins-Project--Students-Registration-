@@ -14,9 +14,11 @@ import twins.user.UserBoundary;
 
 /*
  * TODO: add tests for the following edge cases:
- * 1. create a user with invalid mail/role/space
+ * 1. create a user with invalid mail/role/space/null values
  * 2. create a user with the same mail as an existing user but with different details
- * 3. update space/mail/time stamp of an existing user
+ * 3. update space/mail/timeStamp of an existing user
+ * 4. update a user with null/invalid values
+ * How can we test there's nothing on the server after a DELETE?
  */
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -164,8 +166,6 @@ class UserTest {
 		
 		url = this.baseUrl + "/admin/users/" + this.space + "/" + this.userEmail;
 		this.restTemplate.delete(url);
-		
-		//TODO: how can we test there's nothing on the server?
 	}
 
 }
