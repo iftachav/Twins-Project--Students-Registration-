@@ -14,10 +14,10 @@ import twins.user.UserBoundary;
 
 /*
  * TODO: add tests for the following edge cases:
- * 1. create a user with invalid mail/role/space/null values
- * 2. create a user with the same mail as an existing user but with different details
+ * 1. create a user with invalid mail/role/space/null values								(Done) -?
+ * 2. create a user with the same mail as an existing user but with different details		(Done) -?
  * 3. update space/mail/timeStamp of an existing user
- * 4. update a user with null/invalid values
+ * 4. update a user with null/invalid values												
  * How can we test there's nothing on the server after a DELETE?
  */
 
@@ -61,24 +61,65 @@ class UserTest {
 	public void testContext() throws Exception { }
 
 	@Test
-	void testCreateNewUser() {
+	public void testCreateNewUser() throws Exception {
 		/* Given: the server is up
 		 * When: we POST a valid NewUserDetails JSON to /twins/users
 		 * Then: the server will create a new user with the provided details and will store it in the DB
 		 * And: returns an UserBoundary with the provided details and initialized UserId 
 		 */
 		String url = this.baseUrl + "/users";
-		NewUserDetails newUser = new NewUserDetails(userEmail, userRole, username, userAvatar);
+		NewUserDetails newUser = new NewUserDetails(this.userEmail, this.userRole, this.username, this.userAvatar);
 		UserBoundary userBoundary = this.restTemplate.postForObject(url, newUser, UserBoundary.class);
 		assertThat(userBoundary).isNotNull();
 		assertThat(userBoundary.getUserId()).isNotNull();
 		assertThat(userBoundary.getUserId().getEmail()).isEqualTo(this.userEmail);
 		assertThat(userBoundary.getUserId().getSpace()).isEqualTo(this.space);
 	}
+	
+	@Test
+	public void testCreateNewUserWithInvalidValues() throws Exception {
+		String userMail = "invalid_mail";
+		String userRole = "INVALID";
+		
+		String url = this.baseUrl + "/users";
+		NewUserDetails newUser = new NewUserDetails(userMail, userRole, this.username, this.userAvatar);
+		
+		try {
+			UserBoundary userBoundary = this.restTemplate.postForObject(url, newUser, UserBoundary.class);
+			assertThat(userBoundary).overridingErrorMessage("Shouldn't be able to create a user with invalid values").isNull();
+		} catch(Exception e) { }
+	}
+	
+	@Test
+	public void testCreateNewUserWithNullValues() throws Exception {
+		NewUserDetails newUser = new NewUserDetails();
+		try {
+			UserBoundary userBoundary = this.restTemplate.postForObject(this.baseUrl + "/users", newUser, UserBoundary.class);
+			assertThat(userBoundary).overridingErrorMessage("Shouldn't be able to create a user with null values").isNull();
+		} catch(Exception e) { }
+	}
+	
+	@Test
+	public void testCreateNewUserExploit() throws Exception {
+		// create a user with the same mail as an existing user but with different details
+		String exploitUserRole = "ADMIN";
+		String exploitUsername = "exploit";
+		
+		String url = this.baseUrl + "/users";
+		NewUserDetails newUser = new NewUserDetails(this.userEmail, this.userRole, this.username, this.userAvatar);
+		UserBoundary userBoundary = this.restTemplate.postForObject(url, newUser, UserBoundary.class);
+		
+		newUser = new NewUserDetails(this.userEmail, exploitUserRole, exploitUsername, this.userAvatar);
+		try {
+			userBoundary = this.restTemplate.postForObject(url, newUser, UserBoundary.class);
+			assertThat(userBoundary).overridingErrorMessage("Shoudn't be able to create a user with the same userEmail as an existing user");
+			assertThat(userBoundary.getRole()).isNotEqualTo(exploitUserRole);
+		} catch (Exception e) { }
+	}
 
 
 	@Test
-	void testLoginAndRetrieve() {
+	public void testLoginAndRetrieve() throws Exception {
 		/* Given: The server is up
 		 * And: There is at least 1 user in the DB
 		 * When: We send a GET request to /twins/users/login/{userSpace}/{userEmail} with the correct userSpace and existing userEmail
@@ -101,7 +142,7 @@ class UserTest {
 	}
 
 	@Test
-	void testUpdateUserDetails() {
+	public void testUpdateUserDetails() throws Exception {
 		/* Given: The server is up
 		 * And: There is at least 1 user in the DB
 		 * When: we send a PUT request to /twins/users/{userSpace}/{userEmail} with a valid user details containing a JSON with valid data
@@ -133,7 +174,7 @@ class UserTest {
 	}
 
 	@Test
-	void testExportAllUsers() {
+	public void testExportAllUsers() throws Exception {
 		/* Given: The server is up
 		 * When: we send a GET request to /twins/admin/users/{userSpace}/{userEmail} 
 		 * Then: The server will returns all the Users in the DB as array of UserBoundary
@@ -157,7 +198,7 @@ class UserTest {
 	}
 	
 	@Test
-	void testDeleteAllUsers() {
+	public void testDeleteAllUsers() throws Exception {
 		/* Given: The server is up
 		 * And: There is at least 1 user in the DB
 		 * When: we send a DELETE request to /twins/admin/users/{userSpace}/{userEmail} 

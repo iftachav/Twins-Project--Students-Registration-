@@ -86,7 +86,7 @@ public class ItemTests {
 	}
 	
 	@Test
-	public void testUpdateItem() {
+	public void testUpdateItem() throws Exception {
 		/* Given: the server is up 
 		 * And: the item is exist
 		 * When: we PUT to /items/{userSpace}/{userEmail}/{itemSpace}/{itemId}
@@ -124,7 +124,7 @@ public class ItemTests {
 	}
 	
 	@Test
-	public void testGetSpecificItem() {
+	public void testGetSpecificItem() throws Exception {
 		/* Given: the server is up
 		 * And: there are items in the DB
 		 * And: we look for an existing item
@@ -154,7 +154,7 @@ public class ItemTests {
 	}
 	
 	@Test
-	public void testGetAllItems() {
+	public void testGetAllItems() throws Exception {
 		/* Given: the server is up
 		 * When: we GET to items/{userSpace}/{userEmail}
 		 * Then: the server will returns all the items stored in the DB 
@@ -179,7 +179,7 @@ public class ItemTests {
 	}
 	
 	@Test
-	public void testDeleteAllItems() {
+	public void testDeleteAllItems() throws Exception {
 		/* Given: the server is up
 		 * And: there're Items in the DB
 		 * When: we DELETE to /admin/items/{userSpace}/{userEmail}
