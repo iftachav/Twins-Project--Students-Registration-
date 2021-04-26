@@ -6,6 +6,11 @@ package twins.item;
 //}
 
 public class ItemIdBoundary {
+	@Override
+	public String toString() {
+		return "ItemIdBoundary [space=" + space + ", id=" + id + "]";
+	}
+
 	private String space;
 	private String id;
 

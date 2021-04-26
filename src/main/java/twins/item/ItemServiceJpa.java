@@ -79,8 +79,8 @@ public class ItemServiceJpa implements UpdatedItemService{
 		if(update==null)
 			throw new BadRequestException();
 		
-		String id = itemSpace + "_" + itemId;
-		Optional<ItemEntity> entityOptional =  itemDao.findById(id);
+//		String id = itemSpace + "_" + itemId;
+		Optional<ItemEntity> entityOptional =  itemDao.findById(itemId);
 		
 		if(!entityOptional.isPresent())
 			throw new NotFoundException("Item id " + itemId + " doesn't exist");
@@ -124,8 +124,8 @@ public class ItemServiceJpa implements UpdatedItemService{
 	@Override
 	@Transactional(readOnly = true)
 	public ItemBoundary getSpecificItem(String userSpace, String userEmail, String itemSpace, String itemId) {	
-		String id = itemSpace + "_" + itemId;
-		Optional<ItemEntity> optionalItem = this.itemDao.findById(id);
+//		String id = itemSpace + "_" + itemId;
+		Optional<ItemEntity> optionalItem = this.itemDao.findById(itemId);
 
 		if(!optionalItem.isPresent())
 			throw new NotFoundException("Item id " + itemId + " doesn't exist");

@@ -101,7 +101,9 @@ public class ItemTests {
 				ItemBoundary.class, this.space, this.userEmail);
 		
 		//PUT
-		String itemId = actualItem.getItemId().getId().split("_")[1];
+//		String itemId = actualItem.getItemId().getId().split("_")[1];
+		String itemId = actualItem.getItemId().getId();
+		
 		ItemBoundary updatedItem = new ItemBoundary(updatedType, updatedName, false);
 		this.restTemplate.put(baseUrl + "/items/{userSpace}/{userEmail}/{itemSpace}/{itemId}", updatedItem,
 				this.space, this.userEmail, this.space, itemId);
@@ -135,7 +137,7 @@ public class ItemTests {
 		ItemBoundary actualItem = restTemplate.postForObject(this.baseUrl + "/items/{userSpace}/{userEmail}", item, 
 				ItemBoundary.class, this.space, this.userEmail);
 		
-		String itemId = actualItem.getItemId().getId().split("_")[1];
+		String itemId = actualItem.getItemId().getId();
 		
 		//GET
 		actualItem = restTemplate.getForObject(baseUrl + "/items/{userSpace}/{userEmail}/{itemSpace}/{itemId}", ItemBoundary.class,

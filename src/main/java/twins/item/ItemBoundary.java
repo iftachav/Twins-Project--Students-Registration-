@@ -32,6 +32,13 @@ import java.util.Map;
 //}
 
 public class ItemBoundary {
+	@Override
+	public String toString() {
+		return "ItemBoundary [itemId=" + itemId + ", type=" + type + ", name=" + name + ", active=" + active
+				+ ", createdTimestamp=" + createdTimestamp + ", createdBy=" + createdBy + ", location=" + location
+				+ ", itemAttributes=" + itemAttributes + "]";
+	}
+
 	private ItemIdBoundary itemId;
 	private String type;
 	private String name;
