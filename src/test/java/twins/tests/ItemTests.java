@@ -2,17 +2,21 @@ package twins.tests;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import javax.annotation.PostConstruct;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.web.client.RestTemplate;
-
 import twins.item.ItemBoundary;
 import twins.item.LocationBoundary;
-import twins.user.UserId;
+
+/*
+ * TODO:
+ * 1. update item with invalid values/null values
+ * 2. update space/email/timeStamp of an existing item 
+ * 3. get child/parent of an item
+ */
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class ItemTests {
@@ -90,7 +94,7 @@ public class ItemTests {
 				ItemBoundary.class, this.space, this.userEmail);
 		
 		//PUT
-		String itemId = actualItem.getItemId().getId();
+		String itemId = actualItem.getItemId().getId().split("_")[1];
 		ItemBoundary updatedItem = new ItemBoundary(updatedType, updatedName, false);
 		this.restTemplate.put(baseUrl + "/items/{userSpace}/{userEmail}/{itemSpace}/{itemId}", updatedItem,
 				this.space, this.userEmail, this.space, itemId);
@@ -124,8 +128,7 @@ public class ItemTests {
 		ItemBoundary actualItem = restTemplate.postForObject(this.baseUrl + "/items/{userSpace}/{userEmail}", item, 
 				ItemBoundary.class, this.space, this.userEmail);
 		
-		String itemId = actualItem.getItemId().getId();
-		//System.err.println("Test:" + itemId + "_" + this.space);
+		String itemId = actualItem.getItemId().getId().split("_")[1];
 		
 		//GET
 		actualItem = restTemplate.getForObject(baseUrl + "/items/{userSpace}/{userEmail}/{itemSpace}/{itemId}", ItemBoundary.class,
@@ -180,5 +183,7 @@ public class ItemTests {
 				this.space, this.userEmail);
 		
 		this.restTemplate.delete(baseUrl + "/admin/items/{userSpace}/{userEmail}", this.space, this.userEmail);
+		
+		//TODO: how can we test there's nothing on the server?
 	}
 }
