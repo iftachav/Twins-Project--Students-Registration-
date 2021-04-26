@@ -4,6 +4,7 @@ package twins.item;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -51,14 +52,14 @@ public class ItemServiceJpa implements UpdatedItemService{
 				
 		if(item==null)
 			throw new BadRequestException("item can't be null");
-		if(item.getItemId()==null)
-			throw new BadRequestException("ItemId can't be null");
-		if(item.getItemId().getSpace()==null)
-			throw new BadRequestException("space (of ItemId) can't be null");
-		if(item.getItemId().getId()==null)
-			throw new BadRequestException("id (of ItemId) can't be null");
+//		if(item.getItemId()==null)
+//			throw new BadRequestException("ItemId can't be null");
+//		if(item.getItemId().getSpace()==null)
+//			throw new BadRequestException("space (of ItemId) can't be null");
+//		if(item.getItemId().getId()==null)
+//			throw new BadRequestException("id (of ItemId) can't be null");
 		
-		String newId = this.space + "_" + item.getItemId().getId();
+		String newId = this.space + "_" + UUID.randomUUID().toString();//item.getItemId().getId();
 			
 		ItemEntity entity = this.itemEntityConverter.toEntity(item);
 		entity.setId(newId);
