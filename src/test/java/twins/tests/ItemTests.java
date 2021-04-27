@@ -159,7 +159,7 @@ public class ItemTests {
 	public void testGetAllItems() throws Exception {
 		/* Given: the server is up
 		 * When: we GET to items/{userSpace}/{userEmail}
-		 * Then: the server will returns all the items stored in the DB 
+		 * Then: the server will return all the items stored in the DB 
 		 */
 		String anotherItemType = "anotherDemoType";
 		String anotherItemName = "anotherItemName";
