@@ -49,12 +49,12 @@ public class OperationBoundary {
 		this.operationAttributes = new HashMap<>();
 	}
 	
-	public OperationBoundary(ItemWrapper item, UserIdWrapper invokedBy, Map<String, Object> attributes) {
+	public OperationBoundary(ItemWrapper item, UserIdWrapper invokedBy) {
 		this.operationId = new OperationId();
 		this.createdTimestamp = new Date();
 		this.item = item;
 		this.invokedBy = invokedBy;
-		this.operationAttributes = attributes;
+		this.operationAttributes = new HashMap<>();
 	}
 
 	public OperationId getOperationId() {

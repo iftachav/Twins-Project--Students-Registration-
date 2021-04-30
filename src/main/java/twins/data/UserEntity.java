@@ -10,7 +10,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name="USERS")
 public class UserEntity {
-	private String email;	//email: email@@space
+	private String emailAndSpace;	//email: email@@space
 	private String role;
 	private String username;
 	private String avatar;
@@ -20,11 +20,11 @@ public class UserEntity {
 	
 	@Id
 	public String getEmail() {
-		return email;
+		return emailAndSpace;
 	}
 
 	public void setEmail(String email) {
-		this.email = email;
+		this.emailAndSpace = email;
 	}
 
 	public String getRole() {

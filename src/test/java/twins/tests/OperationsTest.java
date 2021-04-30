@@ -1,5 +1,7 @@
 package twins.tests;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import javax.annotation.PostConstruct;
 
 import org.junit.jupiter.api.AfterEach;
@@ -69,7 +71,9 @@ public class OperationsTest {
 		UserIdWrapper userWrapper = new UserIdWrapper();
 		userWrapper.setUserId(userId);
 		
-		OperationBoundary operation = new OperationBoundary()
+		OperationBoundary operation = new OperationBoundary(itemWrapper, userWrapper);
+		OperationBoundary returnedOperation = this.restTemplate.postForObject(this.baseUrtl + "/operations", operation, 
+				OperationBoundary.class);
 	}
 	
 	@Test @Disabled

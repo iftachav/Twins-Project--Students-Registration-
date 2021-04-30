@@ -47,8 +47,12 @@ public class UserServiceJPA implements UsersService{
 			throw new BadRequestException("Invalid User data");
 		if(user.getAvatar() == null)
 			throw new BadRequestException("User avatar can't be null");
+		if(user.getAvatar().equals(""))
+			throw new BadRequestException("User avatar can't be an empty string");
 		if(user.getUsername() == null)
 			throw new BadRequestException("Username can't be null");
+		if(user.getUsername().equals(""))
+			throw new BadRequestException("Username can't be an empty string");
 		if(user.getRole() == null || !checkUserRole(user.getRole()))
 			throw new BadRequestException("Invalid Role");
 		if(!checkEmail(user.getUserId().getEmail()))
