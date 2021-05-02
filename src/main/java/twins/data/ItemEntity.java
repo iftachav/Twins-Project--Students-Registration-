@@ -9,7 +9,6 @@ import javax.persistence.*;
 @Table(name="ITEMS")
 public class ItemEntity {
 	private String itemSpace;
-	@Column(name="ITEM_ID")
 	private String id;
 	private String type;
 	private String name;
@@ -41,6 +40,7 @@ public class ItemEntity {
 	}
 	
 	@Id
+	@Column(name="ITEM_ID")
 	public String getId() {
 		return id;
 	}
@@ -74,6 +74,7 @@ public class ItemEntity {
 	}
 
 	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name="ITEM_TIMESTAMP")
 	public Date getTimestamp() {
 		return timestamp;
 	}
@@ -123,7 +124,7 @@ public class ItemEntity {
 		this.itemAttributes = itemAttributes;
 	}
 	
-	@ManyToMany(cascade={CascadeType.ALL})
+	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name="Items_Many2Many",
 		joinColumns={@JoinColumn(name="parent")},
 		inverseJoinColumns={@JoinColumn(name="child")})
