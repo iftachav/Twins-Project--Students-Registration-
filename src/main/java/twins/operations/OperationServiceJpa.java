@@ -56,13 +56,14 @@ public class OperationServiceJpa implements OperationService{
 		if(!checkEmail(operation.getInvokedBy().getUserId().getEmail()))
 			throw new BadRequestException("Email Is Not Valid.");
 		
-		if(operation.getItem() == null || operation.getItem().getItemId() == null || operation.getItem().getItemId().getId() == null)
+		if(operation.getItem() == null || operation.getItem().getItemId() == null|| operation.getItem().getItemId().getId()== null || operation.getItem().getItemId().getId().equals("") || operation.getItem().getItemId().getId() == null)
 			throw new BadRequestException("Null Item Element Received.");
 		
 		operation.getItem().getItemId().setSpace(springApplicationName);
 		String newId= UUID.randomUUID().toString()+"_"+this.springApplicationName;
 		operation.getOperationId().setId(newId);
 		operation.getOperationId().setSpace(springApplicationName);
+		//TODO switch case
 		OperationEntity op = operationEntityConverter.fromBoundary(operation);
 		operationDao.save(op);
 		return operationEntityConverter.toBoundary(op);
@@ -81,11 +82,8 @@ public class OperationServiceJpa implements OperationService{
 		operation.getInvokedBy().getUserId().setSpace(springApplicationName);
 		if(!checkEmail(operation.getInvokedBy().getUserId().getEmail()))
 			throw new BadRequestException("Email Is Not Valid.");
-		if(operation.getItem() == null || operation.getItem().getItemId() == null || operation.getItem().getItemId().getId() == null)
+		if(operation.getItem() == null || operation.getItem().getItemId() == null|| operation.getItem().getItemId().getId()== null|| operation.getItem().getItemId().getId().equals("") || operation.getItem().getItemId().getId() == null)
 			throw new BadRequestException("Null Item Element Received.");
-		//TODO to ask eyal.
-		if(!(operation.getItem().getItemId().getSpace().equals(operation.getInvokedBy().getUserId().getSpace())))
-			throw new ForbiddenRequestException("User space and Item space is not the same.");
 		operation.getItem().getItemId().setSpace(springApplicationName);
 		String newId= UUID.randomUUID().toString()+"_"+this.springApplicationName;
 		operation.getOperationId().setId(newId);
