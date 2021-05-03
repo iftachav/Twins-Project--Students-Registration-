@@ -26,9 +26,7 @@ public class ItemServiceJpa implements UpdatedItemService{
 	private ItemConverter itemEntityConverter;
 	private String space;
 	
-	public ItemServiceJpa() {
-		
-	}
+	public ItemServiceJpa() {	}
 
 	@Autowired
 	public void setItemDao(ItemDao itemDao) {
