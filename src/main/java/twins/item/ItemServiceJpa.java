@@ -1,7 +1,9 @@
 package twins.item;
 
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -14,7 +16,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import twins.dal.ItemDao;
+import twins.dal.UserDao;
 import twins.data.ItemEntity;
+import twins.data.UserEntity;
 import twins.errors.BadRequestException;
 import twins.errors.NotFoundException;
 import twins.logic.ItemConverter;
@@ -22,12 +26,18 @@ import twins.logic.UpdatedItemService;
 
 @Service
 public class ItemServiceJpa implements UpdatedItemService{
+	private UserDao userDao;
 	private ItemDao itemDao;
 	private ItemConverter itemEntityConverter;
 	private String space;
 	
 	public ItemServiceJpa() {	}
 
+	@Autowired
+	public void setUserDao(UserDao userDao) {
+		this.userDao = userDao;
+	}
+	
 	@Autowired
 	public void setItemDao(ItemDao itemDao) {
 		this.itemDao = itemDao;
@@ -47,7 +57,14 @@ public class ItemServiceJpa implements UpdatedItemService{
 	@Override
 	@Transactional
 	public ItemBoundary createItem(String userSpace, String userEmail, ItemBoundary item) {
-				
+		Optional<UserEntity> entityOptional =  userDao.findById(userEmail + "@@" + this.space);
+		if(!entityOptional.isPresent())
+			throw new NotFoundException("User doesn't exist");
+		if(!entityOptional.get().getRole().equals("MANAGER")) {
+			throw new BadRequestException("Only manager can create item.");
+		}
+		
+		
 		if(item==null)
 			throw new BadRequestException("item can't be null");
 		
@@ -83,6 +100,12 @@ public class ItemServiceJpa implements UpdatedItemService{
 			ItemBoundary update) {
 		if(update==null)
 			throw new BadRequestException();
+		Optional<UserEntity> userOptional =  userDao.findById(userEmail + "@@" + this.space);
+		if(!userOptional.isPresent())
+			throw new NotFoundException("User doesn't exist");
+		if(!userOptional.get().getRole().equals("MANAGER")) {
+			throw new BadRequestException("Only manager can update item.");
+		}
 		
 //		String id = itemSpace + "_" + itemId;
 		Optional<ItemEntity> entityOptional =  itemDao.findById(itemId);
@@ -118,17 +141,59 @@ public class ItemServiceJpa implements UpdatedItemService{
 	@Override
 	@Transactional(readOnly = true)
 	public List<ItemBoundary> getAllItems(String userSpace, String userEmail) {
-		Iterable<ItemEntity>  allEntities = this.itemDao.findAll();
-
-		return StreamSupport
-				.stream(allEntities.spliterator(), false) 
+		boolean onlyActive=false;
+		Optional<UserEntity> entityOptional =  userDao.findById(userEmail + "@@" + this.space);
+		if(!entityOptional.isPresent())
+			throw new NotFoundException("User doesn't exist");
+		if(entityOptional.get().getRole().equals("ADMIN")) {
+			throw new BadRequestException("Admins can't get all items.");
+		}
+		if(entityOptional.get().getRole().equals("PLAYER")) {
+			onlyActive=true;
+		}
+		
+		
+		
+		Iterable<ItemEntity>  allEntities;
+		allEntities = this.itemDao.findAll();
+//
+//		return StreamSupport
+//				.stream(allEntities.spliterator(), false) 
+//				.map(this.itemEntityConverter::toBoundary)
+//				.collect(Collectors.toList());
+		
+	    ArrayList<ItemBoundary> list1= new ArrayList<ItemBoundary>();
+	    list1=(ArrayList<ItemBoundary>) StreamSupport.stream(allEntities.spliterator(), false) 
 				.map(this.itemEntityConverter::toBoundary)
 				.collect(Collectors.toList());
+	    if(onlyActive) {
+		    ArrayList<ItemBoundary> list2= new ArrayList<ItemBoundary>();
+	    	for (Iterator<ItemBoundary> iterator = list1.iterator(); iterator.hasNext();) {
+				ItemBoundary itemBoundary = (ItemBoundary) iterator.next();
+				if(itemBoundary.getActive())
+					list2.add(itemBoundary);
+			}
+	    	return list2;
+	    }
+	    return list1;
 	}
 
 	@Override
 	@Transactional(readOnly = true)
 	public ItemBoundary getSpecificItem(String userSpace, String userEmail, String itemSpace, String itemId) {	
+		boolean onlyActive=false;
+		Optional<UserEntity> entityOptional =  userDao.findById(userEmail + "@@" + this.space);
+		if(!entityOptional.isPresent())
+			throw new NotFoundException("User doesn't exist");
+		if(entityOptional.get().getRole().equals("ADMIN")) {
+			throw new BadRequestException("Admins can't get a specific item.");
+		}
+		if(entityOptional.get().getRole().equals("PLAYER")) {
+			onlyActive=true;
+		}
+		
+		
+		
 //		String id = itemSpace + "_" + itemId;
 		Optional<ItemEntity> optionalItem = this.itemDao.findById(itemId);
 
@@ -137,11 +202,29 @@ public class ItemServiceJpa implements UpdatedItemService{
 		
 		ItemBoundary boundary = itemEntityConverter.toBoundary(optionalItem.get());
 		
+		
+		
+		
+		if(onlyActive) {
+			if(!boundary.getActive())
+				throw new BadRequestException("Player can get only active items.");
+		}
+		
+		
+		
+		
 		return boundary;
+
 	}
 
 	@Override
 	public void deleteAllItems(String adminSpace, String adminEmail) {
+		Optional<UserEntity> entityOptional =  userDao.findById(adminEmail + "@@" + this.space);
+		if(!entityOptional.isPresent())
+			throw new NotFoundException("User doesn't exist");
+		if(!entityOptional.get().getRole().equals("ADMIN")) {
+			throw new BadRequestException("Only admins can delete all items.");
+		}
 		this.itemDao.deleteAll();
 	}
 
