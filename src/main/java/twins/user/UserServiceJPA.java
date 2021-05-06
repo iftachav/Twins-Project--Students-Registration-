@@ -120,6 +120,12 @@ public class UserServiceJPA implements UsersService{
 	@Override
 	@Transactional(readOnly = true)
 	public List<UserBoundary> getAllUsers(String adminSpace, String adminEmail) {
+		Optional<UserEntity> entityOptional =  userDao.findById(adminEmail + "@@" + this.springApplicationName);
+		if(!entityOptional.isPresent())
+			throw new NotFoundException("User doesn't exist");
+		if(!entityOptional.get().getRole().equals("ADMIN")) {
+			throw new BadRequestException("Only admins can get all users.");
+		}
 		Iterable<UserEntity> users = this.userDao.findAll();
 		return StreamSupport.stream(users.spliterator(), false).map(this.userEntityConverter::toBoundary)
 				.collect(Collectors.toList());
@@ -128,6 +134,12 @@ public class UserServiceJPA implements UsersService{
 	@Override
 	@Transactional
 	public void deleteAllUsers(String adminSpace, String adminEmail) {
+		Optional<UserEntity> entityOptional =  userDao.findById(adminEmail + "@@" + this.springApplicationName);
+		if(!entityOptional.isPresent())
+			throw new NotFoundException("User doesn't exist");
+		if(!entityOptional.get().getRole().equals("ADMIN")) {
+			throw new BadRequestException("Only admins can delete all users.");
+		}
 		this.userDao.deleteAll();
 	}
 	
