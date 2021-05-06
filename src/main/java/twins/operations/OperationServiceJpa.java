@@ -29,7 +29,6 @@ public class OperationServiceJpa implements OperationService{
 	private UserDao userDao;
 	private ItemDao itemDao;
 	private OperationDao operationDao;
-	private OperationHandler operationHandler;
 	private OperationEntityConverter operationEntityConverter;
 	private String springApplicationName;
 	
@@ -53,11 +52,6 @@ public class OperationServiceJpa implements OperationService{
 	@Autowired
 	public void setEntityConverter(OperationEntityConverter entityConverter) {
 		this.operationEntityConverter = entityConverter;
-	}
-	
-	@Autowired
-	public void setOprationHandler(OperationHandler operationHandler) {
-		this.operationHandler = operationHandler;
 	}
 
 	@Value("${spring.application.name:2021b.iftach.avraham}")
@@ -100,12 +94,6 @@ public class OperationServiceJpa implements OperationService{
 		
 		String newId= UUID.randomUUID().toString()+"_"+this.springApplicationName;
 		
-//		operation.setCreatedTimestamp(new Date());
-//		operation.getInvokedBy().getUserId().setSpace(springApplicationName);
-//		operation.getItem().getItemId().setSpace(springApplicationName);
-//		operation.getOperationId().setId(newId);
-//		operation.getOperationId().setSpace(springApplicationName);
-		
 		OperationEntity entity = operationEntityConverter.fromBoundary(operation);
 		entity.setCreatedTimestamp(new Date());
 		entity.setOperationSpace(springApplicationName);
@@ -113,8 +101,6 @@ public class OperationServiceJpa implements OperationService{
 //		entity.setUserSpace(springApplicationName);		//?
 		entity.setOperationId(newId);
 		entity.setOperationSpace(springApplicationName);
-		
-		//operationHandler.handle(entity.getType());
 		
 		operationDao.save(entity);
 		return operationEntityConverter.toBoundary(entity);
@@ -155,12 +141,6 @@ public class OperationServiceJpa implements OperationService{
 		
 		String newId= UUID.randomUUID().toString()+"_"+this.springApplicationName;
 		
-//		operation.setCreatedTimestamp(new Date());
-//		operation.getInvokedBy().getUserId().setSpace(springApplicationName);
-//		operation.getItem().getItemId().setSpace(springApplicationName);
-//		operation.getOperationId().setId(newId);
-//		operation.getOperationId().setSpace(springApplicationName);
-		
 		OperationEntity entity = operationEntityConverter.fromBoundary(operation);
 		entity.setCreatedTimestamp(new Date());
 		entity.setOperationSpace(springApplicationName);
@@ -170,6 +150,8 @@ public class OperationServiceJpa implements OperationService{
 		entity.setOperationSpace(springApplicationName);
 		
 		//TODO switch case
+		handle(entity);
+		
 		operationDao.save(entity);
 		return operationEntityConverter.toBoundary(entity);
 	}
@@ -223,4 +205,22 @@ public class OperationServiceJpa implements OperationService{
 		return true;
 	}
 	
+	private void handle(OperationEntity operation) {
+		//operationHandler.handle(entity.getType());
+		if(operation.getType().equals(OperationTypes.registerToCourse.toString())) {
+			//convert user to item?
+			//add the Student item to the Course item
+		} else if(operation.getType().equals(OperationTypes.resignFromCourse.toString())){
+			//convert user to item
+			//search parent item (Course) for students
+			//remove Student item from parent 
+		} else if(operation.getType().equals(OperationTypes.removeCourse.toString())) {
+			//search for item
+			//remove item
+		} else if(operation.getType().equals(OperationTypes.updateGrade.toString())) {
+			//search for item Course
+			//search for child item (Student)
+			//update grade
+		}
+	}
 }
