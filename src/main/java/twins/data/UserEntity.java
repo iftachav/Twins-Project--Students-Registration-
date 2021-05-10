@@ -19,11 +19,11 @@ public class UserEntity {
 	}
 	
 	@Id
-	public String getEmail() {
+	public String getEmailAndSpace() {
 		return emailAndSpace;
 	}
 
-	public void setEmail(String email) {
+	public void setEmailAndSpace(String email) {
 		this.emailAndSpace = email;
 	}
 
@@ -49,6 +49,14 @@ public class UserEntity {
 
 	public void setAvatar(String avatar) {
 		this.avatar = avatar;
+	}
+	
+	public String getEmail() {
+		return this.emailAndSpace.split("@@")[0];
+	}
+	
+	public String getSpace() {
+		return this.emailAndSpace.split("@@")[1];
 	}
 	
 }

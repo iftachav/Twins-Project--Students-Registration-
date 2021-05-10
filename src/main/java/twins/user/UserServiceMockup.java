@@ -50,7 +50,7 @@ public class UserServiceMockup implements UsersService {
 		user.getUserId().setSpace(springApplicationName);
 		UserEntity entity = this.userEntityConverter.fromBoundary(user);
 		//Doesn't need UUID because each user has different mail.
-		String newId= /*UUID.randomUUID().toString()+*/entity.getEmail();
+		String newId= /*UUID.randomUUID().toString()+*/entity.getEmailAndSpace();
 		this.users.put(newId, entity);
 		return this.userEntityConverter.toBoundary(entity);
 	}
@@ -75,10 +75,10 @@ public class UserServiceMockup implements UsersService {
 			throw new RuntimeException("Role is not one of the enum options");
 		UserEntity entity=null;
 		for(Map.Entry<String, UserEntity> current : users.entrySet()) {
-			if(current.getValue().getEmail().split("@@")[0].equals(userEmail) 
-					&& current.getValue().getEmail().split("@@")[1].equals(userSpace)) {
+			if(current.getValue().getEmailAndSpace().split("@@")[0].equals(userEmail) 
+					&& current.getValue().getEmailAndSpace().split("@@")[1].equals(userSpace)) {
 				entity=userEntityConverter.fromBoundary(update);
-				entity.setEmail(current.getValue().getEmail());
+				entity.setEmailAndSpace(current.getValue().getEmailAndSpace());
 				//entity.setSpace(current.getValue().getSpace());
 				current.setValue(entity);
 				break;

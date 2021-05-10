@@ -2,6 +2,7 @@ package twins.operations;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -22,6 +23,7 @@ import twins.errors.ForbiddenRequestException;
 import twins.errors.NotFoundException;
 import twins.logic.OperationEntityConverter;
 import twins.logic.OperationService;
+import twins.logic.UserItemConverter;
 
 
 @Service
@@ -29,6 +31,7 @@ public class OperationServiceJpa implements OperationService{
 	private UserDao userDao;
 	private ItemDao itemDao;
 	private OperationDao operationDao;
+	private UserItemConverter userToItemConverter;
 	private OperationEntityConverter operationEntityConverter;
 	private String springApplicationName;
 	
@@ -47,6 +50,11 @@ public class OperationServiceJpa implements OperationService{
 	@Autowired
 	public void setItemDao(ItemDao itemDao) {
 		this.itemDao = itemDao;
+	}
+	
+	@Autowired
+	public void setUserToItemConverter(UserItemConverter userItemConverter) {
+		this.userToItemConverter = userItemConverter;
 	}
 	
 	@Autowired
@@ -102,6 +110,7 @@ public class OperationServiceJpa implements OperationService{
 		entity.setOperationId(newId);
 		entity.setOperationSpace(springApplicationName);
 		
+		handleOperation(entity, optionalItem.get(), user);
 		operationDao.save(entity);
 		return operationEntityConverter.toBoundary(entity);
 	}
@@ -150,7 +159,7 @@ public class OperationServiceJpa implements OperationService{
 		entity.setOperationSpace(springApplicationName);
 		
 		//TODO switch case
-		handle(entity);
+		//handle(entity);
 		
 		operationDao.save(entity);
 		return operationEntityConverter.toBoundary(entity);
@@ -205,18 +214,56 @@ public class OperationServiceJpa implements OperationService{
 		return true;
 	}
 	
-	private void handle(OperationEntity operation) {
-		//operationHandler.handle(entity.getType());
+	/*
+	 * TODO
+	 * fixes:
+	 * A student can register himself more than once to the same course
+	 */
+	private void handleOperation(OperationEntity operation, ItemEntity item, UserEntity user) {
 		if(operation.getType().equals(OperationTypes.registerToCourse.toString())) {
-			//convert user to item?
+			//convert user to item
 			//add the Student item to the Course item
+			
+			//register invoker
+			if(operation.getOperationAttributes() == null || operation.getOperationAttributes().equals(""))
+				item.addChild(this.userToItemConverter.UserToItem(user));
+			else {	
+				//register all users passed as OperationAttributes
+				Map<String, Object> users = operationEntityConverter.fromJsonToMap(operation.getOperationAttributes());
+				users.entrySet()
+					.stream()
+					.forEach(e -> {item.addChild(this.userToItemConverter.UserToItem((UserEntity) e.getValue())); });
+			}
+				
 		} else if(operation.getType().equals(OperationTypes.resignFromCourse.toString())){
 			//convert user to item
 			//search parent item (Course) for students
 			//remove Student item from parent 
+			
+			//remove invoker
+			if(operation.getOperationAttributes() == null || operation.getOperationAttributes().equals(""))
+				item.getChildren()
+					.stream()
+					.filter(e-> {return e.getItemSpace().equals(user.getSpace()) && e.getUserEmail().equals(user.getEmail()); })
+					.forEach(e-> e.setActive(false));
+			else {
+				//remove all users passed as OperationAttributes
+				Map<String, Object> users = operationEntityConverter.fromJsonToMap(operation.getOperationAttributes());
+				users.entrySet()
+					.stream()
+					.forEach(userEntry->{
+						item.getChildren()
+						.stream()
+						.filter(e-> {return e.getItemSpace().equals(((UserEntity) userEntry.getValue()).getSpace()) && 
+							e.getUserEmail().equals(((UserEntity) userEntry.getValue()).getEmail()); })
+						.forEach(e-> e.setActive(false));
+					});
+			}
 		} else if(operation.getType().equals(OperationTypes.removeCourse.toString())) {
 			//search for item
 			//remove item
+			List<ItemEntity> courses = itemDao.findAllById(operation.getItemId());
+			courses.stream().forEach(e-> e.setActive(false));
 		} else if(operation.getType().equals(OperationTypes.updateGrade.toString())) {
 			//search for item Course
 			//search for child item (Student)
