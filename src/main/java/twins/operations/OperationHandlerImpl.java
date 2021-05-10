@@ -1,12 +1,12 @@
 package twins.operations;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
+import java.util.stream.StreamSupport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import twins.dal.ItemDao;
 import twins.data.ItemEntity;
 import twins.data.OperationEntity;
@@ -145,8 +145,16 @@ public class OperationHandlerImpl implements OperationHandler{
 
 	@Override
 	public List<ItemBoundary> getStudentsCourses(OperationEntity operation, UserEntity user) {
-		// TODO Auto-generated method stub
-		return null;
+		Iterable<ItemEntity> items = this.itemDao.findAll();
+		List<ItemEntity> courses = StreamSupport.stream(items.spliterator(), false).collect(Collectors.toList());
+		
+		List<ItemEntity> userCourses = new ArrayList<>();
+		for (ItemEntity course : courses) {
+			for(ItemEntity student : course.getChildren())
+				if(student.isActive() && student.getName().equals(user.getEmail()))
+					userCourses.add(course);
+		}
+		return userCourses.stream().map(this.itemConverter::toBoundary).collect(Collectors.toList());
 	}
 	
 }

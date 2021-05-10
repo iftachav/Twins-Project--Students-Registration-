@@ -22,6 +22,7 @@ import twins.data.UserRole;
 import twins.errors.BadRequestException;
 import twins.errors.ForbiddenRequestException;
 import twins.errors.NotFoundException;
+import twins.item.ItemBoundary;
 import twins.logic.ItemConverter;
 import twins.logic.OperationEntityConverter;
 import twins.logic.OperationHandler;
@@ -113,6 +114,11 @@ public class OperationServiceJpa implements OperationService{
 		entity.setOperationId(newId);
 		entity.setOperationSpace(springApplicationName);
 		
+		operationDao.save(entity);
+		
+		if(operation.getType().equals(OperationTypes.browseCourses.toString()))
+			return this.operationHandler.getStudentsCourses(entity, user);
+		
 		if(operation.getType().equals(OperationTypes.registerToCourse.toString()))
 			this.operationHandler.registerToCourse(entity, optionalItem.get(), user);
 		else if(operation.getType().equals(OperationTypes.resignFromCourse.toString()))
@@ -120,9 +126,8 @@ public class OperationServiceJpa implements OperationService{
 		else if(operation.getType().equals(OperationTypes.updateGrade.toString()))
 			this.operationHandler.updateGrade(entity, optionalItem.get());
 		else if(operation.getType().equals(OperationTypes.removeCourse.toString()))
-			this.operationHandler.removeCourse(entity, optionalItem.get());
+			this.operationHandler.removeCourse(entity, optionalItem.get());	
 		
-		operationDao.save(entity);
 		return operationEntityConverter.toBoundary(entity);
 	}
 
