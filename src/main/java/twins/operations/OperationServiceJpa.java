@@ -24,6 +24,7 @@ import twins.errors.ForbiddenRequestException;
 import twins.errors.NotFoundException;
 import twins.logic.ItemConverter;
 import twins.logic.OperationEntityConverter;
+import twins.logic.OperationHandler;
 import twins.logic.OperationService;
 import twins.logic.UserItemConverter;
 
@@ -33,10 +34,9 @@ public class OperationServiceJpa implements OperationService{
 	private UserDao userDao;
 	private ItemDao itemDao;
 	private OperationDao operationDao;
-	private UserItemConverter userToItemConverter;
 	private OperationEntityConverter operationEntityConverter;
-	private ItemConverter itemConverter;
 	private String springApplicationName;
+	private OperationHandler operationHandler;
 	
 	public OperationServiceJpa() { }
 	
@@ -56,13 +56,8 @@ public class OperationServiceJpa implements OperationService{
 	}
 	
 	@Autowired
-	public void setItemConverter(ItemConverter itemConverter) {
-		this.itemConverter = itemConverter;
-	}
-	
-	@Autowired
-	public void setUserToItemConverter(UserItemConverter userItemConverter) {
-		this.userToItemConverter = userItemConverter;
+	public void setOperationHandler(OperationHandler operationHandler) {
+		this.operationHandler = operationHandler;
 	}
 	
 	@Autowired
@@ -118,7 +113,15 @@ public class OperationServiceJpa implements OperationService{
 		entity.setOperationId(newId);
 		entity.setOperationSpace(springApplicationName);
 		
-		handleOperation(entity, optionalItem.get(), user);
+		if(operation.getType().equals(OperationTypes.registerToCourse.toString()))
+			this.operationHandler.registerToCourse(entity, optionalItem.get(), user);
+		else if(operation.getType().equals(OperationTypes.resignFromCourse.toString()))
+			this.operationHandler.resignFromCourse(entity, optionalItem.get(), user);
+		else if(operation.getType().equals(OperationTypes.updateGrade.toString()))
+			this.operationHandler.updateGrade(entity, optionalItem.get());
+		else if(operation.getType().equals(OperationTypes.removeCourse.toString()))
+			this.operationHandler.removeCourse(entity, optionalItem.get());
+		
 		operationDao.save(entity);
 		return operationEntityConverter.toBoundary(entity);
 	}
@@ -227,90 +230,90 @@ public class OperationServiceJpa implements OperationService{
 	 * fixes:
 	 * 
 	 */
-	private void handleOperation(OperationEntity operation, ItemEntity item, UserEntity user) {
-		if(operation.getType().equals(OperationTypes.registerToCourse.toString())) {
-			//convert user to item
-			//add the Student item to the Course item
-			
-			//register invoker
-			if(operation.getOperationAttributes() == null || operation.getOperationAttributes().equals("")) {
-				
-				List<ItemEntity> students = item.getChildren()
-												.stream()
-												.filter(e-> {return e.getName().equals(user.getEmail());})
-												.collect(Collectors.toList());
-				if(students.isEmpty())	//check whether the Student already in the Course participants list 
-					item.addChild(this.userToItemConverter.UserToItem(user));
-				else
-					item.getChildren()
-					.stream()
-					.filter(e-> {return e.getName().equals(user.getEmail());})
-					.forEach(e-> e.setActive(true));
-			}			
-			else {	
-				//register all users passed as OperationAttributes
-				Map<String, Object> students = operationEntityConverter.fromJsonToMap(operation.getOperationAttributes());
-				students.entrySet()
-						.stream()
-						.forEach(studentEntry->{ 
-							//check whether each Student already in the Course participants list 
-							List<ItemEntity> participants = item.getChildren()
-																.stream()
-																.filter(e-> {return e.getName().equals(((UserEntity) studentEntry.getValue()).getEmail());})
-																.collect(Collectors.toList());
-						if(participants.isEmpty())
-							item.addChild(this.userToItemConverter.UserToItem((UserEntity) studentEntry.getValue()));
-						else
-							item.getChildren()
-								.stream()
-								.filter(e->{return e.getName().equals(((UserEntity) studentEntry.getValue()).getEmail()); })
-								.forEach(e-> e.setActive(true));
-					});
-			}
-				
-		} else if(operation.getType().equals(OperationTypes.resignFromCourse.toString())){
-			//convert user to item
-			//search parent item (Course) for students
-			//remove Student item from parent 
-			
-			//remove invoker
-			if(operation.getOperationAttributes() == null || operation.getOperationAttributes().equals(""))
-				item.getChildren()
-					.stream()
-					.filter(e-> {return e.getName().equals(user.getEmail()); })
-					.forEach(e-> e.setActive(false));
-			else {
-				//remove all users passed as OperationAttributes
-				Map<String, Object> users = operationEntityConverter.fromJsonToMap(operation.getOperationAttributes());
-				users.entrySet()
-					.stream()
-					.forEach(userEntry->{
-						item.getChildren()
-						.stream()
-						.filter(e-> {return e.getName().equals(((UserEntity) userEntry.getValue()).getEmail()); })
-						.forEach(e-> e.setActive(false));
-					});
-			}
-		} else if(operation.getType().equals(OperationTypes.removeCourse.toString())) {
-			//search for item
-			//remove item
-			List<ItemEntity> courses = itemDao.findAllById(operation.getItemId());
-			courses.stream().forEach(e-> e.setActive(false));
-		} else if(operation.getType().equals(OperationTypes.updateGrade.toString())) {
-			//search for item Course
-			//search for child item (Student)
-			//update grade
-			Map<String, Object> students = operationEntityConverter.fromJsonToMap(operation.getOperationAttributes());	
-			students.entrySet()
-				.stream()
-				.forEach(studentEntry->{	//iterate over each studentEntry (studentEntry: Map.Entry<String, int> ex. <"Grade", 80>)
-					item.getChildren()
-					.stream()
-					.filter(e-> {return e.getName().equals(studentEntry.getKey());})	//filter all children with name == student.email
-					.forEach(e-> e.setItemAttributes(	//set the grade of the student
-							itemConverter.fromMapToJson(
-									(Map<String, Object>) itemConverter.fromJsonToMap(e.getItemAttributes()).put("Grade", studentEntry.getValue()))));
-				});
-		}
-	}
+//	private void handleOperation(OperationEntity operation, ItemEntity item, UserEntity user) {
+//		if(operation.getType().equals(OperationTypes.registerToCourse.toString())) {
+//			//convert user to item
+//			//add the Student item to the Course item
+//			
+//			//register invoker
+//			if(operation.getOperationAttributes() == null || operation.getOperationAttributes().equals("")) {
+//				
+//				List<ItemEntity> students = item.getChildren()
+//												.stream()
+//												.filter(e-> {return e.getName().equals(user.getEmail());})
+//												.collect(Collectors.toList());
+//				if(students.isEmpty())	//check whether the Student already in the Course participants list 
+//					item.addChild(this.userToItemConverter.UserToItem(user));
+//				else
+//					item.getChildren()
+//						.stream()
+//						.filter(e-> {return e.getName().equals(user.getEmail());})
+//						.forEach(e-> e.setActive(true));
+//			}			
+//			else {	
+//				//register all users passed as OperationAttributes
+//				Map<String, Object> students = operationEntityConverter.fromJsonToMap(operation.getOperationAttributes());
+//				students.entrySet()
+//						.stream()
+//						.forEach(studentEntry->{ 
+//							//check whether each Student already in the Course participants list 
+//							List<ItemEntity> participants = item.getChildren()
+//																.stream()
+//																.filter(e-> {return e.getName().equals(((UserEntity) studentEntry.getValue()).getEmail());})
+//																.collect(Collectors.toList());
+//						if(participants.isEmpty())
+//							item.addChild(this.userToItemConverter.UserToItem((UserEntity) studentEntry.getValue()));
+//						else
+//							item.getChildren()
+//								.stream()
+//								.filter(e->{return e.getName().equals(((UserEntity) studentEntry.getValue()).getEmail()); })
+//								.forEach(e-> e.setActive(true));
+//					});
+//			}
+//				
+//		} else if(operation.getType().equals(OperationTypes.resignFromCourse.toString())){
+//			//convert user to item
+//			//search parent item (Course) for students
+//			//remove Student item from parent 
+//			
+//			//remove invoker
+//			if(operation.getOperationAttributes() == null || operation.getOperationAttributes().equals(""))
+//				item.getChildren()
+//					.stream()
+//					.filter(e-> {return e.getName().equals(user.getEmail()); })
+//					.forEach(e-> e.setActive(false));
+//			else {
+//				//remove all users passed as OperationAttributes
+//				Map<String, Object> users = operationEntityConverter.fromJsonToMap(operation.getOperationAttributes());
+//				users.entrySet()
+//					.stream()
+//					.forEach(userEntry->{
+//						item.getChildren()
+//						.stream()
+//						.filter(e-> {return e.getName().equals(((UserEntity) userEntry.getValue()).getEmail()); })
+//						.forEach(e-> e.setActive(false));
+//					});
+//			}
+//		} else if(operation.getType().equals(OperationTypes.removeCourse.toString())) {
+//			//search for item
+//			//remove item
+//			List<ItemEntity> courses = itemDao.findAllById(operation.getItemId());
+//			courses.stream().forEach(e-> e.setActive(false));
+//		} else if(operation.getType().equals(OperationTypes.updateGrade.toString())) {
+//			//search for item Course
+//			//search for child item (Student)
+//			//update grade
+//			Map<String, Object> students = operationEntityConverter.fromJsonToMap(operation.getOperationAttributes());	
+//			students.entrySet()
+//				.stream()
+//				.forEach(studentEntry->{	//iterate over each studentEntry (studentEntry: Map.Entry<String, int> ex. <"Grade", 80>)
+//					item.getChildren()
+//						.stream()
+//						.filter(e-> {return e.getName().equals(studentEntry.getKey());})	//filter all children with name == student.email
+//						.forEach(e-> e.setItemAttributes(	//set the grade of the student
+//							itemConverter.fromMapToJson(
+//									(Map<String, Object>) itemConverter.fromJsonToMap(e.getItemAttributes()).put("Grade", studentEntry.getValue()))));
+//				});
+//		}
+//	}
 }
