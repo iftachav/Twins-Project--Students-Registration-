@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -224,7 +225,7 @@ public class OperationServiceJpa implements OperationService{
 	/*
 	 * TODO
 	 * fixes:
-	 * A student can register himself more than once to the same course
+	 * 
 	 */
 	private void handleOperation(OperationEntity operation, ItemEntity item, UserEntity user) {
 		if(operation.getType().equals(OperationTypes.registerToCourse.toString())) {
@@ -232,14 +233,39 @@ public class OperationServiceJpa implements OperationService{
 			//add the Student item to the Course item
 			
 			//register invoker
-			if(operation.getOperationAttributes() == null || operation.getOperationAttributes().equals(""))
-				item.addChild(this.userToItemConverter.UserToItem(user));
+			if(operation.getOperationAttributes() == null || operation.getOperationAttributes().equals("")) {
+				
+				List<ItemEntity> students = item.getChildren()
+												.stream()
+												.filter(e-> {return e.getName().equals(user.getEmail());})
+												.collect(Collectors.toList());
+				if(students.isEmpty())	//check whether the Student already in the Course participants list 
+					item.addChild(this.userToItemConverter.UserToItem(user));
+				else
+					item.getChildren()
+					.stream()
+					.filter(e-> {return e.getName().equals(user.getEmail());})
+					.forEach(e-> e.setActive(true));
+			}			
 			else {	
 				//register all users passed as OperationAttributes
-				Map<String, Object> users = operationEntityConverter.fromJsonToMap(operation.getOperationAttributes());
-				users.entrySet()
-					.stream()
-					.forEach(e -> {item.addChild(this.userToItemConverter.UserToItem((UserEntity) e.getValue())); });
+				Map<String, Object> students = operationEntityConverter.fromJsonToMap(operation.getOperationAttributes());
+				students.entrySet()
+						.stream()
+						.forEach(studentEntry->{ 
+							//check whether each Student already in the Course participants list 
+							List<ItemEntity> participants = item.getChildren()
+																.stream()
+																.filter(e-> {return e.getName().equals(((UserEntity) studentEntry.getValue()).getEmail());})
+																.collect(Collectors.toList());
+						if(participants.isEmpty())
+							item.addChild(this.userToItemConverter.UserToItem((UserEntity) studentEntry.getValue()));
+						else
+							item.getChildren()
+								.stream()
+								.filter(e->{return e.getName().equals(((UserEntity) studentEntry.getValue()).getEmail()); })
+								.forEach(e-> e.setActive(true));
+					});
 			}
 				
 		} else if(operation.getType().equals(OperationTypes.resignFromCourse.toString())){
