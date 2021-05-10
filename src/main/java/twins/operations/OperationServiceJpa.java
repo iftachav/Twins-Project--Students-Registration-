@@ -21,6 +21,7 @@ import twins.data.UserRole;
 import twins.errors.BadRequestException;
 import twins.errors.ForbiddenRequestException;
 import twins.errors.NotFoundException;
+import twins.logic.ItemConverter;
 import twins.logic.OperationEntityConverter;
 import twins.logic.OperationService;
 import twins.logic.UserItemConverter;
@@ -33,6 +34,7 @@ public class OperationServiceJpa implements OperationService{
 	private OperationDao operationDao;
 	private UserItemConverter userToItemConverter;
 	private OperationEntityConverter operationEntityConverter;
+	private ItemConverter itemConverter;
 	private String springApplicationName;
 	
 	public OperationServiceJpa() { }
@@ -50,6 +52,11 @@ public class OperationServiceJpa implements OperationService{
 	@Autowired
 	public void setItemDao(ItemDao itemDao) {
 		this.itemDao = itemDao;
+	}
+	
+	@Autowired
+	public void setItemConverter(ItemConverter itemConverter) {
+		this.itemConverter = itemConverter;
 	}
 	
 	@Autowired
@@ -89,7 +96,7 @@ public class OperationServiceJpa implements OperationService{
 		if(!optionalUser.isPresent())
 			throw new NotFoundException("User " + operation.getInvokedBy().getUserId().getEmail() + " Doesn't exist");
 		
-		//Check user Role
+		//Check user Role	TODO: incorrect! need to support other roles for each different operation
 		UserEntity user = optionalUser.get();
 		if(user.getRole() != UserRole.PLAYER.toString())
 			throw new ForbiddenRequestException("Operation " + operation.getType() + " not authorized for role " + user.getRole());
@@ -244,7 +251,7 @@ public class OperationServiceJpa implements OperationService{
 			if(operation.getOperationAttributes() == null || operation.getOperationAttributes().equals(""))
 				item.getChildren()
 					.stream()
-					.filter(e-> {return e.getItemSpace().equals(user.getSpace()) && e.getUserEmail().equals(user.getEmail()); })
+					.filter(e-> {return e.getName().equals(user.getEmail()); })
 					.forEach(e-> e.setActive(false));
 			else {
 				//remove all users passed as OperationAttributes
@@ -254,8 +261,7 @@ public class OperationServiceJpa implements OperationService{
 					.forEach(userEntry->{
 						item.getChildren()
 						.stream()
-						.filter(e-> {return e.getItemSpace().equals(((UserEntity) userEntry.getValue()).getSpace()) && 
-							e.getUserEmail().equals(((UserEntity) userEntry.getValue()).getEmail()); })
+						.filter(e-> {return e.getName().equals(((UserEntity) userEntry.getValue()).getEmail()); })
 						.forEach(e-> e.setActive(false));
 					});
 			}
@@ -268,6 +274,17 @@ public class OperationServiceJpa implements OperationService{
 			//search for item Course
 			//search for child item (Student)
 			//update grade
+			Map<String, Object> students = operationEntityConverter.fromJsonToMap(operation.getOperationAttributes());	
+			students.entrySet()
+				.stream()
+				.forEach(studentEntry->{	//iterate over each studentEntry (studentEntry: Map.Entry<String, int> ex. <"Grade", 80>)
+					item.getChildren()
+					.stream()
+					.filter(e-> {return e.getName().equals(studentEntry.getKey());})	//filter all children with name == student.email
+					.forEach(e-> e.setItemAttributes(	//set the grade of the student
+							itemConverter.fromMapToJson(
+									(Map<String, Object>) itemConverter.fromJsonToMap(e.getItemAttributes()).put("Grade", studentEntry.getValue()))));
+				});
 		}
 	}
 }
