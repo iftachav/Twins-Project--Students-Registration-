@@ -150,9 +150,11 @@ public class OperationHandlerImpl implements OperationHandler{
 		
 		List<ItemEntity> userCourses = new ArrayList<>();
 		for (ItemEntity course : courses) {
-			for(ItemEntity student : course.getChildren())
-				if(student.isActive() && student.getName().equals(user.getEmail()))
-					userCourses.add(course);
+			if(course.isActive()) {
+				for(ItemEntity student : course.getChildren())
+					if(student.isActive() && student.getName().equals(user.getEmail()))
+						userCourses.add(course);
+			}
 		}
 		return userCourses.stream().map(this.itemConverter::toBoundary).collect(Collectors.toList());
 	}
