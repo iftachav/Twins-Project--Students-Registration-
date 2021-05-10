@@ -38,11 +38,11 @@ public class UserToItemConverter implements UserItemConverter{
 		item.setItemSpace(this.space);
 		item.setId(newId);
 		item.setType("Student"); 	//consider replace it with an Enum
-		item.setName(user.getEmail());
+		item.setName(user.getEmailAndSpace().split("@@")[0]);
 		item.setActive(true);
 		item.setTimestamp(new Date());
-		item.setUserEmail(user.getEmail());
-		item.setUserSpace(user.getSpace());
+		item.setUserEmail(user.getEmailAndSpace().split("@@")[0]);
+		item.setUserSpace(user.getEmailAndSpace().split("@@")[1]);
 		item.setLat(0);
 		item.setLng(0);
 		

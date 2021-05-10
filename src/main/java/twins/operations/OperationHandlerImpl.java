@@ -58,14 +58,14 @@ public class OperationHandlerImpl implements OperationHandler{
 			
 			List<ItemEntity> students = item.getChildren()
 											.stream()
-											.filter(e-> {return e.getName().equals(user.getEmail());})
+											.filter(e-> {return e.getName().equals(user.getEmailAndSpace().split("@@")[0]);})
 											.collect(Collectors.toList());
 			if(students.isEmpty())	//check whether the Student already in the Course participants list 
 				item.addChild(this.userToItemConverter.UserToItem(user));
 			else
 				item.getChildren()
 					.stream()
-					.filter(e-> {return e.getName().equals(user.getEmail());})
+					.filter(e-> {return e.getName().equals(user.getEmailAndSpace().split("@@")[0]);})
 					.forEach(e-> e.setActive(true));
 		}			
 		else {	
@@ -77,14 +77,14 @@ public class OperationHandlerImpl implements OperationHandler{
 						//check whether each Student already in the Course participants list 
 						List<ItemEntity> participants = item.getChildren()
 															.stream()
-															.filter(e-> {return e.getName().equals(((UserEntity) studentEntry.getValue()).getEmail());})
+															.filter(e-> {return e.getName().equals(((UserEntity) studentEntry.getValue()).getEmailAndSpace().split("@@")[0]);})
 															.collect(Collectors.toList());
 					if(participants.isEmpty())
 						item.addChild(this.userToItemConverter.UserToItem((UserEntity) studentEntry.getValue()));
 					else
 						item.getChildren()
 							.stream()
-							.filter(e->{return e.getName().equals(((UserEntity) studentEntry.getValue()).getEmail()); })
+							.filter(e->{return e.getName().equals(((UserEntity) studentEntry.getValue()).getEmailAndSpace().split("@@")[0]); })
 							.forEach(e-> e.setActive(true));
 				});
 		}
@@ -101,7 +101,7 @@ public class OperationHandlerImpl implements OperationHandler{
 		if(operation.getOperationAttributes() == null || operation.getOperationAttributes().equals(""))
 			item.getChildren()
 				.stream()
-				.filter(e-> {return e.getName().equals(user.getEmail()); })
+				.filter(e-> {return e.getName().equals(user.getEmailAndSpace().split("@@")[0]); })
 				.forEach(e-> e.setActive(false));
 		else {
 			//remove all users passed as OperationAttributes
@@ -111,7 +111,7 @@ public class OperationHandlerImpl implements OperationHandler{
 				.forEach(userEntry->{
 					item.getChildren()
 					.stream()
-					.filter(e-> {return e.getName().equals(((UserEntity) userEntry.getValue()).getEmail()); })
+					.filter(e-> {return e.getName().equals(((UserEntity) userEntry.getValue()).getEmailAndSpace().split("@@")[0]); })
 					.forEach(e-> e.setActive(false));
 				});
 		}	
@@ -152,7 +152,7 @@ public class OperationHandlerImpl implements OperationHandler{
 		for (ItemEntity course : courses) {
 			if(course.isActive()) {
 				for(ItemEntity student : course.getChildren())
-					if(student.isActive() && student.getName().equals(user.getEmail()))
+					if(student.isActive() && student.getName().equals(user.getEmailAndSpace().split("@@")[0]))
 						userCourses.add(course);
 			}
 		}

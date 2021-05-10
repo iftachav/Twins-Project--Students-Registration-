@@ -51,12 +51,12 @@ public class UserEntity {
 		this.avatar = avatar;
 	}
 	
-	public String getEmail() {
-		return this.emailAndSpace.split("@@")[0];
-	}
-	
-	public String getSpace() {
-		return this.emailAndSpace.split("@@")[1];
-	}
+//	public String getEmail() {
+//		return this.emailAndSpace.split("@@")[0];
+//	}
+//	
+//	public String getSpace() {
+//		return this.emailAndSpace.split("@@")[1];
+//	}
 	
 }

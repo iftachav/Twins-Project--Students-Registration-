@@ -93,7 +93,7 @@ public class OperationServiceJpa implements OperationService{
 		if(!optionalUser.isPresent())
 			throw new NotFoundException("User " + operation.getInvokedBy().getUserId().getEmail() + " Doesn't exist");
 		
-		//Check user Role	TODO: incorrect! need to support other roles for each different operation
+		//Check user Role
 		UserEntity user = optionalUser.get();
 		if(user.getRole() != UserRole.PLAYER.toString())
 			throw new ForbiddenRequestException("Operation " + operation.getType() + " not authorized for role " + user.getRole());
