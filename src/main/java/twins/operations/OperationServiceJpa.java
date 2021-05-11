@@ -270,3 +270,4 @@ public class OperationServiceJpa implements UpdatedOperationService{
 		return true;
 	}
 }
+
