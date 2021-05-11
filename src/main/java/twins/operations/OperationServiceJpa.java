@@ -13,8 +13,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import twins.dal.ItemDao;
 import twins.dal.OperationDao;
 import twins.dal.UserDao;
@@ -42,8 +46,14 @@ public class OperationServiceJpa implements UpdatedOperationService{
 	private OperationEntityConverter operationEntityConverter;
 	private String springApplicationName;
 	private OperationHandler operationHandler;
+	private JmsTemplate jmsTemplate;
 	
 	public OperationServiceJpa() { }
+	
+	@Autowired
+	public void setJmsTemplate(JmsTemplate jmsTemplate) {
+		this.jmsTemplate = jmsTemplate;
+	}
 	
 	@Autowired
 	public void setOperationDao(OperationDao operationDao) {
@@ -184,7 +194,21 @@ public class OperationServiceJpa implements UpdatedOperationService{
 		//handle(entity);
 		
 		operationDao.save(entity);
-		return operationEntityConverter.toBoundary(entity);
+		
+		// send MessageBoundary to MOM for a-synchronous processing
+		ObjectMapper jackson = new ObjectMapper();
+		try {
+			String json = jackson.writeValueAsString(operation); // make sure you send JSON text content
+			this.jmsTemplate // API for MOM (ActiveMQ)
+					.send("operationInbox", // target of message
+							session -> session.createTextMessage(json) // message creator that generates Text Message
+					);
+
+			// return response to client without waiting for processing to end by MOM
+			return operationEntityConverter.toBoundary(entity);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 	
 	@Override
