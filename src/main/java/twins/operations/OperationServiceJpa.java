@@ -13,9 +13,7 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import twins.dal.ItemDao;
 import twins.dal.OperationDao;
 import twins.dal.UserDao;
@@ -108,8 +106,11 @@ public class OperationServiceJpa implements UpdatedOperationService{
 		Optional<ItemEntity> optionalItem = this.itemDao.findById(operation.getItem().getItemId().getId());	//search item by: Space_ItemId
 		if(!optionalItem.isPresent())
 			throw new NotFoundException("Item " + operation.getItem().getItemId().getId() + " doesn't exist");
-		//TODO item is active
 		
+		//Check if item is active
+		ItemEntity item = optionalItem.get();
+		if(!item.isActive())
+			throw new BadRequestException("Can't invoke " + operation.getType() + " on item " + operation.getItem().getItemId());
 		
 		String newId= UUID.randomUUID().toString()+"_"+this.springApplicationName;
 		
@@ -127,13 +128,13 @@ public class OperationServiceJpa implements UpdatedOperationService{
 			return this.operationHandler.getStudentsCourses(entity, user);
 		
 		if(operation.getType().equals(OperationTypes.registerToCourse.toString()))
-			this.operationHandler.registerToCourse(entity, optionalItem.get(), user);
+			this.operationHandler.registerToCourse(entity, item, user);
 		else if(operation.getType().equals(OperationTypes.resignFromCourse.toString()))
-			this.operationHandler.resignFromCourse(entity, optionalItem.get(), user);
+			this.operationHandler.resignFromCourse(entity, item, user);
 		else if(operation.getType().equals(OperationTypes.updateGrade.toString()))
-			this.operationHandler.updateGrade(entity, optionalItem.get());
+			this.operationHandler.updateGrade(entity, item);
 		else if(operation.getType().equals(OperationTypes.removeCourse.toString()))
-			this.operationHandler.removeCourse(entity, optionalItem.get());	
+			this.operationHandler.removeCourse(entity, item);	
 		
 		return operationEntityConverter.toBoundary(entity);
 	}
@@ -169,32 +170,26 @@ public class OperationServiceJpa implements UpdatedOperationService{
 		Optional<ItemEntity> optionalItem = this.itemDao.findById(operation.getItem().getItemId().getId());	//search item by: Space_ItemId
 		if(!optionalItem.isPresent())
 			throw new NotFoundException("Item " + operation.getItem().getItemId().getId() + " doesn't exist");
-		//TODO item is active
+
+		//Check if item is active
+		ItemEntity item = optionalItem.get();
+		if (!item.isActive())
+			throw new BadRequestException("Can't invoke " + operation.getType() + " on item " + operation.getItem().getItemId());
 		
 		String newId= UUID.randomUUID().toString()+"_"+this.springApplicationName;
 		
 		OperationEntity entity = operationEntityConverter.fromBoundary(operation);
 		entity.setCreatedTimestamp(new Date());
 		entity.setOperationSpace(springApplicationName);
-//		entity.setItemSpace(springApplicationName);		//?
-//		entity.setUserSpace(springApplicationName);		//?
 		entity.setOperationId(newId);
 		entity.setOperationSpace(springApplicationName);
 		
-		//TODO switch case
-		//handle(entity);
-		
 		operationDao.save(entity);
-		// send MessageBoundary to MOM for a-synchronous processing
+
 		ObjectMapper jackson = new ObjectMapper();
 		try {
-			String json = jackson.writeValueAsString(operation); // make sure you send JSON text content
-			this.jmsTemplate // API for MOM (ActiveMQ)
-					.send("operationInbox", // target of message
-							session -> session.createTextMessage(json) // message creator that generates Text Message
-					);
-
-			// return response to client without waiting for processing to end by MOM
+			String json = jackson.writeValueAsString(operation); 
+			this.jmsTemplate.send("operationInbox", session -> session.createTextMessage(json));
 			return operationEntityConverter.toBoundary(entity);
 		} catch (Exception e) {
 			throw new RuntimeException(e);

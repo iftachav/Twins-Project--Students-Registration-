@@ -49,6 +49,9 @@ public class OperationEntityConverterImplementation implements OperationEntityCo
 			rv.setItemId(boundary.getItem().getItemId().getId());
 			rv.setItemSpace(boundary.getItem().getItemId().getSpace());
 		}
+		if(boundary.getCreatedTimestamp() != null) {
+			rv.setCreatedTimestamp(boundary.getCreatedTimestamp());
+		}
 		if(boundary.getInvokedBy()!= null) {
 			rv.setUserEmail(boundary.getInvokedBy().getUserId().getEmail());
 			rv.setUserSpace(boundary.getInvokedBy().getUserId().getSpace());
