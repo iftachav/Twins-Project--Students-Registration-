@@ -10,6 +10,9 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import twins.dal.ItemDao;
@@ -27,11 +30,12 @@ import twins.logic.ItemConverter;
 import twins.logic.OperationEntityConverter;
 import twins.logic.OperationHandler;
 import twins.logic.OperationService;
+import twins.logic.UpdatedOperationService;
 import twins.logic.UserItemConverter;
 
 
 @Service
-public class OperationServiceJpa implements OperationService{
+public class OperationServiceJpa implements UpdatedOperationService{
 	private UserDao userDao;
 	private ItemDao itemDao;
 	private OperationDao operationDao;
@@ -95,12 +99,13 @@ public class OperationServiceJpa implements OperationService{
 		
 		//Check user Role
 		UserEntity user = optionalUser.get();
-		if(user.getRole() != UserRole.PLAYER.toString())
+		if(!user.getRole().equals("PLAYER"))
 			throw new ForbiddenRequestException("Operation " + operation.getType() + " not authorized for role " + user.getRole());
 		
 		//Check Item existence
-		Optional<ItemEntity> optionalItem = this.itemDao.findById(operation.getItem().getItemId().getSpace() + "_" + 
-				operation.getItem().getItemId().getId());	//search item by: Space_ItemId
+//		Optional<ItemEntity> optionalItem = this.itemDao.findById(operation.getItem().getItemId().getSpace() + "_" + 
+//				operation.getItem().getItemId().getId());	//search item by: Space_ItemId
+		Optional<ItemEntity> optionalItem = this.itemDao.findById(operation.getItem().getItemId().getId());	//search item by: Space_ItemId
 		if(!optionalItem.isPresent())
 			throw new NotFoundException("Item " + operation.getItem().getItemId().getId() + " doesn't exist");
 		
@@ -148,6 +153,7 @@ public class OperationServiceJpa implements OperationService{
 			throw new BadRequestException("Null Item Element Received.");
 		
 		//Check User existence
+		//TODO need to check here because it didnt work in the previous function.
 		Optional<UserEntity> optionalUser = this.userDao.findById(operation.getInvokedBy().getUserId().getEmail() + 
 				"@@" + operation.getInvokedBy().getUserId().getSpace());	//search user by: UserEmail@@Space
 		if(!optionalUser.isPresent())
@@ -155,7 +161,7 @@ public class OperationServiceJpa implements OperationService{
 		
 		//Check user Role
 		UserEntity user = optionalUser.get();
-		if(user.getRole() != UserRole.PLAYER.toString())
+		if(!user.getRole().equals("PLAYER"))
 			throw new ForbiddenRequestException("Operation " + operation.getType() + " does't authorized for role " + user.getRole());
 		
 		//Check Item existence
@@ -180,9 +186,29 @@ public class OperationServiceJpa implements OperationService{
 		operationDao.save(entity);
 		return operationEntityConverter.toBoundary(entity);
 	}
+	
+	@Override
+	@Transactional(readOnly = true)
+	public List<OperationBoundary> getAllOperations(String adminSpace, String adminEmail, int size, int page) {
+		if(!checkEmail(adminEmail))
+			throw new BadRequestException(adminEmail + " is not a valid Email");
+		
+		Optional<UserEntity> optionalUser = this.userDao.findById(adminEmail + "@@" + adminSpace);
+		if(!optionalUser.isPresent())
+			throw new NotFoundException("User " + adminEmail + " doesn't exist");
+		
+		UserEntity admin = optionalUser.get();
+		if(!admin.getRole().equals("ADMIN"))
+			throw new ForbiddenRequestException("Operation doesn't authorized for role " + admin.getRole());
+		
+		Iterable<OperationEntity> allEntities=this.operationDao.findAll(PageRequest.of(page, size, Direction.ASC, "createdTimestamp"));
+		return StreamSupport.stream(allEntities.spliterator(), false).map(this.operationEntityConverter::toBoundary)
+				.collect(Collectors.toList());
+	}
 
 	@Override
 	@Transactional(readOnly = true)
+	@Deprecated
 	public List<OperationBoundary> getAllOperations(String adminSpace, String adminEmail) {
 		if(!checkEmail(adminEmail))
 			throw new BadRequestException(adminEmail + " is not a valid Email");
@@ -192,7 +218,7 @@ public class OperationServiceJpa implements OperationService{
 			throw new NotFoundException("User " + adminEmail + " doesn't exist");
 		
 		UserEntity admin = optionalUser.get();
-		if(admin.getRole() != UserRole.ADMIN.toString())
+		if(!admin.getRole().equals("ADMIN"))
 			throw new ForbiddenRequestException("Operation doesn't authorized for role " + admin.getRole());
 		
 		Iterable<OperationEntity> allEntities=this.operationDao.findAll();
@@ -211,7 +237,7 @@ public class OperationServiceJpa implements OperationService{
 			throw new NotFoundException("User " + adminEmail + " doesn't exist");
 		
 		UserEntity admin = optionalUser.get();
-		if(admin.getRole() != UserRole.ADMIN.toString())
+		if(!admin.getRole().equals("ADMIN"))
 			throw new ForbiddenRequestException("Operation doesn't authorized for role " + admin.getRole());
 		
 		this.operationDao.deleteAll();
@@ -229,6 +255,8 @@ public class OperationServiceJpa implements OperationService{
 			return false;
 		return true;
 	}
+
+
 	
 	/*
 	 * TODO

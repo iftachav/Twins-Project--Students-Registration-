@@ -6,6 +6,8 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import twins.dal.UserDao;
@@ -14,12 +16,12 @@ import twins.data.UserRole;
 import twins.errors.BadRequestException;
 import twins.errors.ForbiddenRequestException;
 import twins.errors.NotFoundException;
+import twins.logic.UpdatedUsersService;
 import twins.logic.UserEntityConverter;
-import twins.logic.UsersService;
 
 
 @Service
-public class UserServiceJPA implements UsersService{
+public class UserServiceJPA implements UpdatedUsersService{
 	private UserDao userDao;
 	private UserEntityConverter userEntityConverter;
 	private String springApplicationName;
@@ -117,8 +119,26 @@ public class UserServiceJPA implements UsersService{
 		return userEntityConverter.toBoundary(user);
 	}
 
+	
+	
 	@Override
 	@Transactional(readOnly = true)
+	public List<UserBoundary> getAllUsers(String adminSpace, String adminEmail, int size, int page) {
+		Optional<UserEntity> entityOptional =  userDao.findById(adminEmail + "@@" + this.springApplicationName);
+		if(!entityOptional.isPresent())
+			throw new NotFoundException("User doesn't exist");
+		if(!entityOptional.get().getRole().equals("ADMIN")) {
+			throw new BadRequestException("Only admins can get all users.");
+		}
+		Iterable<UserEntity> users = this.userDao.findAll(PageRequest.of(page, size,Direction.ASC,"role"));
+		return StreamSupport.stream(users.spliterator(), false).map(this.userEntityConverter::toBoundary)
+				.collect(Collectors.toList());
+	}
+	
+	
+	@Override
+	@Transactional(readOnly = true)
+	@Deprecated
 	public List<UserBoundary> getAllUsers(String adminSpace, String adminEmail) {
 		Optional<UserEntity> entityOptional =  userDao.findById(adminEmail + "@@" + this.springApplicationName);
 		if(!entityOptional.isPresent())
@@ -163,5 +183,7 @@ public class UserServiceJPA implements UsersService{
 		}
 		return false;
 	}
+
+
 
 }

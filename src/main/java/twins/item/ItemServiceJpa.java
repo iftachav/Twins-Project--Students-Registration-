@@ -12,6 +12,8 @@ import java.util.stream.StreamSupport;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -138,8 +140,43 @@ public class ItemServiceJpa implements UpdatedItemService{
 		return itemEntityConverter.toBoundary(entity);
 	}
 
+	
 	@Override
 	@Transactional(readOnly = true)
+	public List<ItemBoundary> getAllItems(String userSpace, String userEmail, int size, int page) {
+		boolean onlyActive=false;
+		Optional<UserEntity> entityOptional =  userDao.findById(userEmail + "@@" + this.space);
+		if(!entityOptional.isPresent())
+			throw new NotFoundException("User doesn't exist");
+		if(entityOptional.get().getRole().equals("ADMIN")) {
+			throw new BadRequestException("Admins can't get all items.");
+		}
+		if(entityOptional.get().getRole().equals("PLAYER")) {
+			onlyActive=true;
+		}
+		Iterable<ItemEntity>  allEntities;
+		allEntities = this.itemDao.findAll(PageRequest.of(page, size,Direction.ASC,"timestamp"));
+		
+	    ArrayList<ItemBoundary> list1= new ArrayList<ItemBoundary>();
+	    list1=(ArrayList<ItemBoundary>) StreamSupport.stream(allEntities.spliterator(), false) 
+				.map(this.itemEntityConverter::toBoundary)
+				.collect(Collectors.toList());
+	    if(onlyActive) {
+		    ArrayList<ItemBoundary> list2= new ArrayList<ItemBoundary>();
+	    	for (Iterator<ItemBoundary> iterator = list1.iterator(); iterator.hasNext();) {
+				ItemBoundary itemBoundary = (ItemBoundary) iterator.next();
+				if(itemBoundary.getActive())
+					list2.add(itemBoundary);
+			}
+	    	return list2;
+	    }
+	    return list1;
+	}
+	
+	
+	@Override
+	@Transactional(readOnly = true)
+	@Deprecated
 	public List<ItemBoundary> getAllItems(String userSpace, String userEmail) {
 		boolean onlyActive=false;
 		Optional<UserEntity> entityOptional =  userDao.findById(userEmail + "@@" + this.space);
@@ -151,9 +188,6 @@ public class ItemServiceJpa implements UpdatedItemService{
 		if(entityOptional.get().getRole().equals("PLAYER")) {
 			onlyActive=true;
 		}
-		
-		
-		
 		Iterable<ItemEntity>  allEntities;
 		allEntities = this.itemDao.findAll();
 //
@@ -277,5 +311,7 @@ public class ItemServiceJpa implements UpdatedItemService{
 			.map(this.itemEntityConverter::toBoundary)
 			.collect(Collectors.toList());
 	}
+
+
 	
 }

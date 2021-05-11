@@ -7,16 +7,17 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import twins.logic.UsersService;
+import twins.logic.UpdatedUsersService;
 
 @RestController
 public class UserController {
-	private UsersService userService;
+	private UpdatedUsersService userService;
 	
 	@Autowired
-	public UserController(UsersService userService) {
+	public UserController(UpdatedUsersService userService) {
 		this.userService=userService;
 	}
 
@@ -61,7 +62,9 @@ public class UserController {
 				path = "/twins/admin/users/{userSpace}/{userEmail}",
 				method = RequestMethod.GET,
 				produces = MediaType.APPLICATION_JSON_VALUE)
-		public UserBoundary[] exportAllUsers(@PathVariable("userSpace") String userSpace, @PathVariable("userEmail") String userEmail) {
-			return userService.getAllUsers(userSpace, userEmail).toArray(new UserBoundary[0]);
+		public UserBoundary[] exportAllUsers(@PathVariable("userSpace") String userSpace, @PathVariable("userEmail") String userEmail,
+				@RequestParam(name="size", required = false, defaultValue = "20") int size,
+				@RequestParam(name="page", required = false, defaultValue = "0") int page) {
+			return userService.getAllUsers(userSpace, userEmail,size,page).toArray(new UserBoundary[0]);
 		}
 }

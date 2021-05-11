@@ -10,6 +10,7 @@ public interface OperationService {
 
 	public OperationBoundary invokeAsynchronousOperation(OperationBoundary operation);
 
+	@Deprecated
 	public List<OperationBoundary> getAllOperations(String adminSpace, String adminEmail);
 
 	public void deleteAllOperations(String adminSpace, String adminEmail);

@@ -12,5 +12,7 @@ public interface UpdatedItemService extends ItemsService{
 	public List<ItemBoundary> getAllChildren(String parentId);
 	
 	public List<ItemBoundary> getAllParents(String childId);
+	
+	public List<ItemBoundary> getAllItems(String userSpace, String userEmail,int size, int page);
 
 }
