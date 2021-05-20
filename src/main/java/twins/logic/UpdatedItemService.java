@@ -7,11 +7,11 @@ import twins.item.ItemIdBoundary;
 
 public interface UpdatedItemService extends ItemsService{
 	
-	public void addChildToItem(String parentId, ItemIdBoundary childIdBoundary);
+	public void addChildToItem(String parentId, ItemIdBoundary childIdBoundary ,String userEmail, String userSpace);
 
-	public List<ItemBoundary> getAllChildren(String parentId);
+	public List<ItemBoundary> getAllChildren(String parentId,String userEmail, String userSpace);
 	
-	public List<ItemBoundary> getAllParents(String childId);
+	public List<ItemBoundary> getAllParents(String childId,String userEmail, String userSpace);
 	
 	public List<ItemBoundary> getAllItems(String userSpace, String userEmail,int size, int page);
 

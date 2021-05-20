@@ -25,9 +25,11 @@ public class ItemRelationshipController{
 	public void addChildToItem (
 			@PathVariable("itemId") String itemId, 
 			@PathVariable("itemSpace") String itemSpace,
+			@PathVariable("userEmail") String userEmail,
+			@PathVariable("userSpace") String userSpace,
 			@RequestBody ItemIdBoundary childIdBoundary) {
 		this.itemLogic
-			.addChildToItem(itemSpace + "_" + itemId, childIdBoundary);
+			.addChildToItem(itemId, childIdBoundary,userEmail,userSpace);
 	}
 
 	@RequestMapping(
@@ -36,9 +38,11 @@ public class ItemRelationshipController{
 			produces = MediaType.APPLICATION_JSON_VALUE)
 	public ItemBoundary[] getChildren (
 			@PathVariable("itemId") String itemId,
+			@PathVariable("userEmail") String userEmail,
+			@PathVariable("userSpace") String userSpace,
 			@PathVariable("itemSpace") String itemSpace){
 		return this.itemLogic
-			.getAllChildren(itemSpace + "_" + itemId)
+			.getAllChildren(itemId,userEmail,userSpace)
 			.toArray(new ItemBoundary[0]);
 	}
 	
@@ -47,8 +51,10 @@ public class ItemRelationshipController{
 			produces = MediaType.APPLICATION_JSON_VALUE)
 	public ItemBoundary[] getParents (
 			@PathVariable("itemId") String itemId,
+			@PathVariable("userEmail") String userEmail,
+			@PathVariable("userSpace") String userSpace,
 			@PathVariable("itemSpace") String itemSpace) {
-		return this.itemLogic.getAllParents(itemSpace + "_" + itemId).toArray(new ItemBoundary[0]);
+		return this.itemLogic.getAllParents(itemId,userEmail,userSpace).toArray(new ItemBoundary[0]);
 
 	}
 }
