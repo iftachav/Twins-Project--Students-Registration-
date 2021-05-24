@@ -20,6 +20,7 @@ import twins.dal.UserDao;
 import twins.data.ItemEntity;
 import twins.data.OperationEntity;
 import twins.data.UserEntity;
+import twins.data.UserRole;
 import twins.errors.BadRequestException;
 import twins.errors.ForbiddenRequestException;
 import twins.errors.NotFoundException;
@@ -99,7 +100,7 @@ public class OperationServiceJpa implements UpdatedOperationService{
 		
 		//Check user Role
 		UserEntity user = optionalUser.get();
-		if(!user.getRole().equals("PLAYER"))
+		if(!user.getRole().equals(UserRole.PLAYER.toString()))
 			throw new ForbiddenRequestException("Operation " + operation.getType() + " not authorized for role " + user.getRole());
 		
 		//Check Item existence
@@ -117,20 +118,20 @@ public class OperationServiceJpa implements UpdatedOperationService{
 		OperationEntity entity = operationEntityConverter.fromBoundary(operation);
 		entity.setCreatedTimestamp(new Date());
 		entity.setOperationSpace(springApplicationName);
-//		entity.setItemSpace(springApplicationName);		//?
-//		entity.setUserSpace(springApplicationName);		//?
 		entity.setOperationId(newId);
 		entity.setOperationSpace(springApplicationName);
 		
 		operationDao.save(entity);
 		
-		if(operation.getType().equals(OperationTypes.browseCourses.toString()))
-			return this.operationHandler.getStudentsCourses(entity, user);
+		if(operation.getType().equals(OperationTypes.getRegisteredCourses.toString()))
+			return this.operationHandler.getRegisteredCourses(entity);
+		if(operation.getType().equals(OperationTypes.getAllCourses.toString()))
+			return this.operationHandler.getAllCourses(entity);
 		
 		if(operation.getType().equals(OperationTypes.registerToCourse.toString()))
-			this.operationHandler.registerToCourse(entity, item, user);
+			this.operationHandler.registerToCourse(entity, item);
 		else if(operation.getType().equals(OperationTypes.resignFromCourse.toString()))
-			this.operationHandler.resignFromCourse(entity, item, user);
+			this.operationHandler.resignFromCourse(entity, item);
 		else if(operation.getType().equals(OperationTypes.updateGrade.toString()))
 			this.operationHandler.updateGrade(entity, item);
 		else if(operation.getType().equals(OperationTypes.removeCourse.toString()))

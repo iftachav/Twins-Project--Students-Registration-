@@ -21,6 +21,7 @@ import twins.dal.ItemDao;
 import twins.dal.UserDao;
 import twins.data.ItemEntity;
 import twins.data.UserEntity;
+import twins.data.UserRole;
 import twins.errors.BadRequestException;
 import twins.errors.NotFoundException;
 import twins.logic.ItemConverter;
@@ -62,7 +63,7 @@ public class ItemServiceJpa implements UpdatedItemService{
 		Optional<UserEntity> entityOptional =  userDao.findById(userEmail + "@@" + this.space);
 		if(!entityOptional.isPresent())
 			throw new NotFoundException("User doesn't exist");
-		if(!entityOptional.get().getRole().equals("MANAGER")) {
+		if(!entityOptional.get().getRole().equals(UserRole.MANAGER.toString())) {
 			throw new BadRequestException("Only manager can create item.");
 		}
 
@@ -105,7 +106,7 @@ public class ItemServiceJpa implements UpdatedItemService{
 		Optional<UserEntity> userOptional =  userDao.findById(userEmail + "@@" + this.space);
 		if(!userOptional.isPresent())
 			throw new NotFoundException("User doesn't exist");
-		if(!userOptional.get().getRole().equals("MANAGER")) {
+		if(!userOptional.get().getRole().equals(UserRole.MANAGER.toString())) {
 			throw new BadRequestException("Only manager can update item.");
 		}
 		Optional<ItemEntity> entityOptional =  itemDao.findById(itemId);
@@ -146,7 +147,7 @@ public class ItemServiceJpa implements UpdatedItemService{
 		Optional<UserEntity> entityOptional =  userDao.findById(userEmail + "@@" + this.space);
 		if(!entityOptional.isPresent())
 			throw new NotFoundException("User doesn't exist");
-		if(entityOptional.get().getRole().equals("ADMIN")) {
+		if(entityOptional.get().getRole().equals(UserRole.ADMIN.toString())) {
 			throw new BadRequestException("Admins can't get all items.");
 		}
 		if(entityOptional.get().getRole().equals("PLAYER")) {
@@ -180,10 +181,10 @@ public class ItemServiceJpa implements UpdatedItemService{
 		Optional<UserEntity> entityOptional =  userDao.findById(userEmail + "@@" + this.space);
 		if(!entityOptional.isPresent())
 			throw new NotFoundException("User doesn't exist");
-		if(entityOptional.get().getRole().equals("ADMIN")) {
+		if(entityOptional.get().getRole().equals(UserRole.ADMIN.toString())) {
 			throw new BadRequestException("Admins can't get all items.");
 		}
-		if(entityOptional.get().getRole().equals("PLAYER")) {
+		if(entityOptional.get().getRole().equals(UserRole.PLAYER.toString())) {
 			onlyActive=true;
 		}
 		Iterable<ItemEntity>  allEntities;
@@ -211,10 +212,10 @@ public class ItemServiceJpa implements UpdatedItemService{
 		Optional<UserEntity> entityOptional =  userDao.findById(userEmail + "@@" + this.space);
 		if(!entityOptional.isPresent())
 			throw new NotFoundException("User doesn't exist");
-		if(entityOptional.get().getRole().equals("ADMIN")) {
+		if(entityOptional.get().getRole().equals(UserRole.ADMIN.toString())) {
 			throw new BadRequestException("Admins can't get a specific item.");
 		}
-		if(entityOptional.get().getRole().equals("PLAYER")) {
+		if(entityOptional.get().getRole().equals(UserRole.PLAYER.toString())) {
 			onlyActive=true;
 		}
 		Optional<ItemEntity> optionalItem = this.itemDao.findById(itemId);
@@ -233,7 +234,7 @@ public class ItemServiceJpa implements UpdatedItemService{
 		Optional<UserEntity> entityOptional =  userDao.findById(adminEmail + "@@" + this.space);
 		if(!entityOptional.isPresent())
 			throw new NotFoundException("User doesn't exist");
-		if(!entityOptional.get().getRole().equals("ADMIN")) {
+		if(!entityOptional.get().getRole().equals(UserRole.ADMIN.toString())) {
 			throw new BadRequestException("Only admins can delete all items.");
 		}
 		this.itemDao.deleteAll();
@@ -245,7 +246,7 @@ public class ItemServiceJpa implements UpdatedItemService{
 		Optional<UserEntity> entityOptional =  userDao.findById(userEmail + "@@" + userSpace);
 		if(!entityOptional.isPresent())
 			throw new NotFoundException("User doesn't exist");
-		if(!entityOptional.get().getRole().equals("MANAGER")) {
+		if(!entityOptional.get().getRole().equals(UserRole.MANAGER.toString())) {
 			throw new BadRequestException("Only manager can create item.");
 		}
 		ItemEntity parent = this.itemDao
@@ -269,10 +270,10 @@ public class ItemServiceJpa implements UpdatedItemService{
 		Optional<UserEntity> entityOptional =  userDao.findById(userEmail + "@@" + userSpace);
 		if(!entityOptional.isPresent())
 			throw new NotFoundException("User doesn't exist");
-		if(entityOptional.get().getRole().equals("ADMIN")) {
+		if(entityOptional.get().getRole().equals(UserRole.ADMIN.toString())) {
 			throw new BadRequestException("Admins can't get a specific item.");
 		}
-		if(entityOptional.get().getRole().equals("PLAYER")) {
+		if(entityOptional.get().getRole().equals(UserRole.PLAYER.toString())) {
 			onlyActive=true;
 		}
 		ItemEntity parent = this.itemDao
@@ -303,10 +304,10 @@ public class ItemServiceJpa implements UpdatedItemService{
 		Optional<UserEntity> entityOptional =  userDao.findById(userEmail + "@@" + userSpace);
 		if(!entityOptional.isPresent())
 			throw new NotFoundException("User doesn't exist");
-		if(entityOptional.get().getRole().equals("ADMIN")) {
+		if(entityOptional.get().getRole().equals(UserRole.ADMIN.toString())) {
 			throw new BadRequestException("Admins can't get a specific item.");
 		}
-		if(entityOptional.get().getRole().equals("PLAYER")) {
+		if(entityOptional.get().getRole().equals(UserRole.PLAYER.toString())) {
 			onlyActive=true;
 		}
 		ItemEntity child = this.itemDao

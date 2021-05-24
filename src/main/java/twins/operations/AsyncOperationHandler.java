@@ -57,16 +57,15 @@ public class AsyncOperationHandler {
 			
 			Optional<UserEntity> optionalUser = this.userDao.findById(operation.getInvokedBy().getUserId().getEmail() + 
 					"@@" + operation.getInvokedBy().getUserId().getSpace());	//search user by: UserEmail@@Space
-			UserEntity user = optionalUser.get();
 	
 			Optional<ItemEntity> optionalItem = this.itemDao.findById(operation.getItem().getItemId().getId());	//search item by: Space_ItemId
 			ItemEntity item = optionalItem.get();
 			OperationEntity entity = operationEntityConverter.fromBoundary(operation);
 			
 			if(operation.getType().equals(OperationTypes.registerToCourse.toString()))
-				this.operationHandler.registerToCourse(entity, item, user);
+				this.operationHandler.registerToCourse(entity, item);
 			else if(operation.getType().equals(OperationTypes.resignFromCourse.toString()))
-				this.operationHandler.resignFromCourse(entity, item, user);
+				this.operationHandler.resignFromCourse(entity, item);
 			else if(operation.getType().equals(OperationTypes.updateGrade.toString()))
 				this.operationHandler.updateGrade(entity, item);
 			else if(operation.getType().equals(OperationTypes.removeCourse.toString()))

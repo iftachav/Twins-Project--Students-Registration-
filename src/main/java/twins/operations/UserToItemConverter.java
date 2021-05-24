@@ -36,11 +36,6 @@ public class UserToItemConverter implements UserItemConverter{
 	public void setType(String type) {
 		this.type = type;
 	}
-
-	@Value("${studentId:Id}")
-	public void setId(String id) {
-		this.id = id;
-	}
 	
 	@Autowired
 	public void setConverter(OperationEntityConverter converter) {
@@ -54,16 +49,16 @@ public class UserToItemConverter implements UserItemConverter{
 		String newId = this.space + "_" + UUID.randomUUID().toString();
 		item.setItemSpace(this.space);
 		item.setId(newId);
-		item.setType(this.type); 	//consider replace it with an Enum
+		item.setType(this.type); 	
 		//item.setName(user.getUsername());
 		item.setActive(true);
 		item.setTimestamp(new Date());
-		item.setUserEmail(user.getEmailAndSpace().split("@@")[0]);
-		item.setUserSpace(user.getEmailAndSpace().split("@@")[1]);
+		item.setUserEmail(user.getEmailSpace().split("@@")[0]);
+		item.setUserSpace(user.getEmailSpace().split("@@")[1]);
 		item.setLat(0);
 		item.setLng(0);
 		Map<String, Object> json = new HashMap<>();
-		json.put(this.id, user.getEmailAndSpace());
+		json.put(this.type, user.getEmailSpace());
 		item.setItemAttributes(this.converter.fromMapToJson(json));
 		
 		return item;

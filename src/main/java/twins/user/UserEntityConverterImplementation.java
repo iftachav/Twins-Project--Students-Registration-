@@ -13,7 +13,7 @@ public class UserEntityConverterImplementation implements UserEntityConverter {
 		UserBoundary rv= new UserBoundary();
 		rv.setAvatar(entity.getAvatar());
 		rv.setRole(entity.getRole());
-		rv.setUserId(new UserId(entity.getEmailAndSpace().split("@@")[1], entity.getEmailAndSpace().split("@@")[0]));
+		rv.setUserId(new UserId(entity.getEmailSpace().split("@@")[1], entity.getEmailSpace().split("@@")[0]));
 		rv.setUsername(entity.getUsername());
 		return rv;
 	}

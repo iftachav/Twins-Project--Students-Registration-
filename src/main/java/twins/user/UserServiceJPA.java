@@ -68,7 +68,7 @@ public class UserServiceJPA implements UpdatedUsersService{
 			throw new ForbiddenRequestException("Unauthorized operation on an existing user");
 		
 		UserEntity entity = this.userEntityConverter.fromBoundary(user);		
-		entity.setEmailAndSpace(email);
+		entity.setEmailSpace(email);
 		
 		userDao.save(entity);
 		return this.userEntityConverter.toBoundary(entity);

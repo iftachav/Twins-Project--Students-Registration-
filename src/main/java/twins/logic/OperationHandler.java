@@ -8,13 +8,15 @@ import twins.data.UserEntity;
 import twins.item.ItemBoundary;
 
 public interface OperationHandler {
-	public void registerToCourse(OperationEntity operation, ItemEntity item, UserEntity user);
+	public void registerToCourse(OperationEntity operation, ItemEntity item);
 	
-	public void resignFromCourse(OperationEntity operation, ItemEntity item, UserEntity user);
+	public void resignFromCourse(OperationEntity operation, ItemEntity item);
 	
 	public void updateGrade(OperationEntity operation, ItemEntity item);
 	
 	public void removeCourse(OperationEntity operation, ItemEntity item);
 	
-	public List<ItemBoundary> getStudentsCourses(OperationEntity operation, UserEntity user);
+	public List<ItemBoundary> getRegisteredCourses(OperationEntity operation);
+	
+	public List<ItemBoundary> getAllCourses(OperationEntity operation);
 }

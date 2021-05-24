@@ -1,5 +1,5 @@
 package twins.operations;
 
 public enum OperationTypes {
-	registerToCourse, resignFromCourse, updateGrade, removeCourse, browseCourses 
+	registerToCourse, resignFromCourse, updateGrade, removeCourse, getRegisteredCourses, getAllCourses 
 }
