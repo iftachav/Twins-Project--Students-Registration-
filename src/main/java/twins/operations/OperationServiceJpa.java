@@ -94,7 +94,6 @@ public class OperationServiceJpa implements UpdatedOperationService{
 				throw new BadRequestException("Null Item Element Received.");
 		}
 		
-		
 		//Check User existence
 		Optional<UserEntity> optionalUser = this.userDao.findById(operation.getInvokedBy().getUserId().getEmail() + 
 				"@@" + operation.getInvokedBy().getUserId().getSpace());	//search user by: UserEmail@@Space
@@ -106,15 +105,15 @@ public class OperationServiceJpa implements UpdatedOperationService{
 		if(!user.getRole().equals(UserRole.PLAYER.toString()))
 			throw new ForbiddenRequestException("Operation " + operation.getType() + " not authorized for role " + user.getRole());
 		
-		//Check Item existence
-		Optional<ItemEntity> optionalItem = this.itemDao.findById(operation.getItem().getItemId().getId());	//search item by: Space_ItemId
-		if(!optionalItem.isPresent())
-			throw new NotFoundException("Item " + operation.getItem().getItemId().getId() + " doesn't exist");
-		
-		//Check if item is active
-		ItemEntity item = optionalItem.get();
-		if(!item.isActive())
-			throw new BadRequestException("Can't invoke " + operation.getType() + " on item " + operation.getItem().getItemId());
+//		//Check Item existence
+//		Optional<ItemEntity> optionalItem = this.itemDao.findById(operation.getItem().getItemId().getId());	//search item by: Space_ItemId
+//		if(!optionalItem.isPresent())
+//			throw new NotFoundException("Item " + operation.getItem().getItemId().getId() + " doesn't exist");
+//		
+//		//Check if item is active
+//		ItemEntity item = optionalItem.get();
+//		if(!item.isActive())
+//			throw new BadRequestException("Can't invoke " + operation.getType() + " on item " + operation.getItem().getItemId());
 		
 		String newId= UUID.randomUUID().toString()+"_"+this.springApplicationName;
 		
@@ -132,13 +131,13 @@ public class OperationServiceJpa implements UpdatedOperationService{
 			return this.operationHandler.getAllCourses(entity);
 		
 		if(operation.getType().equals(OperationTypes.registerToCourse.toString()))
-			this.operationHandler.registerToCourse(entity, item);
+			this.operationHandler.registerToCourse(entity);
 		else if(operation.getType().equals(OperationTypes.resignFromCourse.toString()))
-			this.operationHandler.resignFromCourse(entity, item);
+			this.operationHandler.resignFromCourse(entity);
 		else if(operation.getType().equals(OperationTypes.updateGrade.toString()))
-			this.operationHandler.updateGrade(entity, item);
+			this.operationHandler.updateGrade(entity);
 		else if(operation.getType().equals(OperationTypes.removeCourse.toString()))
-			this.operationHandler.removeCourse(entity, item);	
+			this.operationHandler.removeCourse(entity);	
 		
 		return operationEntityConverter.toBoundary(entity);
 	}

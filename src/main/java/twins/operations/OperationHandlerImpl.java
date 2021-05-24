@@ -15,6 +15,7 @@ import twins.data.ItemEntity;
 import twins.data.OperationEntity;
 import twins.data.UserEntity;
 import twins.errors.BadRequestException;
+import twins.errors.NotFoundException;
 import twins.item.ItemBoundary;
 import twins.logic.ItemConverter;
 import twins.logic.OperationEntityConverter;
@@ -76,9 +77,20 @@ public class OperationHandlerImpl implements OperationHandler{
 	}
 	
 	@Override
-	public void registerToCourse(OperationEntity operation, ItemEntity item) {
+	public void registerToCourse(OperationEntity operation/*, ItemEntity item*/) {
 		//convert user to item
 		//add the Student item to the Course item
+		//Check Item existence
+		Optional<ItemEntity> optionalItem = this.itemDao.findById(operation.getItemId()); 
+		if (!optionalItem.isPresent())
+			throw new NotFoundException("Item " + operation.getItemId() + " doesn't exist");
+
+		// Check if item is active
+		ItemEntity item = optionalItem.get();
+		if (!item.isActive())
+			throw new BadRequestException(
+					"Can't invoke " + operation.getType() + " on item " + operation.getItemId());
+		
 		String studentId = (String) this.operationEntityConverter.fromJsonToMap(operation.getOperationAttributes()).get(this.studentType);
 		Optional<UserEntity> optionalStudent = this.userDao.findFirstByEmailSpace(studentId);
 		if(!optionalStudent.isPresent())
@@ -89,7 +101,16 @@ public class OperationHandlerImpl implements OperationHandler{
 	}
 
 	@Override
-	public void resignFromCourse(OperationEntity operation, ItemEntity item) {
+	public void resignFromCourse(OperationEntity operation/*, ItemEntity item*/) {
+		Optional<ItemEntity> optionalItem = this.itemDao.findById(operation.getItemId()); 
+		if (!optionalItem.isPresent())
+			throw new NotFoundException("Item " + operation.getItemId() + " doesn't exist");
+
+		// Check if item is active
+		ItemEntity item = optionalItem.get();
+		if (!item.isActive())
+			throw new BadRequestException(
+					"Can't invoke " + operation.getType() + " on item " + operation.getItemId());
 		//search parent item (Course) for students
 		//remove Student item from parent (set active to false)
 		String studentId = (String) this.operationEntityConverter.fromJsonToMap(operation.getOperationAttributes()).get(this.studentType);
@@ -109,7 +130,16 @@ public class OperationHandlerImpl implements OperationHandler{
 	}
 
 	@Override
-	public void updateGrade(OperationEntity operation, ItemEntity item) {
+	public void updateGrade(OperationEntity operation/*, ItemEntity item*/) {
+		Optional<ItemEntity> optionalItem = this.itemDao.findById(operation.getItemId()); 
+		if (!optionalItem.isPresent())
+			throw new NotFoundException("Item " + operation.getItemId() + " doesn't exist");
+
+		// Check if item is active
+		ItemEntity item = optionalItem.get();
+		if (!item.isActive())
+			throw new BadRequestException(
+					"Can't invoke " + operation.getType() + " on item " + operation.getItemId());
 		//search for item Course
 		//search for child item (Student)
 		//update grade
@@ -132,7 +162,16 @@ public class OperationHandlerImpl implements OperationHandler{
 	}
 
 	@Override
-	public void removeCourse(OperationEntity operation, ItemEntity item) {
+	public void removeCourse(OperationEntity operation/*, ItemEntity item*/) {
+		Optional<ItemEntity> optionalItem = this.itemDao.findById(operation.getItemId()); 
+		if (!optionalItem.isPresent())
+			throw new NotFoundException("Item " + operation.getItemId() + " doesn't exist");
+
+		// Check if item is active
+		ItemEntity item = optionalItem.get();
+		if (!item.isActive())
+			throw new BadRequestException(
+					"Can't invoke " + operation.getType() + " on item " + operation.getItemId());
 		//search for item
 		//remove item
 		List<ItemEntity> courses = this.itemDao.findAllByNameAndTypeAndActive(item.getName(), this.courseType, true, Sort.by("name").ascending());

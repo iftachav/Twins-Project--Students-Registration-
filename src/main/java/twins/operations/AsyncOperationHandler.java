@@ -63,13 +63,13 @@ public class AsyncOperationHandler {
 			OperationEntity entity = operationEntityConverter.fromBoundary(operation);
 			
 			if(operation.getType().equals(OperationTypes.registerToCourse.toString()))
-				this.operationHandler.registerToCourse(entity, item);
+				this.operationHandler.registerToCourse(entity);
 			else if(operation.getType().equals(OperationTypes.resignFromCourse.toString()))
-				this.operationHandler.resignFromCourse(entity, item);
+				this.operationHandler.resignFromCourse(entity);
 			else if(operation.getType().equals(OperationTypes.updateGrade.toString()))
-				this.operationHandler.updateGrade(entity, item);
+				this.operationHandler.updateGrade(entity);
 			else if(operation.getType().equals(OperationTypes.removeCourse.toString()))
-				this.operationHandler.removeCourse(entity, item);				
+				this.operationHandler.removeCourse(entity);				
 			
 		} catch (Exception e) {
 			e.printStackTrace();
