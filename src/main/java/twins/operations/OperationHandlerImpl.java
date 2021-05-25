@@ -18,8 +18,10 @@ import twins.errors.BadRequestException;
 import twins.errors.NotFoundException;
 import twins.item.ItemBoundary;
 import twins.logic.ItemConverter;
+import twins.logic.ItemsService;
 import twins.logic.OperationEntityConverter;
 import twins.logic.OperationHandler;
+import twins.logic.UpdatedItemService;
 import twins.logic.UserItemConverter;
 
 @Component
@@ -30,6 +32,7 @@ public class OperationHandlerImpl implements OperationHandler{
 	private ItemConverter itemConverter;
 	private UserItemConverter userToItemConverter;
 	private OperationEntityConverter operationEntityConverter;
+	private UpdatedItemService itemService;
 	private String courseType;
 	private String studentType;
 	private String gradeType;
@@ -45,6 +48,11 @@ public class OperationHandlerImpl implements OperationHandler{
 	@Autowired
 	public void setItemDao(ItemDao itemDao) {
 		this.itemDao = itemDao;
+	}
+	
+	@Autowired
+	public void setItemService(UpdatedItemService itemService) {
+		this.itemService = itemService;
 	}
 
 	@Autowired
@@ -105,7 +113,8 @@ public class OperationHandlerImpl implements OperationHandler{
 			throw new BadRequestException("Student " + id + " doesn't exist");
 		
 		ItemEntity studentAsItem = this.userToItemConverter.UserToItem(optionalStudent.get());
-		item.addChild(studentAsItem);
+		this.itemService.addChildToItem(item.getId(), this.itemConverter.toBoundary(studentAsItem).getItemId(), studentId, this.space);
+		//item.addChild(studentAsItem);
 	}
 
 	@Override
