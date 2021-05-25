@@ -33,6 +33,7 @@ public class OperationHandlerImpl implements OperationHandler{
 	private String courseType;
 	private String studentType;
 	private String gradeType;
+	private String space;
 
 	public OperationHandlerImpl() { }
 
@@ -76,12 +77,17 @@ public class OperationHandlerImpl implements OperationHandler{
 		this.gradeType = gradeType;
 	}
 	
+	@Value("${spring.application.name:2021b.iftach.avraham}")
+	public void setSpace(String space) {
+		this.space = space;
+	}
+	
 	@Override
 	public void registerToCourse(OperationEntity operation/*, ItemEntity item*/) {
 		//convert user to item
 		//add the Student item to the Course item
 		//Check Item existence
-		Optional<ItemEntity> optionalItem = this.itemDao.findById(operation.getItemId()); 
+		Optional<ItemEntity> optionalItem = this.itemDao.findById(this.space + "_" + operation.getItemId()); 
 		if (!optionalItem.isPresent())
 			throw new NotFoundException("Item " + operation.getItemId() + " doesn't exist");
 
@@ -92,9 +98,11 @@ public class OperationHandlerImpl implements OperationHandler{
 					"Can't invoke " + operation.getType() + " on item " + operation.getItemId());
 		
 		String studentId = (String) this.operationEntityConverter.fromJsonToMap(operation.getOperationAttributes()).get(this.studentType);
-		Optional<UserEntity> optionalStudent = this.userDao.findFirstByEmailSpace(studentId);
+		String id = studentId + "@@" + this.space;
+		System.err.println("studentId: " + studentId + "\tId: " + id + "\tSpace: " + space);
+		Optional<UserEntity> optionalStudent = this.userDao.findById(id);
 		if(!optionalStudent.isPresent())
-			throw new BadRequestException("Student " + studentId + " doesn't exist");
+			throw new BadRequestException("Student " + id + " doesn't exist");
 		
 		ItemEntity studentAsItem = this.userToItemConverter.UserToItem(optionalStudent.get());
 		item.addChild(studentAsItem);
@@ -114,9 +122,11 @@ public class OperationHandlerImpl implements OperationHandler{
 		//search parent item (Course) for students
 		//remove Student item from parent (set active to false)
 		String studentId = (String) this.operationEntityConverter.fromJsonToMap(operation.getOperationAttributes()).get(this.studentType);
-		Optional<UserEntity> optionalStudent = this.userDao.findFirstByEmailSpace(studentId);
+		String id = studentId + "@@" + this.space;
+		System.err.println("studentId: " + studentId + "\tId: " + id + "\tSpace: " + space);
+		Optional<UserEntity> optionalStudent = this.userDao.findById(id);
 		if(!optionalStudent.isPresent())
-			throw new BadRequestException("Student " + studentId + " doesn't exist");
+			throw new BadRequestException("Student " + id + " doesn't exist");
 		
 		List<ItemEntity> courses = this.itemDao.findAllByNameAndTypeAndActive(item.getName(), this.courseType, true, Sort.by("name").ascending());
 		courses.stream().forEach(course-> {
