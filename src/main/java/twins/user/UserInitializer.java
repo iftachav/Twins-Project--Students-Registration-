@@ -38,7 +38,7 @@ public class UserInitializer implements CommandLineRunner{
 	public void run(String... args) throws Exception {
 		char userNames[] = "abcdefghijklmnopqrstuvwxyz".toCharArray();
 		String email = "@demo.com";
-		String role = "manager".toUpperCase();
+		String role = "player".toUpperCase();
 		
 		IntStream.range(0, 20).mapToObj(
 				i->{

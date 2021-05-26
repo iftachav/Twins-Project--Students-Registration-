@@ -50,7 +50,7 @@ public class UserToItemConverter implements UserItemConverter{
 		item.setItemSpace(this.space);
 		item.setId(newId);
 		item.setType(this.type); 	
-		//item.setName(user.getUsername());
+		item.setName(user.getEmailSpace().split("@@")[0]);
 		item.setActive(true);
 		item.setTimestamp(new Date());
 		item.setUserEmail(user.getEmailSpace().split("@@")[0]);

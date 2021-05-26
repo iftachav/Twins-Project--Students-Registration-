@@ -1,5 +1,7 @@
 package twins.operations;
 
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +16,7 @@ import twins.dal.UserDao;
 import twins.data.ItemEntity;
 import twins.data.OperationEntity;
 import twins.data.UserEntity;
+import twins.data.UserRole;
 import twins.errors.BadRequestException;
 import twins.errors.NotFoundException;
 import twins.item.ItemBoundary;
@@ -91,131 +94,133 @@ public class OperationHandlerImpl implements OperationHandler{
 	}
 	
 	@Override
-	public void registerToCourse(OperationEntity operation/*, ItemEntity item*/) {
-		//convert user to item
-		//add the Student item to the Course item
-		//Check Item existence
-		Optional<ItemEntity> optionalItem = this.itemDao.findById(this.space + "_" + operation.getItemId()); 
+	public void registerToCourse(OperationEntity operation) {
+		//check if Course exists and active
+		String itemId = this.space + "_" + operation.getItemId();
+		Optional<ItemEntity> optionalItem = this.itemDao.findByIdAndActive(itemId, true); 
 		if (!optionalItem.isPresent())
 			throw new NotFoundException("Item " + operation.getItemId() + " doesn't exist");
+		
+		//Extract Student email from Operation attributes
+		String studentEmail = (String) this.operationEntityConverter.fromJsonToMap(operation.getOperationAttributes()).get(this.studentType);
+		String studentId = studentEmail + "@@" + this.space;
 
-		// Check if item is active
-		ItemEntity item = optionalItem.get();
-		if (!item.isActive())
-			throw new BadRequestException(
-					"Can't invoke " + operation.getType() + " on item " + operation.getItemId());
-		
-		String studentId = (String) this.operationEntityConverter.fromJsonToMap(operation.getOperationAttributes()).get(this.studentType);
-		String id = studentId + "@@" + this.space;
-		System.err.println("studentId: " + studentId + "\tId: " + id + "\tSpace: " + space);
-		Optional<UserEntity> optionalStudent = this.userDao.findById(id);
+		//Check Student existence
+		Optional<UserEntity> optionalStudent = this.userDao.findById(studentId);
 		if(!optionalStudent.isPresent())
-			throw new BadRequestException("Student " + id + " doesn't exist");
+			throw new BadRequestException("Student " + studentEmail + " doesn't exist");
 		
+		//Check if the student already registered 
+		List<ItemEntity> students = this.itemDao.findAllByNameAndParents_id(studentEmail, itemId);
+		if(!students.isEmpty() && students.get(0).isActive())
+			throw new BadRequestException("Student " + studentEmail + " already registered");
+		if(!students.isEmpty() && !students.get(0).isActive()) {
+			students.get(0).setActive(true);
+			return;
+		}
+			
+		
+		//Grant Student temporary MANAGER role to convert himself to Item
+		String role = optionalStudent.get().getRole();
+		optionalStudent.get().setRole(UserRole.MANAGER.toString());
+		
+		//Add Student (as Item) to the Course
 		ItemEntity studentAsItem = this.userToItemConverter.UserToItem(optionalStudent.get());
-		this.itemService.addChildToItem(item.getId(), this.itemConverter.toBoundary(studentAsItem).getItemId(), studentId, this.space);
-		//item.addChild(studentAsItem);
+		this.itemDao.save(studentAsItem);
+		this.itemService.addChildToItem(optionalItem.get().getId(), this.itemConverter.toBoundary(studentAsItem).getItemId(), studentEmail, this.space);
+		optionalStudent.get().setRole(role);
 	}
 
 	@Override
-	public void resignFromCourse(OperationEntity operation/*, ItemEntity item*/) {
-		Optional<ItemEntity> optionalItem = this.itemDao.findById(operation.getItemId()); 
+	public void resignFromCourse(OperationEntity operation) {
+		//check if Course exists and active
+		String itemId = this.space + "_" + operation.getItemId();
+		Optional<ItemEntity> optionalItem = this.itemDao.findByIdAndActive(itemId, true); 
 		if (!optionalItem.isPresent())
 			throw new NotFoundException("Item " + operation.getItemId() + " doesn't exist");
 
-		// Check if item is active
-		ItemEntity item = optionalItem.get();
-		if (!item.isActive())
-			throw new BadRequestException(
-					"Can't invoke " + operation.getType() + " on item " + operation.getItemId());
-		//search parent item (Course) for students
-		//remove Student item from parent (set active to false)
-		String studentId = (String) this.operationEntityConverter.fromJsonToMap(operation.getOperationAttributes()).get(this.studentType);
-		String id = studentId + "@@" + this.space;
-		System.err.println("studentId: " + studentId + "\tId: " + id + "\tSpace: " + space);
-		Optional<UserEntity> optionalStudent = this.userDao.findById(id);
+		//Extract Student email from Operation attributes
+		String studentEmail = (String) this.operationEntityConverter.fromJsonToMap(operation.getOperationAttributes()).get(this.studentType);
+		String studentId = studentEmail + "@@" + this.space;
+
+		//Check Student existence
+		Optional<UserEntity> optionalStudent = this.userDao.findById(studentId);
 		if(!optionalStudent.isPresent())
-			throw new BadRequestException("Student " + id + " doesn't exist");
+			throw new BadRequestException("Student " + studentEmail + " doesn't exist");
 		
-		List<ItemEntity> courses = this.itemDao.findAllByNameAndTypeAndActive(item.getName(), this.courseType, true, Sort.by("name").ascending());
-		courses.stream().forEach(course-> {
-			course.getChildren()
-					.stream()
-					.forEach(student-> {
-						if(this.itemConverter.fromJsonToMap(student.getItemAttributes()).get(this.studentType).equals(studentId) && student.isActive()) {
-							student.setActive(false);
-						}
-					});});
+		//Get the student
+		List<ItemEntity> students = this.itemDao.findAllByNameAndParents_id(studentEmail, itemId);
+		if (students.isEmpty() || !students.get(0).isActive())
+			throw new BadRequestException("Student " + studentEmail + " isn't registered to Course " + itemId);
+		
+		students.stream().forEach(s-> s.setActive(false));
+//		List<ItemEntity> courses = this.itemDao.findAllByNameAndTypeAndActive(optionalItem.get().getName(), this.courseType, true, Sort.by("name").ascending());
+//		courses.stream().forEach(course-> {
+//			course.getChildren()
+//					.stream()
+//					.forEach(student-> {
+//						if(this.itemConverter.fromJsonToMap(student.getItemAttributes()).get(this.studentType).equals(studentEmail) && student.isActive()) {
+//							student.setActive(false);
+//						}
+//					});});
+		
+//		List<ItemEntity> courses = this.itemDao.findRegisteredCourses(studentEmail, true);
+//		courses.stream().forEach(student-> student.setActive(false));
 	}
 
 	@Override
-	public void updateGrade(OperationEntity operation/*, ItemEntity item*/) {
-		Optional<ItemEntity> optionalItem = this.itemDao.findById(operation.getItemId()); 
+	public void updateGrade(OperationEntity operation) {
+		//check if Course exists and active
+		String itemId = this.space + "_" + operation.getItemId();
+		Optional<ItemEntity> optionalItem = this.itemDao.findByIdAndActive(itemId, true);
 		if (!optionalItem.isPresent())
 			throw new NotFoundException("Item " + operation.getItemId() + " doesn't exist");
+		
+		//Extract Student email from Operation attributes
+		String studentEmail = (String) this.operationEntityConverter.fromJsonToMap(operation.getOperationAttributes())
+				.get(this.studentType);
+		String studentId = studentEmail + "@@" + this.space;
 
-		// Check if item is active
-		ItemEntity item = optionalItem.get();
-		if (!item.isActive())
-			throw new BadRequestException(
-					"Can't invoke " + operation.getType() + " on item " + operation.getItemId());
-		//search for item Course
-		//search for child item (Student)
+		// Check Student existence
+		Optional<UserEntity> optionalStudent = this.userDao.findById(studentId);
+		if (!optionalStudent.isPresent())
+			throw new BadRequestException("Student " + studentEmail + " doesn't exist");
+
+		// Get the student
+		List<ItemEntity> students = this.itemDao.findAllByNameAndParents_id(studentEmail, itemId);
+		if (students.isEmpty() || !students.get(0).isActive())
+			throw new BadRequestException("Student " + studentEmail + " isn't registered to Course " + itemId);
+		
 		//update grade
 		//expect only one grade to be passed
-		String studentId = (String) this.operationEntityConverter.fromJsonToMap(operation.getOperationAttributes()).get(this.studentType);
-		Optional<UserEntity> optionalStudent = this.userDao.findFirstByEmailSpace(studentId);
-		if(!optionalStudent.isPresent())
-			throw new BadRequestException("Student " + studentId + " doesn't exist");
-		
 		String grade = (String) this.operationEntityConverter.fromJsonToMap(operation.getOperationAttributes()).get(this.gradeType);
-		List<ItemEntity> courses = this.itemDao.findAllByNameAndTypeAndActive(item.getName(), this.courseType, true, Sort.by("name").ascending());
-		courses.stream().forEach(course-> {
-			course.getChildren()
-					.stream()
-					.forEach(student-> {
-						if(this.itemConverter.fromJsonToMap(student.getItemAttributes()).get(this.studentType).equals(studentId) && student.isActive()) {
-							this.itemConverter.fromMapToJson((Map<String, Object>) this.itemConverter.fromJsonToMap(student.getItemAttributes()).put(this.gradeType, grade));
-						}
-					});});
+		students.stream().forEach(s-> this.itemConverter.fromMapToJson((Map<String, Object>) this.itemConverter.fromJsonToMap(s.getItemAttributes()).put(this.gradeType, grade)));
 	}
 
 	@Override
-	public void removeCourse(OperationEntity operation/*, ItemEntity item*/) {
-		Optional<ItemEntity> optionalItem = this.itemDao.findById(operation.getItemId()); 
+	public void removeCourse(OperationEntity operation) {
+		//check if Course exists and active
+		String itemId = this.space + "_" + operation.getItemId();
+		Optional<ItemEntity> optionalItem = this.itemDao.findByIdAndActive(itemId, true);
 		if (!optionalItem.isPresent())
 			throw new NotFoundException("Item " + operation.getItemId() + " doesn't exist");
 
-		// Check if item is active
-		ItemEntity item = optionalItem.get();
-		if (!item.isActive())
-			throw new BadRequestException(
-					"Can't invoke " + operation.getType() + " on item " + operation.getItemId());
-		//search for item
-		//remove item
-		List<ItemEntity> courses = this.itemDao.findAllByNameAndTypeAndActive(item.getName(), this.courseType, true, Sort.by("name").ascending());
-		courses.stream().forEach(e-> e.setActive(false));
+		optionalItem.get().setActive(false);
 	}
 	
-	//TODO: Expensive! maybe there's another way?
 	@Override
 	public List<ItemBoundary> getRegisteredCourses(OperationEntity operation) {
-		String studentId = (String) this.operationEntityConverter.fromJsonToMap(operation.getOperationAttributes()).get(this.studentType);
-		Optional<UserEntity> student = this.userDao.findFirstByEmailSpace(studentId);
-		if(!student.isPresent())
-			throw new BadRequestException("Student " + studentId + " doesn't exist");
+		//Extract Student email from Operation attributes
+		String studentEmail = (String) this.operationEntityConverter.fromJsonToMap(operation.getOperationAttributes())
+				.get(this.studentType);
+		String studentId = studentEmail + "@@" + this.space;
+
+		// Check Student existence
+		Optional<UserEntity> optionalStudent = this.userDao.findById(studentId);
+		if (!optionalStudent.isPresent())
+			throw new BadRequestException("Student " + studentEmail + " doesn't exist");
 		
-		List<ItemEntity> courses = this.itemDao.findAllByTypeAndActive(this.courseType, true, Sort.by("name").ascending());
-		List<ItemEntity> studentRegisteredCourses = new ArrayList<>();
-		for(ItemEntity course : courses)
-		{
-			for(ItemEntity studentItem: course.getChildren()) {
-				if(this.itemConverter.fromJsonToMap(studentItem.getItemAttributes()).get(this.studentType).equals(studentId) && studentItem.isActive()) {
-					studentRegisteredCourses.add(course);
-				}
-			}
-		}
-		return studentRegisteredCourses.stream().map(this.itemConverter::toBoundary).collect(Collectors.toList());
+		return this.itemDao.findAllByChildren_nameAndChildren_active(studentEmail, true).stream().map(this.itemConverter::toBoundary).collect(Collectors.toList());
 	}
 
 	@Override
