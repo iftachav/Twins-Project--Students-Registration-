@@ -107,7 +107,7 @@ public class OperationHandlerImpl implements OperationHandler{
 			throw new BadRequestException("Student " + studentEmail + " doesn't exist");
 		
 		//Check if the student already registered 
-		Optional<ItemEntity> student = this.itemDao.findByNameAndParents_id(studentEmail, itemId);
+		Optional<ItemEntity> student = this.itemDao.findStudentByNameAndParents_id(studentEmail, itemId);
 		if(student.isPresent() && student.get().isActive())
 			throw new BadRequestException("Student " + studentEmail + " already registered");
 		if(student.isPresent() && !student.get().isActive()) {
@@ -145,7 +145,7 @@ public class OperationHandlerImpl implements OperationHandler{
 			throw new BadRequestException("Student " + studentEmail + " doesn't exist");
 		
 		//Check if the student registered to the course
-		Optional<ItemEntity> student = this.itemDao.findByNameAndParents_id(studentEmail, itemId);
+		Optional<ItemEntity> student = this.itemDao.findStudentByNameAndParents_id(studentEmail, itemId);
 		if (!student.isPresent())
 			throw new BadRequestException("Student " + studentEmail + " isn't registered to Course " + itemId);
 		else if(!student.get().isActive())
@@ -173,7 +173,7 @@ public class OperationHandlerImpl implements OperationHandler{
 			throw new BadRequestException("Student " + studentEmail + " doesn't exist");
 
 		//Check if the student registered to the course
-		Optional<ItemEntity> student = this.itemDao.findByNameAndParents_id(studentEmail, itemId);
+		Optional<ItemEntity> student = this.itemDao.findStudentByNameAndParents_id(studentEmail, itemId);
 		if(!student.isPresent())
 			throw new BadRequestException("Student " + studentEmail + " isn't registered to Course " + itemId);
 		else if(!student.get().isActive())
@@ -210,7 +210,7 @@ public class OperationHandlerImpl implements OperationHandler{
 		if (!optionalStudent.isPresent())
 			throw new BadRequestException("Student " + studentEmail + " doesn't exist");
 		
-		return this.itemDao.findAllByChildren_nameAndChildren_active(studentEmail, true).stream().map(this.itemConverter::toBoundary).collect(Collectors.toList());
+		return this.itemDao.findStudentsAllByChildren_nameAndChildren_active(studentEmail, true).stream().map(this.itemConverter::toBoundary).collect(Collectors.toList());
 	}
 
 	@Override

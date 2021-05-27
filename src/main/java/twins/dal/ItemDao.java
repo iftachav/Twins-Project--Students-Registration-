@@ -31,9 +31,9 @@ public interface ItemDao extends PagingAndSortingRepository<ItemEntity, String>{
 			@Param("active") boolean active, 
 			Sort sort);
 	
-	public List<ItemEntity> findAllByChildren_name(@Param("children_name") String children_name);
+	public List<ItemEntity> findAllStudentsByChildren_name(@Param("children_name") String children_name);
 	
-	public List<ItemEntity> findAllByChildren_nameAndChildren_active(@Param("children_name") String children_name, @Param("children_active") boolean children_active);
+	public List<ItemEntity> findStudentsAllByChildren_nameAndChildren_active(@Param("children_name") String children_name, @Param("children_active") boolean children_active);
 	
-	public Optional<ItemEntity> findByNameAndParents_id(@Param("name") String name, @Param("parent_id") String parents_id);
+	public Optional<ItemEntity> findStudentByNameAndParents_id(@Param("name") String name, @Param("parent_id") String parents_id);
 }
