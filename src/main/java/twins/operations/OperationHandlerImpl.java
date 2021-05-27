@@ -96,7 +96,7 @@ public class OperationHandlerImpl implements OperationHandler{
 	@Override
 	public void registerToCourse(OperationEntity operation) {
 		//check if Course exists and active
-		String itemId = this.space + "_" + operation.getItemId();
+		String itemId = /*this.space + "_" + */operation.getItemId();
 		Optional<ItemEntity> optionalItem = this.itemDao.findByIdAndActive(itemId, true); 
 		if (!optionalItem.isPresent())
 			throw new NotFoundException("Item " + operation.getItemId() + " doesn't exist");
@@ -134,7 +134,7 @@ public class OperationHandlerImpl implements OperationHandler{
 	@Override
 	public void resignFromCourse(OperationEntity operation) {
 		//check if Course exists and active
-		String itemId = this.space + "_" + operation.getItemId();
+		String itemId = /*this.space + "_" + */operation.getItemId();
 		Optional<ItemEntity> optionalItem = this.itemDao.findByIdAndActive(itemId, true); 
 		if (!optionalItem.isPresent())
 			throw new NotFoundException("Item " + operation.getItemId() + " doesn't exist");
@@ -171,7 +171,7 @@ public class OperationHandlerImpl implements OperationHandler{
 	@Override
 	public void updateGrade(OperationEntity operation) {
 		//check if Course exists and active
-		String itemId = this.space + "_" + operation.getItemId();
+		String itemId = /*this.space + "_" + */operation.getItemId();
 		Optional<ItemEntity> optionalItem = this.itemDao.findByIdAndActive(itemId, true);
 		if (!optionalItem.isPresent())
 			throw new NotFoundException("Item " + operation.getItemId() + " doesn't exist");
@@ -200,7 +200,7 @@ public class OperationHandlerImpl implements OperationHandler{
 	@Override
 	public void removeCourse(OperationEntity operation) {
 		//check if Course exists and active
-		String itemId = this.space + "_" + operation.getItemId();
+		String itemId = /*this.space + "_" + */operation.getItemId();
 		Optional<ItemEntity> optionalItem = this.itemDao.findByIdAndActive(itemId, true);
 		if (!optionalItem.isPresent())
 			throw new NotFoundException("Item " + operation.getItemId() + " doesn't exist");
