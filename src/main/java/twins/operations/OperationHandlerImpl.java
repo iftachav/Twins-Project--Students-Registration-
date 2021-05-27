@@ -1,8 +1,5 @@
 package twins.operations;
 
-import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
-
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -21,7 +18,6 @@ import twins.errors.BadRequestException;
 import twins.errors.NotFoundException;
 import twins.item.ItemBoundary;
 import twins.logic.ItemConverter;
-import twins.logic.ItemsService;
 import twins.logic.OperationEntityConverter;
 import twins.logic.OperationHandler;
 import twins.logic.UpdatedItemService;
@@ -111,11 +107,11 @@ public class OperationHandlerImpl implements OperationHandler{
 			throw new BadRequestException("Student " + studentEmail + " doesn't exist");
 		
 		//Check if the student already registered 
-		List<ItemEntity> students = this.itemDao.findAllByNameAndParents_id(studentEmail, itemId);
-		if(!students.isEmpty() && students.get(0).isActive())
+		Optional<ItemEntity> student = this.itemDao.findByNameAndParents_id(studentEmail, itemId);
+		if(student.isPresent() && student.get().isActive())
 			throw new BadRequestException("Student " + studentEmail + " already registered");
-		if(!students.isEmpty() && !students.get(0).isActive()) {
-			students.get(0).setActive(true);
+		if(student.isPresent() && !student.get().isActive()) {
+			student.get().setActive(true);
 			return;
 		}
 			
@@ -148,24 +144,14 @@ public class OperationHandlerImpl implements OperationHandler{
 		if(!optionalStudent.isPresent())
 			throw new BadRequestException("Student " + studentEmail + " doesn't exist");
 		
-		//Get the student
-		List<ItemEntity> students = this.itemDao.findAllByNameAndParents_id(studentEmail, itemId);
-		if (students.isEmpty() || !students.get(0).isActive())
+		//Check if the student registered to the course
+		Optional<ItemEntity> student = this.itemDao.findByNameAndParents_id(studentEmail, itemId);
+		if (!student.isPresent())
 			throw new BadRequestException("Student " + studentEmail + " isn't registered to Course " + itemId);
+		else if(!student.get().isActive())
+				throw new BadRequestException("Student " + studentEmail + " isn't registered to Course " + itemId);
 		
-		students.stream().forEach(s-> s.setActive(false));
-//		List<ItemEntity> courses = this.itemDao.findAllByNameAndTypeAndActive(optionalItem.get().getName(), this.courseType, true, Sort.by("name").ascending());
-//		courses.stream().forEach(course-> {
-//			course.getChildren()
-//					.stream()
-//					.forEach(student-> {
-//						if(this.itemConverter.fromJsonToMap(student.getItemAttributes()).get(this.studentType).equals(studentEmail) && student.isActive()) {
-//							student.setActive(false);
-//						}
-//					});});
-		
-//		List<ItemEntity> courses = this.itemDao.findRegisteredCourses(studentEmail, true);
-//		courses.stream().forEach(student-> student.setActive(false));
+		student.get().setActive(false);
 	}
 
 	@Override
@@ -186,15 +172,19 @@ public class OperationHandlerImpl implements OperationHandler{
 		if (!optionalStudent.isPresent())
 			throw new BadRequestException("Student " + studentEmail + " doesn't exist");
 
-		// Get the student
-		List<ItemEntity> students = this.itemDao.findAllByNameAndParents_id(studentEmail, itemId);
-		if (students.isEmpty() || !students.get(0).isActive())
+		//Check if the student registered to the course
+		Optional<ItemEntity> student = this.itemDao.findByNameAndParents_id(studentEmail, itemId);
+		if(!student.isPresent())
+			throw new BadRequestException("Student " + studentEmail + " isn't registered to Course " + itemId);
+		else if(!student.get().isActive())
 			throw new BadRequestException("Student " + studentEmail + " isn't registered to Course " + itemId);
 		
 		//update grade
 		//expect only one grade to be passed
-		String grade = (String) this.operationEntityConverter.fromJsonToMap(operation.getOperationAttributes()).get(this.gradeType);
-		students.stream().forEach(s-> this.itemConverter.fromMapToJson((Map<String, Object>) this.itemConverter.fromJsonToMap(s.getItemAttributes()).put(this.gradeType, grade)));
+		String grade = (String) this.operationEntityConverter.fromJsonToMap(operation.getOperationAttributes()).get(this.gradeType);		
+		Map<String, Object> attr = (Map<String, Object>) this.itemConverter.fromJsonToMap(student.get().getItemAttributes());
+		attr.put(this.gradeType, grade);
+		student.get().setItemAttributes(this.itemConverter.fromMapToJson(attr));
 	}
 
 	@Override

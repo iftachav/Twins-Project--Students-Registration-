@@ -89,7 +89,7 @@ public class OperationServiceJpa implements UpdatedOperationService{
 			throw new BadRequestException("Null Invoked By Element Received.");
 		if(!checkEmail(operation.getInvokedBy().getUserId().getEmail()))
 			throw new BadRequestException("Email Is Not Valid.");
-		if(!operation.getType().equals(OperationTypes.getAllCourses.toString()) || !operation.getType().equals(OperationTypes.getRegisteredCourses.toString())) {
+		if(!operation.getType().equals(OperationTypes.getAllCourses.toString()) && !operation.getType().equals(OperationTypes.getRegisteredCourses.toString())) {
 			if(operation.getItem() == null || operation.getItem().getItemId() == null|| operation.getItem().getItemId().getId()== null || operation.getItem().getItemId().getId().equals("") || operation.getItem().getItemId().getId() == null)
 				throw new BadRequestException("Null Item Element Received.");
 		}

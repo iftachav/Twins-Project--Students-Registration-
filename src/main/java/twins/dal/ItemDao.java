@@ -35,5 +35,5 @@ public interface ItemDao extends PagingAndSortingRepository<ItemEntity, String>{
 	
 	public List<ItemEntity> findAllByChildren_nameAndChildren_active(@Param("children_name") String children_name, @Param("children_active") boolean children_active);
 	
-	public List<ItemEntity> findAllByNameAndParents_id(@Param("name") String name, @Param("parent_id") String parents_id);
+	public Optional<ItemEntity> findByNameAndParents_id(@Param("name") String name, @Param("parent_id") String parents_id);
 }
