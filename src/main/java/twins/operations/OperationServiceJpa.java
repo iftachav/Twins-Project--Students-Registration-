@@ -108,8 +108,6 @@ public class OperationServiceJpa implements UpdatedOperationService{
 		entity.setOperationId(newId);
 		entity.setOperationSpace(springApplicationName);
 		
-		operationDao.save(entity);
-		
 		if(operation.getType().equals(OperationTypes.getRegisteredCourses.toString()))
 			return this.operationHandler.getRegisteredCourses(entity);
 		if(operation.getType().equals(OperationTypes.getAllCourses.toString()))
@@ -123,6 +121,8 @@ public class OperationServiceJpa implements UpdatedOperationService{
 			this.operationHandler.updateGrade(entity);
 		else if(operation.getType().equals(OperationTypes.removeCourse.toString()))
 			this.operationHandler.removeCourse(entity);	
+		
+		operationDao.save(entity);
 		
 		return operationEntityConverter.toBoundary(entity);
 	}
@@ -165,7 +165,7 @@ public class OperationServiceJpa implements UpdatedOperationService{
 		entity.setOperationSpace(springApplicationName);
 		
 		operationDao.save(entity);
-
+		
 		ObjectMapper jackson = new ObjectMapper();
 		try {
 			String json = jackson.writeValueAsString(operation); 
