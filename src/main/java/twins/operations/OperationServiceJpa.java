@@ -164,7 +164,7 @@ public class OperationServiceJpa implements UpdatedOperationService{
 		entity.setOperationId(newId);
 		entity.setOperationSpace(springApplicationName);
 		
-		operationDao.save(entity);
+		//operationDao.save(entity); moved to AsyncOperationHandler::handleJson
 		
 		ObjectMapper jackson = new ObjectMapper();
 		try {

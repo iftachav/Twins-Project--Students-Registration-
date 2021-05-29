@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import twins.dal.ItemDao;
+import twins.dal.OperationDao;
 import twins.dal.UserDao;
 import twins.data.ItemEntity;
 import twins.data.OperationEntity;
@@ -21,6 +22,7 @@ public class AsyncOperationHandler {
 	private OperationHandler operationHandler;
 	private UserDao userDao;
 	private ItemDao itemDao;
+	private OperationDao operationDao;
 	private OperationEntityConverter operationEntityConverter;
 	
 	public AsyncOperationHandler() {
@@ -35,6 +37,11 @@ public class AsyncOperationHandler {
 	@Autowired
 	public void setItemDao(ItemDao itemDao) {
 		this.itemDao = itemDao;
+	}
+	
+	@Autowired
+	public void setOperationDao(OperationDao operationDao) {
+		this.operationDao = operationDao;
 	}
 	
 	@Autowired
@@ -66,6 +73,7 @@ public class AsyncOperationHandler {
 			else if(operation.getType().equals(OperationTypes.removeCourse.toString()))
 				this.operationHandler.removeCourse(entity);				
 			
+			operationDao.save(entity); //moved from OperationServiceJpa::invokeAsynchronousOperation
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
