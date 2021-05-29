@@ -129,7 +129,7 @@ public class OperationHandlerImpl implements OperationHandler{
 		optionalUser.get().setRole(UserRole.MANAGER.toString());
 		
 		//Add Student (as Item) to the Course
-		ItemEntity userAsItem = this.userToItemConverter.UserToItem(optionalUser.get());
+		ItemEntity userAsItem = this.userToItemConverter.UserToItem(optionalUser.get(), type);
 		this.itemDao.save(userAsItem);
 		this.itemService.addChildToItem(optionalItem.get().getId(), this.itemConverter.toBoundary(userAsItem).getItemId(), userEmail, this.space);
 		optionalUser.get().setRole(role);

@@ -163,13 +163,12 @@ public class OperationServiceJpa implements UpdatedOperationService{
 		entity.setOperationSpace(springApplicationName);
 		entity.setOperationId(newId);
 		entity.setOperationSpace(springApplicationName);
-		
-		//operationDao.save(entity); moved to AsyncOperationHandler::handleJson
-		
+			
 		ObjectMapper jackson = new ObjectMapper();
 		try {
 			String json = jackson.writeValueAsString(operation); 
 			this.jmsTemplate.send("operationInbox", session -> session.createTextMessage(json));
+			//operationDao.save(entity); moved to AsyncOperationHandler::handleJson
 			return operationEntityConverter.toBoundary(entity);
 		} catch (Exception e) {
 			throw new RuntimeException(e);

@@ -5,5 +5,5 @@ import twins.data.UserEntity;
 
 public interface UserItemConverter {
 	
-	public ItemEntity UserToItem(UserEntity user);
+	public ItemEntity UserToItem(UserEntity user, String type);
 }

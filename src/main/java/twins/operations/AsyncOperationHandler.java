@@ -1,17 +1,12 @@
 package twins.operations;
 
-import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import twins.dal.ItemDao;
 import twins.dal.OperationDao;
-import twins.dal.UserDao;
-import twins.data.ItemEntity;
 import twins.data.OperationEntity;
-import twins.data.UserEntity;
 import twins.logic.OperationEntityConverter;
 import twins.logic.OperationHandler;
 
@@ -20,23 +15,11 @@ import twins.logic.OperationHandler;
 public class AsyncOperationHandler {
 	private ObjectMapper jackson;
 	private OperationHandler operationHandler;
-	private UserDao userDao;
-	private ItemDao itemDao;
 	private OperationDao operationDao;
 	private OperationEntityConverter operationEntityConverter;
 	
 	public AsyncOperationHandler() {
 		this.jackson = new ObjectMapper();
-	}
-	
-	@Autowired
-	public void setUserDao(UserDao userDao) {
-		this.userDao = userDao;
-	}
-	
-	@Autowired
-	public void setItemDao(ItemDao itemDao) {
-		this.itemDao = itemDao;
 	}
 	
 	@Autowired
