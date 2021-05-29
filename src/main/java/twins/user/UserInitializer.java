@@ -38,5 +38,10 @@ public class UserInitializer implements CommandLineRunner{
 					user.setUserId(new UserId(this.space, Character.toString(userName) + email));
 					return user;
 				}).forEach(obj->this.userService.createUser(obj));
+		
+		UserBoundary admin = new UserBoundary("ADMIN", "admin", "A");
+		
+		admin.setUserId(new UserId(this.space, "admin@demo.com"));		
+		this.userService.createUser(admin);
 	}
 }
