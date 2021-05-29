@@ -60,14 +60,14 @@ public class UserServiceJPA implements UpdatedUsersService{
 		if(!checkEmail(user.getUserId().getEmail()))
 			throw new BadRequestException("Invalid Email");
 		
-		String emailAndSpace = user.getUserId().getEmail() + "@@" + this.springApplicationName;
+		user.getUserId().setSpace(this.springApplicationName);
+		String emailAndSpace = user.getUserId().getEmail() + "@@" + user.getUserId().getSpace();
 		
 		//if User already exists -> throw (prevent an exploit for changing the details of an existing User by creating a new user with the same Email).
 		Optional<UserEntity> optional = this.userDao.findById(emailAndSpace);
 		if(optional.isPresent())
 			throw new ForbiddenRequestException("Unauthorized operation on an existing user");
 		
-		user.getUserId().setSpace(this.springApplicationName);
 		UserEntity entity = this.userEntityConverter.fromBoundary(user);		
 		entity.setEmailSpace(emailAndSpace);
 		
