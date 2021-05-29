@@ -117,7 +117,7 @@ public class OperationHandlerImpl implements OperationHandler{
 		//Check if the user already registered 
 		Optional<ItemEntity> registered = this.itemDao.findStudentByNameAndParents_id(userEmail, itemId);
 		if(registered.isPresent() && registered.get().isActive())
-			throw new BadRequestException("Student " + userEmail + " already registered");
+			throw new BadRequestException("User " + userEmail + " already registered");
 		if(registered.isPresent() && !registered.get().isActive()) {
 			registered.get().setActive(true);
 			return;
@@ -162,9 +162,9 @@ public class OperationHandlerImpl implements OperationHandler{
 		//Check if the student registered to the course
 		Optional<ItemEntity> user = this.itemDao.findStudentByNameAndParents_id(userEmail, itemId);
 		if (!user.isPresent())
-			throw new BadRequestException("Student " + userEmail + " isn't registered to Course " + itemId);
+			throw new BadRequestException("User " + userEmail + " isn't registered to Course " + itemId);
 		else if(!user.get().isActive())
-				throw new BadRequestException("Student " + userEmail + " isn't registered to Course " + itemId);
+				throw new BadRequestException("User " + userEmail + " isn't registered to Course " + itemId);
 		
 		user.get().setActive(false);
 	}
@@ -201,6 +201,10 @@ public class OperationHandlerImpl implements OperationHandler{
 			throw new BadRequestException("Student " + studentEmail + " isn't registered to Course " + itemId);
 		else if(!student.get().isActive())
 			throw new BadRequestException("Student " + studentEmail + " isn't registered to Course " + itemId);
+		
+		//Check if the User is a Lecturer
+		else if(!student.get().getType().equals(ItemTypes.Student.toString()))
+			throw new BadRequestException("User " + studentEmail + " isn't of type Student");
 		
 		//update grade
 		//expect only one grade to be passed
@@ -244,7 +248,7 @@ public class OperationHandlerImpl implements OperationHandler{
 		// Check Student existence
 		Optional<UserEntity> optionalStudent = this.userDao.findById(studentId);
 		if (!optionalStudent.isPresent())
-			throw new BadRequestException("Student " + studentEmail + " doesn't exist");
+			throw new BadRequestException("User " + studentEmail + " doesn't exist");
 		
 		return this.itemDao.findAllStudentsByChildren_nameAndChildren_active(studentEmail, true).stream().map(this.itemConverter::toBoundary).collect(Collectors.toList());
 	}
