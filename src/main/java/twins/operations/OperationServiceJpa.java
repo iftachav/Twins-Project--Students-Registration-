@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -93,6 +94,8 @@ public class OperationServiceJpa implements UpdatedOperationService{
 			if(operation.getItem() == null || operation.getItem().getItemId() == null|| operation.getItem().getItemId().getId()== null || operation.getItem().getItemId().getId().equals("") || operation.getItem().getItemId().getId() == null)
 				throw new BadRequestException("Null Item Element Received.");
 		}
+		if(!Stream.of(OperationTypes.values()).map(Enum::name).collect(Collectors.toList()).contains(operation.getType()))
+			throw new BadRequestException("There's no such operation as "+operation.getType());
 		
 		//Check User existence
 		Optional<UserEntity> optionalUser = this.userDao.findById(operation.getInvokedBy().getUserId().getEmail() + 
@@ -157,6 +160,8 @@ public class OperationServiceJpa implements UpdatedOperationService{
 			throw new BadRequestException("Email Is Not Valid.");
 		if(operation.getItem() == null || operation.getItem().getItemId() == null|| operation.getItem().getItemId().getId()== null || operation.getItem().getItemId().getId().equals("") || operation.getItem().getItemId().getId() == null)
 			throw new BadRequestException("Null Item Element Received.");
+		if(!Stream.of(OperationTypes.values()).map(Enum::name).collect(Collectors.toList()).contains(operation.getType()))
+			throw new BadRequestException("There's no such operation as "+operation.getType());
 			
 		//Check User existence
 		Optional<UserEntity> optionalUser = this.userDao.findById(operation.getInvokedBy().getUserId().getEmail() + 
