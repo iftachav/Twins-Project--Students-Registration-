@@ -57,7 +57,7 @@ public class UserServiceMockup implements UsersService {
 
 	@Override
 	public UserBoundary login(String userSpace, String userEmail) {
-		UserEntity entity=null;
+//		UserEntity entity=null;
 //		for(Map.Entry<String, UserEntity> current : users.entrySet()) {
 //			if(current.getValue().getEmail().equals(userEmail) 
 //					&& current.getValue().getSpace().equals(userSpace)) {

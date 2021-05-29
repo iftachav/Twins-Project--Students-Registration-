@@ -77,13 +77,6 @@ public class ItemServiceJpa implements UpdatedItemService{
 		if(item.getName() == null || item.getName().isEmpty())
 			throw new BadRequestException("item name can't be null or empty.");
 
-		//		if(item.getItemId()==null)
-		//			throw new BadRequestException("ItemId can't be null");
-		//		if(item.getItemId().getSpace()==null)
-		//			throw new BadRequestException("space (of ItemId) can't be null");
-		//		if(item.getItemId().getId()==null)
-		//			throw new BadRequestException("id (of ItemId) can't be null");
-
 		String newId = this.space + "_" + UUID.randomUUID().toString();//item.getItemId().getId();
 
 		ItemEntity entity = this.itemEntityConverter.toEntity(item);

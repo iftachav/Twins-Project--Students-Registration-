@@ -16,6 +16,4 @@ public class UserIdWrapper {
 	public void setUserId(UserId userId) {
 		this.userId = userId;
 	}
-	
-	
 }

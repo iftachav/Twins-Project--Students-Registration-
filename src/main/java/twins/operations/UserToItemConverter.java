@@ -18,7 +18,6 @@ import twins.logic.UserItemConverter;
 public class UserToItemConverter implements UserItemConverter{
 	private String space;
 	private String type;
-	private String id;
 	private OperationEntityConverter converter;
 	
 	public UserToItemConverter() { }

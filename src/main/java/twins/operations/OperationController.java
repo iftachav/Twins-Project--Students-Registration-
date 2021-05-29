@@ -8,8 +8,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import twins.logic.OperationService;
 import twins.logic.UpdatedOperationService;
 
 @RestController
@@ -42,8 +40,6 @@ public class OperationController {
 			@PathVariable("userEmail") String userEmail,
 			@RequestParam(name = "size", required = false, defaultValue = "20") int size,
 			@RequestParam(name = "page", required = false, defaultValue = "0") int page) {
-//		OperationBoundary[] tmp = Stream.of(new OperationBoundary(), new OperationBoundary(), new OperationBoundary())
-//				.map(input->{ return input; }).collect(Collectors.toList()).toArray(new OperationBoundary[0]);
 		return operationService.getAllOperations(userSpace, userEmail, size, page).toArray(new OperationBoundary[0]);
 	}
 }

@@ -54,12 +54,7 @@ public class AsyncOperationHandler {
 
 			OperationBoundary operation = this.jackson
 				.readValue(json, OperationBoundary.class);
-			
-			Optional<UserEntity> optionalUser = this.userDao.findById(operation.getInvokedBy().getUserId().getEmail() + 
-					"@@" + operation.getInvokedBy().getUserId().getSpace());	//search user by: UserEmail@@Space
-	
-			Optional<ItemEntity> optionalItem = this.itemDao.findById(operation.getItem().getItemId().getId());	//search item by: Space_ItemId
-			ItemEntity item = optionalItem.get();
+
 			OperationEntity entity = operationEntityConverter.fromBoundary(operation);
 			
 			if(operation.getType().equals(OperationTypes.registerToCourse.toString()))

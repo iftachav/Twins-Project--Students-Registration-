@@ -69,16 +69,6 @@ public class OperationHandlerImpl implements OperationHandler{
 		this.userToItemConverter = userToItemConverter;
 	}
 	
-//	@Value("${courseType:Course}")
-//	public void setCourseType(String courseType) {
-//		this.courseType = courseType;
-//	}
-//	
-//	@Value("${studentType:Student}")
-//	public void setStudentType(String studentType) {
-//		this.studentType = studentType;
-//	}
-	
 	@Value("${type:Type}")
 	public void setCourseType(String type) {
 		this.type = type;

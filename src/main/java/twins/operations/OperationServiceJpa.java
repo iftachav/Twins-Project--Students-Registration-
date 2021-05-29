@@ -15,10 +15,8 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import twins.dal.ItemDao;
 import twins.dal.OperationDao;
 import twins.dal.UserDao;
-import twins.data.ItemEntity;
 import twins.data.OperationEntity;
 import twins.data.UserEntity;
 import twins.data.UserRole;
@@ -33,7 +31,6 @@ import twins.logic.UpdatedOperationService;
 @Service
 public class OperationServiceJpa implements UpdatedOperationService{
 	private UserDao userDao;
-	private ItemDao itemDao;
 	private OperationDao operationDao;
 	private OperationEntityConverter operationEntityConverter;
 	private String springApplicationName;
@@ -55,11 +52,6 @@ public class OperationServiceJpa implements UpdatedOperationService{
 	@Autowired
 	public void setUserDao(UserDao userDao) {
 		this.userDao = userDao;
-	}
-	
-	@Autowired
-	public void setItemDao(ItemDao itemDao) {
-		this.itemDao = itemDao;
 	}
 	
 	@Autowired
@@ -90,13 +82,13 @@ public class OperationServiceJpa implements UpdatedOperationService{
 			throw new BadRequestException("Null Invoked By Element Received.");
 		if(!checkEmail(operation.getInvokedBy().getUserId().getEmail()))
 			throw new BadRequestException("Email Is Not Valid.");
+		if(!Stream.of(OperationTypes.values()).map(Enum::name).collect(Collectors.toList()).contains(operation.getType()))
+			throw new BadRequestException("There's no such operation as "+ operation.getType());
 		if(!operation.getType().equals(OperationTypes.getAllCourses.toString()) && !operation.getType().equals(OperationTypes.getRegisteredCourses.toString())) {
 			if(operation.getItem() == null || operation.getItem().getItemId() == null|| operation.getItem().getItemId().getId()== null || operation.getItem().getItemId().getId().equals("") || operation.getItem().getItemId().getId() == null)
 				throw new BadRequestException("Null Item Element Received.");
 		}
-		if(!Stream.of(OperationTypes.values()).map(Enum::name).collect(Collectors.toList()).contains(operation.getType()))
-			throw new BadRequestException("There's no such operation as "+operation.getType());
-		
+			
 		//Check User existence
 		Optional<UserEntity> optionalUser = this.userDao.findById(operation.getInvokedBy().getUserId().getEmail() + 
 				"@@" + operation.getInvokedBy().getUserId().getSpace());	//search user by: UserEmail@@Space
@@ -107,16 +99,6 @@ public class OperationServiceJpa implements UpdatedOperationService{
 		UserEntity user = optionalUser.get();
 		if(!user.getRole().equals(UserRole.PLAYER.toString()))
 			throw new ForbiddenRequestException("Operation " + operation.getType() + " not authorized for role " + user.getRole());
-		
-//		//Check Item existence
-//		Optional<ItemEntity> optionalItem = this.itemDao.findById(operation.getItem().getItemId().getId());	//search item by: Space_ItemId
-//		if(!optionalItem.isPresent())
-//			throw new NotFoundException("Item " + operation.getItem().getItemId().getId() + " doesn't exist");
-//		
-//		//Check if item is active
-//		ItemEntity item = optionalItem.get();
-//		if(!item.isActive())
-//			throw new BadRequestException("Can't invoke " + operation.getType() + " on item " + operation.getItem().getItemId());
 		
 		String newId= UUID.randomUUID().toString()+"_"+this.springApplicationName;
 		
@@ -171,18 +153,8 @@ public class OperationServiceJpa implements UpdatedOperationService{
 		
 		//Check user Role
 		UserEntity user = optionalUser.get();
-		if(!user.getRole().equals("PLAYER"))
+		if(!user.getRole().equals(UserRole.PLAYER.toString()))
 			throw new ForbiddenRequestException("Operation " + operation.getType() + " not authorized for role " + user.getRole());
-		
-		//Check Item existence
-		Optional<ItemEntity> optionalItem = this.itemDao.findById(operation.getItem().getItemId().getId());	//search item by: Space_ItemId
-		if(!optionalItem.isPresent())
-			throw new NotFoundException("Item " + operation.getItem().getItemId().getId() + " doesn't exist");
-
-		//Check if item is active
-		ItemEntity item = optionalItem.get();
-		if (!item.isActive())
-			throw new BadRequestException("Can't invoke " + operation.getType() + " on item " + operation.getItem().getItemId());
 		
 		String newId= UUID.randomUUID().toString()+"_"+this.springApplicationName;
 		
@@ -215,7 +187,7 @@ public class OperationServiceJpa implements UpdatedOperationService{
 			throw new NotFoundException("User " + adminEmail + " doesn't exist");
 		
 		UserEntity admin = optionalUser.get();
-		if(!admin.getRole().equals("ADMIN"))
+		if(!admin.getRole().equals(UserRole.ADMIN.toString()))
 			throw new ForbiddenRequestException("Operation doesn't authorized for role " + admin.getRole());
 		
 		Iterable<OperationEntity> allEntities=this.operationDao.findAll(PageRequest.of(page, size, Direction.ASC, "createdTimestamp"));
@@ -235,7 +207,7 @@ public class OperationServiceJpa implements UpdatedOperationService{
 			throw new NotFoundException("User " + adminEmail + " doesn't exist");
 		
 		UserEntity admin = optionalUser.get();
-		if(!admin.getRole().equals("ADMIN"))
+		if(!admin.getRole().equals(UserRole.ADMIN.toString()))
 			throw new ForbiddenRequestException("Operation doesn't authorized for role " + admin.getRole());
 		
 		Iterable<OperationEntity> allEntities=this.operationDao.findAll();
@@ -254,7 +226,7 @@ public class OperationServiceJpa implements UpdatedOperationService{
 			throw new NotFoundException("User " + adminEmail + " doesn't exist");
 		
 		UserEntity admin = optionalUser.get();
-		if(!admin.getRole().equals("ADMIN"))
+		if(!admin.getRole().equals(UserRole.ADMIN.toString()))
 			throw new ForbiddenRequestException("Operation doesn't authorized for role " + admin.getRole());
 		
 		this.operationDao.deleteAll();

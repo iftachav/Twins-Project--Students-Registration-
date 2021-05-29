@@ -5,13 +5,13 @@ import twins.data.OperationEntity;
 import twins.item.ItemBoundary;
 
 public interface OperationHandler {
-	public void registerToCourse(OperationEntity operation/*, ItemEntity item*/);
+	public void registerToCourse(OperationEntity operation);
 	
-	public void resignFromCourse(OperationEntity operation/*, ItemEntity item*/);
+	public void resignFromCourse(OperationEntity operation);
 	
-	public void updateGrade(OperationEntity operation/*, ItemEntity item*/);
+	public void updateGrade(OperationEntity operation);
 	
-	public void removeCourse(OperationEntity operation/*, ItemEntity item*/);
+	public void removeCourse(OperationEntity operation);
 	
 	public List<ItemBoundary> getRegisteredCourses(OperationEntity operation);
 	
